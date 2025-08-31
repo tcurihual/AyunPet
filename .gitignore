@@ -64,3 +64,8 @@ xcuserdata
 
 **/dist
 */dist
+**/package-lock.json
+**/*-lock.*
+**/pnpm-lock.yaml
+**/yarn.lock
+pnpm-lock.yaml
