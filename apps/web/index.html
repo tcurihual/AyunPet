@@ -4,10 +4,57 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>AYÜN PET</title>
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <header>
+        <div class="header-left">
+          <img src="/ayun_pet.png" alt="ayun pet logo"/>
+          <span>descripcion pequeña de la pag.</span>
+        </div>
+        <div class="header-right">
+          <button>
+            <img src="perfil.png" alt="Mi perfil"/>
+            <span>Mi perfil</span>
+          </button>
+        </div>
+      </header>
+      <div>
+                <div class="animal-grid">
+          <input type="text" placeholder="foto de cualquier animal" />
+          <div class="grid-container">
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+            <div class="animal-card">animal</div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <select>
+            <option value="">filtro de animales</option>
+            <option value="lugar">Lugar</option>
+            <option value="animal">Animal</option>
+            <option value="tamaño">Tamaño</option>
+            <option value="caracteristicas">Características</option>
+            <option value="edad">Edad</option>
+            <option value="raza">Raza</option>
+          </select>
+          <input type="text" placeholder="Lugar" />
+          <input type="text" placeholder="Animal" />
+          <input type="text" placeholder="Tamaño" />
+          <input type="text" placeholder="Características" />
+          <input type="text" placeholder="Edad" />
+          <input type="text" placeholder="Raza" />
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
