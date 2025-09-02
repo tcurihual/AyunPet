@@ -1,44 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AYÜN PET</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="src/pages/Imagenes/styles.css" />
   </head>
   <body>
     <div id="root">
-      <header>
-        <div class="header-left">
-          <img src="/ayun_pet.png" alt="ayun pet logo"/>
-          <span>descripcion pequeña de la pag.</span>
+      <header class="flex justify-between items-center bg-yellow-600 p-4">
+        <div class="flex items-center">
+          <img src="src/pages/Imagenes/logo_ayun_pet.png" alt="Ayún Pet Logo" class="h-12" />
+          <span class="ml-4 text-white">descripciónPequeña de la pag.</span>
         </div>
-        <div class="header-right">
-          <button>
-            <img src="perfil.png" alt="Mi perfil"/>
-            <span>Mi perfil</span>
+        <div>
+          <button class="flex items-center bg-transparent border-none cursor-pointer">
+            <img src="/profile.svg" alt="Mi perfil" class="h-10 rounded-full" />
+            <span class="ml-2 text-white">Mi perfil</span>
           </button>
         </div>
       </header>
-      <div>
-                <div class="animal-grid">
-          <input type="text" placeholder="foto de cualquier animal" />
-          <div class="grid-container">
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
-            <div class="animal-card">animal</div>
+      <div class="flex p-5">
+        <div class="w-3/4 pr-5">
+          <input type="text" placeholder="foto de cualquier animal" class="w-full p-2.5 mb-2.5 border rounded" />
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
+            <div class="border border-gray-300 p-2.5 text-center bg-gray-100">animal</div>
           </div>
         </div>
-        <div class="filter-section">
-          <select>
-            <option value="">filtro de animales</option>
+        <div class="w-1/4">
+          <select class="w-full p-2.5 mb-2.5 border rounded">
+            <option value="">filtro de...</option>
             <option value="lugar">Lugar</option>
             <option value="animal">Animal</option>
             <option value="tamaño">Tamaño</option>
@@ -46,12 +47,12 @@
             <option value="edad">Edad</option>
             <option value="raza">Raza</option>
           </select>
-          <input type="text" placeholder="Lugar" />
-          <input type="text" placeholder="Animal" />
-          <input type="text" placeholder="Tamaño" />
-          <input type="text" placeholder="Características" />
-          <input type="text" placeholder="Edad" />
-          <input type="text" placeholder="Raza" />
+          <input type="text" placeholder="Lugar" class="w-full p-2.5 mb-2.5 border rounded" />
+          <input type="text" placeholder="Animal" class="w-full p-2.5 mb-2.5 border rounded" />
+          <input type="text" placeholder="Tamaño" class="w-full p-2.5 mb-2.5 border rounded" />
+          <input type="text" placeholder="Características" class="w-full p-2.5 mb-2.5 border rounded" />
+          <input type="text" placeholder="Edad" class="w-full p-2.5 mb-2.5 border rounded" />
+          <input type="text" placeholder="Raza" class="w-full p-2.5 mb-2.5 border rounded" />
         </div>
       </div>
     </div>
