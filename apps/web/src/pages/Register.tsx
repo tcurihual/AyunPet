@@ -15,12 +15,12 @@ export default function Register() {
         <TextField 
           label="Correo electrónico" 
           type="email" 
-          placeholder="ejemplo@correo.com" 
+          placeholder="hlepio2024@alu.uct.cl" 
           name="email" 
         />
         <TextField 
           label="RUT" 
-          placeholder="12345678-9" 
+          placeholder="21916832-2" 
           name="rut" 
         />
         <TextField 
