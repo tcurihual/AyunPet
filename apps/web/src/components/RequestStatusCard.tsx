@@ -77,7 +77,7 @@ export default function RequestStatusCard({
 
       {/* Columna Derecha: Imagen y Botones */}
       <div className="flex flex-col items-end gap-4">
-        <img src={petImage} alt={petName} className="w-40 h-40 rounded-full object-cover border-4 border-[#E5D5BE] shadow-lg" />
+        <img src={petImage} alt={petName} className="w-40 h-40 rounded-full object-cover border-4 border-[#E5D5BE] shadow-lg shadow-[#6D3B07]/50" />
         <div className="flex items-center gap-2 mt-2">
           <button className="px-4 py-1.5 text-sm bg-[#8d4925] text-white rounded-lg hover:bg-[#644C34] transition">
             Informacion
