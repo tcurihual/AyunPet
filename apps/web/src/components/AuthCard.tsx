@@ -10,13 +10,15 @@ type Props = {
 export default function AuthCard({ title, subtitle, children }: Props) {
   return (
     <div className="min-h-dvh flex flex-col bg-white">
-      <nav className="h-14 md:h-16 w-full bg-[#FBDBA8]">
-        <div className="max-w-6xl mx-auto h-full px-4 flex items-center justify-between">
+      <nav className="h-14 md:h-16 w-full bg-[#FBDBA8] px-4 md:px-6">
+        <div className="w-full h-full flex items-center justify-between">
+          
+          
           <div className="flex items-center">
             <img src="/logo.png" alt="Ayün Pet" className="h-8 w-8" />
           </div>
 
-          <div className="flex-1 flex justify-center gap-8">
+          <div className="flex gap-8">
             <Link to="/adopta" className="text-sm text-[#281402] hover:underline">
               Adopta
             </Link>
@@ -42,6 +44,7 @@ export default function AuthCard({ title, subtitle, children }: Props) {
               Registrarse
             </Link>
           </div>
+
         </div>
       </nav>
 
