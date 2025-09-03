@@ -69,3 +69,4 @@ xcuserdata
 **/pnpm-lock.yaml
 **/yarn.lock
 pnpm-lock.yaml
+uploads/
