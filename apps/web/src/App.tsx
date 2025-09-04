@@ -1,10 +1,18 @@
-import { BrowserRouter } from "react-router-dom"
-import WebRouter from "./pages/router"
+import { Routes, Route } from 'react-router-dom';
+import HomePage from './pages/router';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AdoptionRequestsPage from './pages/AdoptionRequestsPage'; 
 
-export default function App() {
+function App() {
   return (
-    <BrowserRouter>
-      <WebRouter />
-    </BrowserRouter>
-  )
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} /> 
+      <Route path="/solicitudes" element={<AdoptionRequestsPage />} />
+    </Routes>
+  );
 }
+
+export default App;

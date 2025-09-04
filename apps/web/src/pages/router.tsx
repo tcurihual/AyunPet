@@ -1,26 +1,20 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./Login";
-import Register from "./Register";
-import AdoptionRequestsPage from "./AdoptionRequestsPage";
-import MainLayout from "../components/MainLayout";
 
-const Home: React.FC = () => {
-  return <div>Contenido de la página de Inicio</div>;
-};
+import React from 'react';
 
-const WebRouter: React.FC = () => {
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import Faq from '../components/Faq';
+import Footer from '../components/Footer';
+
+const HomePage: React.FC = () => {
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/solicitudes" element={<AdoptionRequestsPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <Header />
+      <Hero />
+      <Faq />
+      <Footer />
+    </>
   );
 };
 
-export default WebRouter;
+export default HomePage;
