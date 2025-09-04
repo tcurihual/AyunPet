@@ -1,6 +1,5 @@
 import React from 'react';
 import logo from '../assets/logo.png';
-y
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
