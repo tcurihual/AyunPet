@@ -91,20 +91,32 @@ function createRefreshToken(user:UserToken){
 
 }
 
-function verifyAccessToken(token: string) {
+function verificarAccessToken(token: string): UserToken {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
+            issuer: "ns",
             audience: "UserPet"
         }) as any
-        
-        if (decoded.tipo !== "access") {
-            throw new Error("Este no es un Access Token")
+
+        if (decoded.type !== "access") {
+            throw new Error("Tipo de token inválido")
         }
         
-        return decoded
+        return {
+            UserId: decoded.UserId,
+            email: decoded.email,
+            role: decoded.role,
+            UserName: decoded.UserName
+        }
+        
     } catch (error) {
-        console.log("AccessToken invalido :", error)
-        return null
+        if (error instanceof jwt.TokenExpiredError) {
+            throw new Error("Token expirado")
+        } else if (error instanceof jwt.JsonWebTokenError) {
+            throw new Error("Token inválido")
+        } else {
+            throw new Error("Error al verificar token")
+        }
     }
 }
 
