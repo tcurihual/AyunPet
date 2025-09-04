@@ -123,16 +123,27 @@ function verifyAccessToken(token: string): UserToken {
 function verifyRefreshToken(token: string) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
+            issuer: "ns",
             audience: "ayunRefresh"
         }) as any
         
-        if (decoded.tipo !== "refresh") {
+        if (decoded.type !== "refresh") {
             throw new Error("Este no es un Refresh Token")
         }
         
-        return decoded
+        return {
+            UserId: decoded.UserId,
+            email: decoded.email,
+            role: decoded.role,
+            UserName: decoded.UserName
+        }
     } catch (error) {
-        console.log("refreshToken inválido:", error)
-        return null
+        if (error instanceof jwt.TokenExpiredError) {
+            throw new Error("Token expirado")
+        } else if (error instanceof jwt.JsonWebTokenError) {
+            throw new Error("Token inválido")
+        } else {
+            throw new Error("Error al verificar token")
+        }
     }
 }
