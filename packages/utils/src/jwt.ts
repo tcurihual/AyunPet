@@ -4,6 +4,13 @@ import dotenv from "dotenv"
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret"
 
+interface UserToken {
+    UserId:string
+    UserName: string
+    email: string
+    role:string
+}
+
 function createToken(user:{id:string, email:string}) {
     console.log("creando token del user:",user.email)
     const TokenData = {
@@ -34,28 +41,37 @@ function TokenVerify(token:string) {
 
 }
 
-function createAccessToken(user:{id:string, email:string, role:string}) {
-    const token = jwt.sign(
+function createAccessToken(user:UserToken) {
+    try{
+        const token = jwt.sign(
         {
-            userID: user.id,
+            userID: user.UserId,
             email: user.email,
+            name: user.UserName,
             role: user.role,
             type: "access"
         },
         JWT_SECRET,
         {
             expiresIn:"15m",
+            issuer: "ns",
             audience: "UserPet"
         }
     )
 
-    console.log("AccessToken Creado")
-    return token
+        console.log("AccessToken Creado")
+        return token
+
+    } catch (error) {
+        console.error("Error al generar Access Token:", error)
+        throw new Error("Error interno al generar token")
+    }
+
 }
 
-function createRefreshToken(user:{id:string,email:string,role:string}){
+function createRefreshToken(user:UserToken){
     const token = jwt.sign(
-        {userID: user.id,
+        {userID: user.UserId,
         tokenVersion: 1,
         type: "refresh",
         },JWT_SECRET,
