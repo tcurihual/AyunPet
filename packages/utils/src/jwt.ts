@@ -91,7 +91,7 @@ function createRefreshToken(user:UserToken){
 
 }
 
-function verificarAccessToken(token: string): UserToken {
+function verifyAccessToken(token: string): UserToken {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
             issuer: "ns",
