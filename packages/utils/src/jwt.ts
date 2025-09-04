@@ -70,17 +70,25 @@ function createAccessToken(user:UserToken) {
 }
 
 function createRefreshToken(user:UserToken){
-    const token = jwt.sign(
-        {userID: user.UserId,
-        tokenVersion: 1,
-        type: "refresh",
-        },JWT_SECRET,
-        {expiresIn: "7d",
-         audience: "AyunRefresh"
-        }
-    )
-    console.log("refreshToken creado")
-    return token
+    try{
+        const token = jwt.sign(
+            {userID: user.UserId,
+            tokenVersion: 1,
+            type: "refresh",
+            },JWT_SECRET,
+            {expiresIn: "7d",
+            audience: "AyunRefresh",
+            issuer: "ns"
+            }
+        )
+        console.log("refreshToken creado")
+        return token
+
+    } catch (error) {
+        console.error("Error al generar Refresh Token:", error)
+        throw new Error("Error interno al generar refresh token")
+}
+
 }
 
 function verifyAccessToken(token: string) {
