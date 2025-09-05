@@ -3,6 +3,10 @@ import dotenv from "dotenv"
 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret"
+if (!JWT_SECRET) {
+    console.error("Error con la key");
+    process.exit(1);
+}
 
 interface UserToken {
     UserId:string
@@ -11,25 +15,7 @@ interface UserToken {
     role:string
 }
 
-function createToken(user:{id:string, email:string}) {
-    console.log("creando token del user:",user.email)
-    const TokenData = {
-        userID: user.id,
-        email: user.email,
-    }
-    const token = jwt.sign(
-        TokenData,
-        JWT_SECRET,
-        {
-            expiresIn:"15m"
-        }
-    )
-
-    console.log("Token Creado", token.substring(0,50)+ "...")
-    return token
-}
-
-function TokenVerify(token:string) {
+export function TokenVerify(token:string) {
     try {
         const UserData = jwt.verify(token,JWT_SECRET) as any
         console.log("Token Aceptado para el user:",UserData.email)
@@ -41,7 +27,7 @@ function TokenVerify(token:string) {
 
 }
 
-function createAccessToken(user:UserToken) {
+export function createAccessToken(user:UserToken) {
     try{
         const token = jwt.sign(
         {
@@ -69,7 +55,7 @@ function createAccessToken(user:UserToken) {
 
 }
 
-function createRefreshToken(user:UserToken){
+export function createRefreshToken(user:UserToken){
     try{
         const token = jwt.sign(
             {userID: user.UserId,
@@ -77,7 +63,7 @@ function createRefreshToken(user:UserToken){
             type: "refresh",
             },JWT_SECRET,
             {expiresIn: "7d",
-            audience: "AyunRefresh",
+            audience: "ayunRefresh",
             issuer: "ns"
             }
         )
@@ -91,7 +77,7 @@ function createRefreshToken(user:UserToken){
 
 }
 
-function verifyAccessToken(token: string): UserToken {
+export function verifyAccessToken(token: string): UserToken {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
             issuer: "ns",
@@ -120,7 +106,7 @@ function verifyAccessToken(token: string): UserToken {
     }
 }
 
-function verifyRefreshToken(token: string) {
+export function verifyRefreshToken(token: string) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
             issuer: "ns",
@@ -146,4 +132,18 @@ function verifyRefreshToken(token: string) {
             throw new Error("Error al verificar token")
         }
     }
+}
+
+export function extractTokenHeader(authHeader: string | undefined): string | null {
+    if (!authHeader) {
+        return null
+    }
+    
+    const parts = authHeader.split(" ")
+    
+    if (parts.length !== 2 || parts[0] !== "Bearer") {
+        return null
+    }
+    
+    return parts[1]  
 }
