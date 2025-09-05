@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import logo from '../assets/logo.png';
-const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginData } from '../lib/schemas';
 
-  const handleSubmit = (event: React.FormEvent) => { //aqui esta la funcion del login :v
+const LoginForm: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginData) => {
+    console.log("Datos de login validados:", data);
+    // aqui va la logica para enviar al backend
   };
 
   return (
@@ -13,29 +24,29 @@ const LoginForm: React.FC = () => {
       <h2>Iniciar sesión</h2>
       <p className="login-subtitle">Bienvenido a Ayün Pet</p>
       
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-group">
           <label htmlFor="email">Correo electrónico</label>
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             placeholder="ejemplo@correo.com"
-            required
+            {...register("email")}
           />
+          {errors.email && <p className="error-message">{errors.email.message}</p>}
         </div>
+        
         <div className="form-group">
           <label htmlFor="password">Contraseña</label>
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             placeholder="********"
-            required
+            {...register("password")}
           />
+          {errors.password && <p className="error-message">{errors.password.message}</p>}
         </div>
+        
         <button type="submit" className="btn btn-submit">Ingresar</button>
       </form>
       
