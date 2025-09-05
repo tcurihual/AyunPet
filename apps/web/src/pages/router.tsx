@@ -1,14 +1,20 @@
-import React from "react"
-import { Routes, Route } from "react-router-dom"
-import App from "../App.tsx"
 
-const WebRouter: React.FC = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<h1>Ayün Pet</h1>} />
-            <Route path="/example" element={<App />} />
-        </Routes>
-    )
-}
+import React from 'react';
 
-export default WebRouter
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import Faq from '../components/Faq';
+import Footer from '../components/Footer';
+
+const HomePage: React.FC = () => {
+  return (
+    <>
+      <Header />
+      <Hero />
+      <Faq />
+      <Footer />
+    </>
+  );
+};
+
+export default HomePage;
