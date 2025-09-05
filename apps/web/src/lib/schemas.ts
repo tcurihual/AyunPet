@@ -27,3 +27,13 @@ export const registerSchema = z.object({
   message: "Las contraseñas no coinciden.",
   path: ["confirmPassword"],
 });
+
+
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Por favor, ingresa un correo válido." }),
+  password: z.string().min(1, { message: "La contraseña no puede estar vacía." }),
+});
+
+
+export type RegisterData = z.infer<typeof registerSchema>;
+export type LoginData = z.infer<typeof loginSchema>;
