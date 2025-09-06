@@ -15,23 +15,11 @@ interface UserToken {
     role:string
 }
 
-export function TokenVerify(token:string) {
-    try {
-        const UserData = jwt.verify(token,JWT_SECRET) as any
-        console.log("Token Aceptado para el user:",UserData.email)
-        return UserData
-    } catch (error){
-        console.log("token anulado")
-        return null
-    }
-
-}
-
 export function createAccessToken(user:UserToken) {
     try{
         const token = jwt.sign(
         {
-            userID: user.UserId,
+            userId: user.UserId,
             email: user.email,
             name: user.UserName,
             role: user.role,
@@ -58,7 +46,7 @@ export function createAccessToken(user:UserToken) {
 export function createRefreshToken(user:UserToken){
     try{
         const token = jwt.sign(
-            {userID: user.UserId,
+            {userId: user.UserId,
             tokenVersion: 1,
             type: "refresh",
             },JWT_SECRET,
