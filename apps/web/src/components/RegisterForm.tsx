@@ -2,21 +2,20 @@ import React from 'react';
 import logo from '../assets/logo.png';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { registerSchema } from '../lib/schemas';
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
+import { registerSchema, type RegisterData } from '../lib/schemas';
 
 const RegisterForm: React.FC = () => {
   const { 
     register,         
     handleSubmit,      
     formState: { errors }
-  } = useForm<RegisterFormValues>({
+  } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: RegisterFormValues) => { // aqui va la logica del submit :v
+  const onSubmit = (data: RegisterData) => {
+    console.log("Datos de register validados:", data); 
+    // aqui va la logica del submit 
   };
 
   return (
