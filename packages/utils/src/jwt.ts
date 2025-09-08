@@ -68,8 +68,8 @@ export function createRefreshToken(user:UserToken){
 export function verifyAccessToken(token: string): UserToken {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
-            issuer: "ns",
-            audience: "UserPet"
+            issuer: "AyunPet",
+            audience: "Users"
         }) as any
 
         if (decoded.type !== "access") {
@@ -97,8 +97,8 @@ export function verifyAccessToken(token: string): UserToken {
 export function verifyRefreshToken(token: string) {
     try {
         const decoded = jwt.verify(token, JWT_SECRET, {
-            issuer: "ns",
-            audience: "ayunRefresh"
+            issuer: "AyunPet",
+            audience: "UsersRefresh"
         }) as any
         
         if (decoded.type !== "refresh") {
