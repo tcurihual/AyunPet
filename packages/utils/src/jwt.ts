@@ -28,8 +28,8 @@ export function createAccessToken(user:UserToken) {
         JWT_SECRET,
         {
             expiresIn:"15m",
-            issuer: "ns",
-            audience: "UserPet"
+            issuer: "AyunPet",
+            audience: "Users"
         }
     )
 
@@ -51,8 +51,8 @@ export function createRefreshToken(user:UserToken){
             type: "refresh",
             },JWT_SECRET,
             {expiresIn: "7d",
-            audience: "ayunRefresh",
-            issuer: "ns"
+            audience: "UsersRefresh",
+            issuer: "AyunPet"
             }
         )
         console.log("refreshToken creado")
