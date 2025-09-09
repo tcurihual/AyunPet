@@ -1,4 +1,4 @@
-import { supabase } from "../db_conection";
+import { supabase } from "@supabase";
 
 export interface Post {
   id?: number;

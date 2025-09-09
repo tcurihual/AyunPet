@@ -1,25 +1,18 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "CommonJS",
-    "rootDir": "../../",            
-    "outDir": "dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "baseUrl": ".",
-    "paths": {
-      "@db/*": ["../../packages/db/*"]
-    }
+    "rootDir": "src",
+    "outDir": "dist"
   },
+  "include": [
+    "src/**/*",
+    "../../packages/db/**/*"
+  ],
   "exclude": [
     "node_modules",
     "dist",
     "tsup.config.ts",
     "*.config.ts",
     "**/*.config.ts"
-  ],
-  "include": [
-    "src/**/*",
-    "../../packages/db/**/*"
   ]
 }
