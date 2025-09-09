@@ -31,7 +31,7 @@ router.post("/:id", (req,res)=>{
         message: "",
         type: "success",
         value: {
-            endpoint:"/api/entities/users",
+            endpoint:"/api/entities/users:id",
             method: "post"
         }
     })
@@ -43,7 +43,7 @@ router.put("/:id", (req,res)=>{
         message: "",
         type: "success",
         value: {
-            endpoitn: "api/entities/users",
+            endpoitn: "api/entities/users:id",
             method: "put",
             userId: id
         }
@@ -56,7 +56,7 @@ router.delete("/:id", (req,res)=>{
         message: "",
         type:"success",
         value:{
-            endpoint: "api/entities/users",
+            endpoint: "api/entities/users:id",
             method: "delete",
             userId: id
         }
