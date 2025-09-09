@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["src/**/*", "services/**/*"],
+  "include": ["src", "../../packages/db/services/**/*"],
   "exclude": ["node_modules", "dist"]
 }
