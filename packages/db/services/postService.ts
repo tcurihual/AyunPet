@@ -2,36 +2,36 @@ import { supabase } from "../db_conection";
 
 export interface Post {
   id?: number;
-  creator_id: number;
-  pet_id: number;
+  creatorid: number;
+  petid: number;
   title: string;
   description?: string;
   status?: string;
-  created_at?: string;
-  updated_at?: string;
+  createdat?: string;
+  updatedat?: string;
 }
 
 export const PostService = {
-  async create(postData: Omit<Post, 'id'>) {
+  async create(postData: Omit<Post, "id">) {
     const { data, error } = await supabase
-      .from("posts")
-      .insert([postData]) 
+      .from("post")
+      .insert([postData])
       .select()
       .single();
 
     if (error) throw error;
     return data;
-  },
+  },  
 
   async getAll() {
-    const { data, error } = await supabase.from("posts").select("*");
+    const { data, error } = await supabase.from("post").select("*");
     if (error) throw error;
     return data;
   },
 
   async getById(id: number) {
     const { data, error } = await supabase
-      .from("posts")
+      .from("post")
       .select("*")
       .eq("id", id)
       .single();
@@ -42,8 +42,8 @@ export const PostService = {
 
   async update(id: number, postData: Partial<Post>) {
     const { data, error } = await supabase
-      .from("posts")
-      .update({ ...postData, updated_at: new Date().toISOString() })
+      .from("post")
+      .update({ ...postData, updatedat: new Date().toISOString() })
       .eq("id", id)
       .select()
       .single();
@@ -53,7 +53,7 @@ export const PostService = {
   },
 
   async remove(id: number) {
-    const { error } = await supabase.from("posts").delete().eq("id", id);
+    const { error } = await supabase.from("post").delete().eq("id", id);
     if (error) throw error;
     return { message: "Post eliminado correctamente" };
   },

@@ -6,8 +6,8 @@ export const PostController = {
     try {
       const { creatorId, petId, title, description, status } = req.body;
       const postData = {
-        creator_id: creatorId,
-        pet_id: petId,
+        creatorid: creatorId,
+        petid: petId,
         title,
         description,
         status,
