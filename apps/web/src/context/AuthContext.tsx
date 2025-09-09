@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useLoading } from './LoadingContext';
 import { type LoginData } from '../lib/schemas';
 

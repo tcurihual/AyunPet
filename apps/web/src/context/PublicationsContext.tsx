@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import { useLoading } from './LoadingContext';
+import { useAuth } from './AuthContext';
 
-
-// (debe coincidir con la estructura de datos del backend)
 export interface Publication {
   id: string;
   petName: string;
@@ -12,36 +12,51 @@ export interface Publication {
   date: string;
 }
 
-
 interface PublicationsContextType {
   publications: Publication[];
-  loading: boolean;
-  // aqui pueden ir funciones a futuro, ejemplo:
-  // addPublication: (publication: Publication) => void;
+  fetchPublications: () => Promise<void>;
 }
-
 
 const PublicationsContext = createContext<PublicationsContextType | undefined>(undefined);
 
 export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [publications, setPublications] = useState<Publication[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  
 
-  // ejemplo API
-  React.useEffect(() => {
-    setTimeout(() => {
+  const { setLoading } = useLoading();
+  const { user } = useAuth();
+
+
+  const fetchPublications = useCallback(async () => {
+    if (!user) {
+      setPublications([]); 
+      return;
+    }
+    setLoading(true);
+    try {
+      console.log("Cargando publicaciones...");
+
+
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
+
       const mockPublications: Publication[] = [
         { id: '1', petName: 'Luna', petImage: '/images/pets/luna.jpg', description: 'Una perrita muy juguetona.', submitterName: 'Fundación Huellitas', date: '05-09-2025' },
         { id: '2', petName: 'Rocky', petImage: '/images/pets/rocky.jpg', description: 'Leal y cariñoso, ideal para familias.', submitterName: 'Rescate Animal Temuco', date: '01-09-2025' },
       ];
       setPublications(mockPublications);
-      setLoading(false);
-    }, 1500); 
-  }, []);
+      console.log("Publicaciones cargadas.");
+
+    } catch (error) {
+      console.error("Error al cargar las publicaciones:", error);
+
+    } finally {
+      setLoading(false); 
+    }
+  }, [user, setLoading]); 
 
   const value = {
     publications,
-    loading,
+    fetchPublications,
   };
 
   return (
@@ -50,9 +65,6 @@ export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ childr
     </PublicationsContext.Provider>
   );
 };
-
-
-
 
 export const usePublications = () => {
   const context = useContext(PublicationsContext);
