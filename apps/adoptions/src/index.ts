@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { errorHandler, ADOPTIONS_PORT } from "@repo/utils";
 import postRoutes from "./routes/postRoutes";
+import adoptionRequestRoutes from "./routes/adoptionRequestRoutes";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/", (_, res) => {
 });
 
 app.use("/api/adoptions/posts", postRoutes);
+app.use("/api/adoptions/adoption-request", adoptionRequestRoutes);
 
 
 app.use(errorHandler);
