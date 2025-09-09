@@ -6,11 +6,11 @@ export const registerSchema = z.object({
     .max(50, { message: "El nombre es demasiado largo." }),
   
   userType: z.string({
-    required_error: "Elige una opción.", // Error si el campo no se envía
+    required_error: "Elige una opción.",
   })
-  .min(1, { message: "Elige una opción." }) // Error si el string está vacío
+  .min(1, { message: "Elige una opción." })
   .refine(val => val === 'usuario' || val === 'empresa', {
-    message: "Selección no válida.", // Por si se intenta enviar otro valor
+    message: "Selección no válida.",
   }),
   
   
