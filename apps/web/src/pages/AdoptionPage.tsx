@@ -1,3 +1,7 @@
+// pagina base ya que aun no esta la hoja de diseño definitiva por la cual guiarme
+
+
+
 import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
