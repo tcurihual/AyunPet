@@ -18,7 +18,7 @@ router.get("/:id", (req,res)=>{
         meessage: "",
         type: "success",
         value: {
-            endpoint: "/api/entities/pets",
+            endpoint: "/api/entities/pets:id",
             method: "get",
             userId: id
         }
@@ -31,7 +31,7 @@ router.post("/:id", (req,res)=>{
         message: "",
         type: "success",
         value: {
-            endpoint:"/api/entities/pets",
+            endpoint:"/api/entities/pets:id",
             method: "post",
             userId: "id"
         }
@@ -44,7 +44,7 @@ router.put("/:id", (req,res)=>{
         message: "",
         type: "success",
         value: {
-            endpoitn: "api/entities/pets",
+            endpoitn: "api/entities/pets:id",
             method: "put",
             userId: id
         }
@@ -57,7 +57,7 @@ router.delete("/:id", (req,res)=>{
         message: "",
         type:"success",
         value:{
-            endpoint: "api/entities/pets",
+            endpoint: "api/entities/pets:id ",
             method: "delete",
             userId: id
         }
