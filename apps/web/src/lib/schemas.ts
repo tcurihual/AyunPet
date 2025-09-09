@@ -5,6 +5,15 @@ export const registerSchema = z.object({
     .min(3, { message: "El nombre completo debe tener al menos 3 caracteres." })
     .max(50, { message: "El nombre es demasiado largo." }),
   
+  userType: z.string({
+    required_error: "Elige una opción.", // Error si el campo no se envía
+  })
+  .min(1, { message: "Elige una opción." }) // Error si el string está vacío
+  .refine(val => val === 'usuario' || val === 'empresa', {
+    message: "Selección no válida.", // Por si se intenta enviar otro valor
+  }),
+  
+  
   email: z.string()
     .email({ message: "Por favor, ingresa un correo electrónico válido." }),
   
@@ -28,12 +37,10 @@ export const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 
-
 export const loginSchema = z.object({
   email: z.string().email({ message: "Por favor, ingresa un correo válido." }),
   password: z.string().min(1, { message: "La contraseña no puede estar vacía." }),
 });
-
 
 export type RegisterData = z.infer<typeof registerSchema>;
 export type LoginData = z.infer<typeof loginSchema>;
