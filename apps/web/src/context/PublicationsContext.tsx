@@ -22,10 +22,8 @@ const PublicationsContext = createContext<PublicationsContextType | undefined>(u
 export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [publications, setPublications] = useState<Publication[]>([]);
   
-
   const { setLoading } = useLoading();
   const { user } = useAuth();
-
 
   const fetchPublications = useCallback(async () => {
     if (!user) {
@@ -35,24 +33,20 @@ export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ childr
     setLoading(true);
     try {
       console.log("Cargando publicaciones...");
-
-
       await new Promise(resolve => setTimeout(resolve, 1500)); 
 
       const mockPublications: Publication[] = [
-        { id: '1', petName: 'Luna', petImage: '/images/pets/luna.jpg', description: 'Una perrita muy juguetona.', submitterName: 'Fundación Huellitas', date: '05-09-2025' },
-        { id: '2', petName: 'Rocky', petImage: '/images/pets/rocky.jpg', description: 'Leal y cariñoso, ideal para familias.', submitterName: 'Rescate Animal Temuco', date: '01-09-2025' },
+        { id: '1', petName: 'Luna', petImage: '/images/pets/firulais.jpg', description: 'Una perrita muy juguetona.', submitterName: 'Fundación Huellitas', date: '05-09-2025' },
+        { id: '2', petName: 'Rocky', petImage: '/images/pets/firulais.jpg', description: 'Leal y cariñoso, ideal para familias.', submitterName: 'Rescate Animal Temuco', date: '01-09-2025' },
       ];
       setPublications(mockPublications);
       console.log("Publicaciones cargadas.");
-
     } catch (error) {
       console.error("Error al cargar las publicaciones:", error);
-
     } finally {
       setLoading(false); 
     }
-  }, [user, setLoading]); 
+  }, [user?.id, setLoading]); 
 
   const value = {
     publications,
