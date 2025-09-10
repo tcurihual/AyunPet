@@ -35,7 +35,7 @@ const Header: React.FC = () => {
         </Link>
         <nav>
           <ul>
-            <li><Link to="/adopta">Adopta</Link></li>
+            <li><Link to="adopta">Adopta</Link></li>
             <li><Link to="#">Refugios y Organizaciones</Link></li>
             <li><Link to="#">Nosotros</Link></li>
           </ul>
