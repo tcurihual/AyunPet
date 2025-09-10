@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
-
 import { useAuth } from '../context/AuthContext';
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -36,7 +35,7 @@ const Header: React.FC = () => {
         </Link>
         <nav>
           <ul>
-            <li><Link to="#">Adopta</Link></li>
+            <li><Link to="/adopta">Adopta</Link></li>
             <li><Link to="#">Refugios y Organizaciones</Link></li>
             <li><Link to="#">Nosotros</Link></li>
           </ul>
@@ -57,9 +56,13 @@ const Header: React.FC = () => {
                   Bienvenido de vuelta
                   <strong>{user.fullName}</strong>
                 </div>
-                <Link to="#" className="dropdown-item">Mi Perfil</Link>
-                <Link to="#" className="dropdown-item">Mis Solicitudes</Link>
-                <Link to="#" className="dropdown-item">Ajustes</Link>
+                
+                {user.role === 'institution' && (
+                   <Link to="/dashboard-institucion" className="dropdown-item">Panel de Institución</Link>
+                )}
+
+                <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
+                <Link to="/solicitudes" className="dropdown-item">Mis Solicitudes</Link>
                 <button onClick={handleLogout} className="dropdown-item logout-button">
                   Cerrar sesión
                 </button>
