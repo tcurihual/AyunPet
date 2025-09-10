@@ -166,5 +166,5 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para má
 * **Christopher Solis** - [@Insert-name-115](https://github.com/Insert-name-115)
 * **Maximiliano Sáez** - [@Mxtsi7](https://github.com/Mxtsi7)
 * **Benjamin Rojas** - [@pvcdf](https://github.com/pvcdf)
-* **Diego Ortiz**
-* **Sebastian Mena** - [@SebaMena](https://github.com/SebasMenas)
+* **Diego Ortiz** - [@DiegoNicolasOrtiz](https://github.com/DiegoNicolasOrtiz)
+* **Sebastian Mena** [@SebaMena]((https://github.com/SebasMenas))
