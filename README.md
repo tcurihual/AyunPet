@@ -167,4 +167,4 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para má
 * **Maximiliano Sáez** - [@Mxtsi7](https://github.com/Mxtsi7)
 * **Benjamin Rojas** - [@pvcdf](https://github.com/pvcdf)
 * **Diego Ortiz**
-* **Sebastian Mena**
+* **Sebastian Mena** - [@SebaMena](https://github.com/SebasMenas)
