@@ -1,27 +1,30 @@
 // pagina base ya que aun no esta la hoja de diseño definitiva por la cual guiarme
 
 
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { usePublications } from '../context/PublicationsContext';
-import { useLoading } from '../context/LoadingContext'; 
+import { useAuth } from '../context/AuthContext';
+import PetAdoptionCard from '../components/PetAdoptionCard';
 
 const AdoptionPage: React.FC = () => {
   const { publications, fetchPublications } = usePublications();
-  const { isLoading } = useLoading(); 
+  const { user } = useAuth();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    fetchPublications();
-  }, [fetchPublications]); 
+    fetchPublications().finally(() => {
+      setIsInitialLoad(false);
+    });
+  }, [fetchPublications]);
 
-  if (isLoading) {
+  if (isInitialLoad) {
     return (
       <div className="page-container">
         <Header />
-        <main className="main-content">
-          <h2>Cargando mascotas...</h2>
+        <main className="requests-page-container">
+          <h2 className="title-center">Cargando mascotas...</h2>
         </main>
         <Footer />
       </div>
@@ -31,19 +34,22 @@ const AdoptionPage: React.FC = () => {
   return (
     <div className="page-container">
       <Header />
-      <main className="main-content" style={{ textAlign: 'left', maxWidth: '800px', margin: '0 auto' }}>
-        <h1>Mascotas en Adopción</h1>
-        {publications.length > 0 ? (
-          publications.map(pub => (
-            <div key={pub.id} style={{ border: '1px solid #ddd', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
-              <h2>{pub.petName}</h2>
-              <p>{pub.description}</p>
-              <small>Publicado por: {pub.submitterName} el {pub.date}</small>
+      <main className="adoption-page-container">
+        <h1 className="title-center">Mascotas en Adopción</h1>
+        
+        <div className="pets-grid">
+          {user && publications.length > 0 ? (
+            publications.map(pub => (
+              <PetAdoptionCard key={pub.id} publication={pub} />
+            ))
+          ) : (
+            <div className="full-width-message">
+              <p>
+                {user ? "No hay mascotas disponibles en este momento." : "Inicia sesión para ver las mascotas disponibles."}
+              </p>
             </div>
-          ))
-        ) : (
-          <p>Inicia sesión para ver las mascotas disponibles.</p> 
-        )}
+          )}
+        </div>
       </main>
       <Footer />
     </div>
