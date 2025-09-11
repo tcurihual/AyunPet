@@ -4,7 +4,7 @@ const router = Router()
 
 router.get("/", (req,res)=>{
     res.status(200).json({
-        message: "",
+        message: "get pets endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/entities/pets"
@@ -15,7 +15,7 @@ router.get("/", (req,res)=>{
 router.get("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        meessage: "",
+        meessage: "get pets by id endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/entities/pets:id",
@@ -28,7 +28,7 @@ router.get("/:id", (req,res)=>{
 router.post("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "create pet enpdoint reached",
         type: "success",
         value: {
             endpoint:"/api/entities/pets:id",
@@ -41,7 +41,7 @@ router.post("/:id", (req,res)=>{
 router.put("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "update pet endpoint reached",
         type: "success",
         value: {
             endpoitn: "api/entities/pets:id",
@@ -54,7 +54,7 @@ router.put("/:id", (req,res)=>{
 router.delete("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "delete pet endpoint reached",
         type:"success",
         value:{
             endpoint: "api/entities/pets:id ",
