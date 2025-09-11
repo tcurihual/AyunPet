@@ -3,6 +3,7 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
+import authRouter from "./routs"
 
 
 const app = express()
@@ -18,6 +19,8 @@ app.get("/", (_, res) => {
         message: "Microservicio Auth funcionando correctamente",
     })
 })
+
+app.use("/",authRouter)
 
 app.use(errorHandler)
 app.listen(AUTH_PORT, () => {
