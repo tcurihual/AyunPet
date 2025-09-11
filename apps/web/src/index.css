@@ -696,3 +696,35 @@ footer {
 .pet-card-actions .btn {
   width: 100%;
 }
+
+
+.adoption-page-container {
+  padding: 40px 20px;
+  width: 100%;
+  max-width: 1200px; 
+  margin: 0 auto;
+  flex-grow: 1;
+}
+
+.title-center {
+  font-size: 2.5rem;
+  color: #3a332f;
+  text-align: center;
+  margin-bottom: 40px;
+  font-family: 'monospace';
+}
+
+.pets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 32px;
+  justify-content: center;
+}
+
+.full-width-message {
+  grid-column: 1 / -1; 
+  text-align: center;
+  padding: 40px 0;
+  font-size: 1.2rem;
+  color: #666;
+}
