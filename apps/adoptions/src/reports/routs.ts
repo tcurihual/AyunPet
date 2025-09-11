@@ -4,7 +4,7 @@ const router = Router()
 
 router.get("/", (req, res) => {
     res.status(200).json({
-        message: "",
+        message: "get all reports endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports",
@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "get report by ID endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports/:id",
@@ -30,7 +30,7 @@ router.get("/:id", (req, res) => {
 router.get("/reported-user/:userId", (req, res) => {
     const { userId } = req.params
     res.status(200).json({
-        message: "",
+        message: "get reports by reported user endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports/reported-user/:userId",
@@ -43,7 +43,7 @@ router.get("/reported-user/:userId", (req, res) => {
 router.get("/publication/:publicationId", (req, res) => {
     const { publicationId } = req.params
     res.status(200).json({
-        message: "",
+        message: "get reports by publication endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports/publication/:publicationId",
@@ -55,7 +55,7 @@ router.get("/publication/:publicationId", (req, res) => {
 
 router.post("/", (req, res) => {
     res.status(201).json({
-        message: "",
+        message: "create report endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports",
@@ -67,7 +67,7 @@ router.post("/", (req, res) => {
 router.patch("/:id/status", (req, res) => {
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "update report status endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports/:id/status",
@@ -80,7 +80,7 @@ router.patch("/:id/status", (req, res) => {
 router.put("/:id", (req, res) => {
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "update report endpoint reached",
         type: "success",
         values: {
             endpoint: "/api/adoptions/reports/:id",
@@ -93,7 +93,7 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "delete report endpoint reached",
         type:"success",
         value:{
             endpoint: "api/adoptions/reports:id ",

@@ -16,7 +16,7 @@ router.get("/", (req,res)=>{
 router.get("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        meessage: "",
+        meessage:  "Get histories by id endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/adoptions/histories:id",
@@ -29,7 +29,7 @@ router.get("/:id", (req,res)=>{
 
 router.post("/", (req, res)=>{
     res.status(201).json({
-        message: "",
+        message: "create history endpoint reached",
         type: "sucess",
         value: {
             endpoint: "api/adoptions/histories",
@@ -43,7 +43,7 @@ router.post("/", (req, res)=>{
 router.put("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "update history endpoint reached",
         type: "success",
         value: {
             endpoitn: "api/adoptions/histories:id",
@@ -56,7 +56,7 @@ router.put("/:id", (req,res)=>{
 router.patch("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "parcial update history endpoint reached",
         type: "success",
         value: {
             endpoitn: "api/adoptions/histories:id",
@@ -70,7 +70,7 @@ router.patch("/:id", (req,res)=>{
 router.delete("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "delete history endpoint reached",
         type:"success",
         value:{
             endpoint: "api/adoptions/histories:id ",

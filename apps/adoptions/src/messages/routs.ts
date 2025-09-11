@@ -5,7 +5,7 @@ const router = Router()
 router.get("/conversation/:conversationId", (req,res)=>{
     const { conversationId } = req.params
     res.status(200).json({
-        message: "Get messages endpoint reached",
+        message: "get messages endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/adoptions/messages/conversations/:userId",
@@ -17,7 +17,7 @@ router.get("/conversation/:conversationId", (req,res)=>{
 router.get("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        meessage: "",
+        meessage: "Get message by ID endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/adoptions/messages:id",
@@ -30,7 +30,7 @@ router.get("/:id", (req,res)=>{
 router.get("/conversations/:userId", (req,res)=>{
     const { userId} = req.params
     res.status(200).json({
-        message: "",
+        message: "get user conversations endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/adoption/messages/conversations/:userId",
@@ -42,12 +42,11 @@ router.get("/conversations/:userId", (req,res)=>{
 
 router.post("/", (req, res)=>{
     res.status(201).json({
-        message: "",
+        message: "send message endpoint reached",
         type: "sucess",
         value: {
             endpoint: "api/adoptions/messages",
-            method: "post",
-            query_params: req.query
+            method: "post"
         }
     })
 })
@@ -83,7 +82,7 @@ router.patch("/:id", (req,res)=>{
 router.delete("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "delete message endpoint reached",
         type:"success",
         value:{
             endpoint: "api/adoptions/messsages:id ",

@@ -15,7 +15,7 @@ router.get("/", (req,res)=>{
 router.get("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        meessage: "",
+        meessage: "get publication by ID endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/adoptions/publications:id",
@@ -28,7 +28,7 @@ router.get("/:id", (req,res)=>{
 router.get("/user/:userId", (req,res)=>{
     const { userId} = req.params
     res.status(200).json({
-        message: "",
+        message: "get publications by user endpoint reached",
         type: "success",
         value: {
             endpoint: "/api/adoption/publications/user/:userId",
@@ -40,7 +40,7 @@ router.get("/user/:userId", (req,res)=>{
 
 router.get("/search", (req, res)=>{
     res.status(200).json({
-        message: "",
+        message: "search publications endpoint reached",
         type: "sucess",
         value: {
             endpoint: "api/adoptions/publications/search",
@@ -52,7 +52,7 @@ router.get("/search", (req, res)=>{
 
 router.post("/", (req,res)=>{
     res.status(201).json({
-        message: "",
+        message: "create publication endpoint reached",
         type: "sucesss",
         value: {
             endpoint: "/api/adoption/publications",
@@ -65,7 +65,7 @@ router.post("/", (req,res)=>{
 router.put("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "update publication endpoint reached",
         type: "success",
         value: {
             endpoitn: "api/adoptions/publications:id",
@@ -78,7 +78,7 @@ router.put("/:id", (req,res)=>{
 router.patch("/:id/status", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "status update publication endpoint reached",
         type: "success",
         value: {
             endpoitn: "api/adoptions/publications:id",
@@ -92,7 +92,7 @@ router.patch("/:id/status", (req,res)=>{
 router.delete("/:id", (req,res)=>{
     const { id } = req.params
     res.status(200).json({
-        message: "",
+        message: "delete publication endpoint reached",
         type:"success",
         value:{
             endpoint: "api/adoptions/publications:id ",
