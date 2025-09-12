@@ -5,7 +5,8 @@ import morgan from "morgan";
 import { errorHandler, ADOPTIONS_PORT } from "@repo/utils";
 import postRoutes from "./routes/postRoutes";
 import adoptionRequestRoutes from "./routes/adoptionRequestRoutes";
-import adopRouter from "./adoprouter"
+import messageRoutes from "./routes/messageRoutes";
+import adopRouter from "./adoprouter";
 
 const app = express();
 
@@ -23,13 +24,12 @@ app.get("/", (_, res) => {
 
 app.use("/api/adoptions/posts", postRoutes);
 app.use("/api/adoptions/adoption-request", adoptionRequestRoutes);
+app.use("/api/adoptions/messages", messageRoutes);
+app.use("/", adopRouter);
 
-
+// middleware de errores al final
 app.use(errorHandler);
 
-app.use("/",adopRouter)
-
-app.use(errorHandler)
 app.listen(ADOPTIONS_PORT, () => {
   console.log(
     `🚀 Adoptions service running on http://localhost:${ADOPTIONS_PORT}`
