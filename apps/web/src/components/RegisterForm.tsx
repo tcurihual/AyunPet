@@ -20,22 +20,47 @@ const RegisterForm: React.FC = () => {
   });
 
   const onSubmit = async (data: RegisterData) => {
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      console.log("Enviando datos validados a la API:", data);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log("Respuesta de la API recibida.");
+  try {
+    console.log("Enviando datos validados a la API:", data);
 
-    } catch (error) {
-      console.error("Error al registrar el usuario:", error);
-      alert("Hubo un error al crear la cuenta. Por favor, inténtalo de nuevo.");
+    // Llamada real al endpoint
+    const response = await fetch("http://localhost:4000/api/auth/users/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: data.fullName,
+        email: data.email,
+        rut: data.rut,
+        password: data.password,
+      }),
+    });
 
-    } finally {
-      setLoading(false);
+    if (response.ok) {
+      // Registro exitoso
+      const result = await response.json();
+      console.log("Usuario registrado:", result);
+      alert("Cuenta creada con éxito");
+    } else if (response.status === 409) {
+      // RUT o email ya registrado
+      const error = await response.json();
+      alert(error.error || "El RUT o correo ya está registrado");
+    } else {
+      const error = await response.json();
+      throw new Error(error.error || "Error desconocido al registrar usuario");
     }
-  };
+
+  } catch (error: any) {
+    console.error("Error al registrar el usuario:", error);
+    alert("Hubo un error al crear la cuenta. Por favor, inténtalo de nuevo.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="form-card">

@@ -1,12 +1,18 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "CommonJS",
-        "rootDir": "src",
-        "outDir": "dist",
-        "strict": true,
-        "esModuleInterop": true
-    },
-    "exclude": ["node_modules", "dist", "tsup.config.ts", "*.config.ts", "**/*.config.ts"],
-    "include": ["src/**/*"]
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "../../",
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*",
+    "../../packages/db/**/*"
+, "../auth/src/controllers/userController.ts"  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tsup.config.ts",
+    "*.config.ts",
+    "**/*.config.ts"
+  ]
 }
