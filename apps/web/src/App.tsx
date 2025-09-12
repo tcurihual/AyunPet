@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdoptionRequestsPage from './pages/AdoptionRequestsPage'; 
 import AdoptionPage from './pages/AdoptionPage'; 
+import InstitutionProfilePage from './pages/InstitutionProfilePage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} /> 
       <Route path="/solicitudes" element={<AdoptionRequestsPage />} />
       <Route path="/adopta" element={<AdoptionPage />} /> 
+      <Route path="/perfil-institucion" element={<InstitutionProfilePage />} />
     </Routes>
   );
 }
