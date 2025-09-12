@@ -9,7 +9,7 @@ const ProfileHeader: React.FC = () => {
         className="profile-avatar"
       />
       <div className="profile-info">
-        <h2>Fundacion sigma</h2>
+        <h2>Fundacion Sigma</h2>
         <span className="profile-handle">@Sigma · Temuco</span>
         <p>Rescatamos, rehabilitamos y damos en adopción responsable a perros y gatos en situación de vulnerabilidad.</p>
       </div>
