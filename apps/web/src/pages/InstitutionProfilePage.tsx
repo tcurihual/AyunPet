@@ -29,7 +29,7 @@ const InstitutionProfilePage: React.FC = () => {
       <div className="page-container">
         <Header />
         <main className="profile-page-container">
-          <h2 className="title-center">Cargando perfil...</h2>
+          <h2 className="title-center">Cargando muro...</h2>
         </main>
         <Footer />
       </div>
