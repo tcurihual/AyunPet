@@ -58,10 +58,13 @@ const Header: React.FC = () => {
                 </div>
                 
                 {user.role === 'institution' && (
-                   <Link to="/dashboard-institucion" className="dropdown-item">Panel de Institución</Link>
+                   <Link to="/muro-institucion" className="dropdown-item">Muro de Institución</Link>
+                )}
+                
+                {user.role === 'normal' && (
+                  <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
                 )}
 
-                <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
                 <Link to="/solicitudes" className="dropdown-item">Mis Solicitudes</Link>
                 <button onClick={handleLogout} className="dropdown-item logout-button">
                   Cerrar sesión
