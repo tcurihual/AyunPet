@@ -2,20 +2,31 @@ import React from 'react';
 import logo from '../assets/logo.png';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema, type LoginData } from '../lib/schemas';
+import { useAuth } from '../context/AuthContext';
+import { useLoading } from '../context/LoadingContext';
 
 const LoginForm: React.FC = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const { isLoading } = useLoading();
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors }
   } = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginData) => {
-    console.log("Datos de login validados:", data);
-    // aqui va la logica para enviar al backend
+  const onSubmit = async (data: LoginData) => {
+    try {
+      await login(data); 
+      navigate('/');
+    } catch (error) {
+      setError("root", { message: "El correo o la contraseña son incorrectos." });
+    }
   };
 
   return (
@@ -25,6 +36,8 @@ const LoginForm: React.FC = () => {
       <p className="login-subtitle">Bienvenido a Ayün Pet</p>
       
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        {errors.root && <p className="error-message">{errors.root.message}</p>}
+
         <div className="form-group">
           <label htmlFor="email">Correo electrónico</label>
           <input
@@ -32,6 +45,7 @@ const LoginForm: React.FC = () => {
             id="email"
             placeholder="ejemplo@correo.com"
             {...register("email")}
+            disabled={isLoading}
           />
           {errors.email && <p className="error-message">{errors.email.message}</p>}
         </div>
@@ -43,15 +57,19 @@ const LoginForm: React.FC = () => {
             id="password"
             placeholder="********"
             {...register("password")}
+            disabled={isLoading}
           />
           {errors.password && <p className="error-message">{errors.password.message}</p>}
         </div>
         
-        <button type="submit" className="btn btn-submit">Ingresar</button>
+        <button type="submit" className="btn btn-submit" disabled={isLoading}>
+          {isLoading ? 'Ingresando...' : 'Ingresar'}
+        </button>
       </form>
       
       <p className="create-account-link">
-        ¿No tienes cuenta? <a href="/register">Crear cuenta</a>
+        ¿No tienes cuenta?{' '}
+        <Link to="/register">Crear cuenta</Link>
       </p>
     </div>
   );

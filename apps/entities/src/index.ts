@@ -3,6 +3,7 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { errorHandler, ENTITIES_PORT } from "@repo/utils"
+import entitiesRouter from "./mainrouter"
 
 const app = express()
 
@@ -17,6 +18,8 @@ app.get("/", (_, res) => {
         message: "Microservicio Entities funcionando correctamente",
     })
 })
+
+app.use("/", entitiesRouter)
 
 app.use(errorHandler)
 app.listen(ENTITIES_PORT, () => {
