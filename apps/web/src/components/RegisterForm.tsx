@@ -5,16 +5,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterData } from '../lib/schemas';
 import { useLoading } from '../context/LoadingContext';
+import { useAuth } from '../context/AuthContext';
 
 const RegisterForm: React.FC = () => {
   const { isLoading, setLoading } = useLoading();
+  const { register: registerUser } = useAuth(); // <-- Usamos la función de registro del contexto
   const { 
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
-      defaultValues: {
+    defaultValues: {
       userType: "",
     },
   });
@@ -23,15 +25,11 @@ const RegisterForm: React.FC = () => {
     setLoading(true);
 
     try {
-      console.log("Enviando datos validados a la API:", data);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log("Respuesta de la API recibida.");
-
+      await registerUser(data); // <-- Registramos al usuario usando el contexto
+      alert("¡Registro exitoso!");
     } catch (error) {
       console.error("Error al registrar el usuario:", error);
       alert("Hubo un error al crear la cuenta. Por favor, inténtalo de nuevo.");
-
     } finally {
       setLoading(false);
     }
@@ -44,7 +42,6 @@ const RegisterForm: React.FC = () => {
       <p className="form-subtitle">Únete a Ayün Pet</p>
       
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        
         <div className="form-group">
           <label htmlFor="fullName">Nombre completo</label>
           <input 
@@ -104,6 +101,7 @@ const RegisterForm: React.FC = () => {
           />
           {errors.confirmPassword && <p className="error-message">{errors.confirmPassword.message}</p>}
         </div>
+        
         <div className="form-group">
           <label htmlFor="userType">Tipo de cuenta</label>
           <select 
@@ -118,6 +116,7 @@ const RegisterForm: React.FC = () => {
           </select>
           {errors.userType && <p className="error-message">{errors.userType.message}</p>}
         </div>
+        
         <div className="terms-group">
           <input 
             type="checkbox" 
