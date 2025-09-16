@@ -25,12 +25,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  // ---------------- Login ----------------
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       let fakeUserData: User | null = null;
       let fakeToken = "";
 
@@ -44,70 +43,58 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       if (fakeUserData && fakeToken) {
         localStorage.setItem('authToken', fakeToken);
-        localStorage.setItem('userRole', fakeUserData.role); 
+        localStorage.setItem('userRole', fakeUserData.role);
         setUser(fakeUserData);
-        console.log(`Login exitoso como ${fakeUserData.role}`);
       } else {
         throw new Error("Credenciales inválidas");
       }
-    } catch (error) {
-      console.error("Error en el login:", error);
-      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // ---------------- Register ----------------
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-      // Aquí iría la llamada real a la API de registro
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Simulación de respuesta de registro con token
-      const fakeToken = "token_nuevo_usuario_789";
+      // Simulación de registro exitoso
+      const fakeToken = "token_generico_registro_" + Math.floor(Math.random() * 1000);
+      const role = data.userType === 'empresa' ? 'institution' : 'normal';
       const newUser: User = {
-        id: '789',
+        id: (Math.floor(Math.random() * 10000)).toString(),
         fullName: data.fullName,
         email: data.email,
-        role: data.userType === "empresa" ? "institution" : "normal"
+        role
       };
 
       localStorage.setItem('authToken', fakeToken);
-      localStorage.setItem('userRole', newUser.role);
+      localStorage.setItem('userRole', role);
       setUser(newUser);
-
-      console.log(`Usuario registrado y logueado como ${newUser.role}`);
-    } catch (error) {
-      console.error("Error en el registro:", error);
-      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // ---------------- Logout ----------------
   const logout = () => {
     localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole'); 
+    localStorage.removeItem('userRole');
     setUser(null);
   };
 
-  // ---------------- Check Auth Status ----------------
   const checkAuthStatus = useCallback(async () => {
     const token = localStorage.getItem('authToken');
-    const role = localStorage.getItem('userRole') as User['role'] | null; 
+    const role = localStorage.getItem('userRole') as User['role'] | null;
 
     if (token && role) {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const userData: User = role === 'institution' 
-          ? { id: '456', fullName: 'Fundación Huellitas', email: 'institucion@test.com', role: 'institution' }
-          : { id: '123', fullName: 'Usuario de Prueba', email: 'test@test.com', role: 'normal' };
-          
+        await new Promise(resolve => setTimeout(resolve, 500));
+        const userData: User = role === 'institution'
+          ? { id: '456', fullName: 'Fundación Huellitas', email: 'institucion@test.com', role }
+          : { id: '123', fullName: 'Usuario de Prueba', email: 'test@test.com', role };
+
         setUser(userData);
-      } catch (error) {
+      } catch {
         logout();
       }
     }
@@ -117,7 +104,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
-  
+
   return (
     <AuthContext.Provider value={{ user, login, register, logout, isAuthLoading }}>
       {!isAuthLoading && children}
@@ -127,8 +114,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
+  if (!context) throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   return context;
 };
