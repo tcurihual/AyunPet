@@ -44,7 +44,7 @@ const RegisterForm: React.FC = () => {
           <input 
             type="text" 
             id="fullName" 
-            placeholder="Ej: Sofía González Pérez" 
+            placeholder="Ej: Miguel Angel Fernandez Espinoza" 
             {...register("fullName")}
             disabled={isLoading}
           />
@@ -55,7 +55,7 @@ const RegisterForm: React.FC = () => {
           <input 
             type="email" 
             id="email" 
-            placeholder="sofia.gonzalez@email.com" 
+            placeholder="miguel.fernandez2021@alu.uct.cl" 
             {...register("email")}
             disabled={isLoading}
           />
@@ -66,7 +66,7 @@ const RegisterForm: React.FC = () => {
           <input 
             type="text" 
             id="rut" 
-            placeholder="12.345.678-9" 
+            placeholder="20.987.300-1" 
             {...register("rut")}
             disabled={isLoading}
           />
