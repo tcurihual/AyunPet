@@ -4,26 +4,29 @@ export const registerSchema = z.object({
   fullName: z.string()
     .min(3, { message: "El nombre completo debe tener al menos 3 caracteres." })
     .max(50, { message: "El nombre es demasiado largo." }),
-  
+
   userType: z.string()
     .min(1, { message: "Elige una opción." })
     .refine(val => val === 'usuario' || val === 'empresa', {
       message: "Selección no válida.",
     }),
-  
+
   email: z.string()
     .email({ message: "Por favor, ingresa un correo electrónico válido." }),
-  
+
   rut: z.string()
     .min(9, { message: "El RUT debe tener al menos 9 caracteres (ej: 12.345.678-9)." })
     .regex(/^[0-9]{1,2}\.?[0-9]{3}\.?[0-9]{3}-?[0-9kK]{1}$/, { message: "Formato de RUT no válido." }),
-  
+
   password: z.string()
     .min(8, { message: "La contraseña debe tener al menos 8 caracteres." }),
-    
+
   confirmPassword: z.string()
     .min(8, { message: "La confirmación debe tener al menos 8 caracteres." }),
-    
+
+  address: z.string().optional(),
+  description: z.string().optional(),
+
   agreedToTerms: z.boolean()
     .refine(val => val === true, {
       message: "Debes aceptar los términos y condiciones para continuar.",
