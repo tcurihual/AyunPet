@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { UserService } from "@db/services/userServices";
-
 export const UserController = {
   async register(req: Request, res: Response) {
     try {

@@ -1,9 +1,12 @@
-import { defineConfig } from "tsup"
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
-    entry: ["src/index.ts"],
-    format: ["cjs"],
-    dts: true,
-    clean: true,
-    onSuccess: "node dist/index.js",
+  entry: ['src/index.ts'],
+  format: ['cjs'],
+  dts: false,
+  splitting: false,
+  sourcemap: true,
+  clean: true,
+  target: 'node18',
+  external: []
 })

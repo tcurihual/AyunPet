@@ -7,7 +7,7 @@
   "include": [
     "src/**/*",
     "../../packages/db/**/*"
-, "../auth/src/controllers/userController.ts"  ],
+  ],
   "exclude": [
     "node_modules",
     "dist",
