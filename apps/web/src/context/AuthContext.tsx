@@ -5,9 +5,12 @@ import { type LoginData } from '../lib/schemas';
 
 interface User {
   id: string;
-  fullName: string;
+  name: string;
   email: string;
   role: 'normal' | 'institution';
+  rut?: string;
+  address?: string;
+  description?: string;
 }
 
 interface AuthContextType {
@@ -31,14 +34,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       let fakeUserData: User | null = null;
       let fakeToken = "";
-
       if (data.email === "test@test.com" && data.password === "password123") {
-        fakeUserData = { id: '123', fullName: 'Usuario de Prueba', email: data.email, role: 'normal' };
+        fakeUserData = { id: '123', name: 'Usuario de Prueba', email: data.email, role: 'normal' };
         fakeToken = "token_para_usuario_normal_123";
       } 
-
       else if (data.email === "institucion@test.com" && data.password === "password123") {
-        fakeUserData = { id: '456', fullName: 'Fundación Huellitas', email: data.email, role: 'institution' };
+        fakeUserData = { id: '456', name: 'Fundación Sigma', email: data.email, role: 'institution' };
         fakeToken = "token_para_institucion_456";
       }
 
@@ -71,9 +72,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (token && role) {
       try {
         await new Promise(resolve => setTimeout(resolve, 1000));
+
         const userData: User = role === 'institution' 
-          ? { id: '456', fullName: 'Fundación Huellitas', email: 'institucion@test.com', role: 'institution' }
-          : { id: '123', fullName: 'Usuario de Prueba', email: 'test@test.com', role: 'normal' };
+          ? { id: '456', name: 'Fundación Sigma', email: 'institucion@test.com', role: 'institution' }
+          : { id: '123', name: 'Usuario de Prueba', email: 'test@test.com', role: 'normal' };
           
         setUser(userData);
       } catch (error) {

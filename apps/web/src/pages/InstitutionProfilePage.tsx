@@ -21,7 +21,7 @@ const InstitutionProfilePage: React.FC = () => {
   }, [fetchPublications]);
 
   const institutionPublications = publications.filter(
-    (pub) => pub.submitterName === 'Fundación Sigma'
+    (pub) => pub.creator.name === 'Fundación Sigma'
   );
 
   if (isInitialLoad) {

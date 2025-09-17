@@ -1,27 +1,42 @@
 import React from 'react';
-import type { Publication } from '../context/PublicationsContext'; 
+import type { Publication } from '../context/PublicationsContext';
 
 interface PetAdoptionCardProps {
   publication: Publication;
 }
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
-  const { petName, petImage, description, submitterName, date } = publication;
+  const { creator, pet } = publication;
 
   return (
     <div className="pet-card">
       <div className="pet-card-content">
-        <h3>{petName}</h3>
-        <p className="pet-card-description">{description}</p>
+        <h3>{pet.name}</h3>
+        <div className="pet-details-container">
+          <span className="pet-detail-item">{pet.species}</span>
+          <span className="pet-detail-item">{`${pet.age} meses`}</span>
+          <span className="pet-detail-item">{pet.size}</span>
+        </div>
+
+        <p className="pet-card-description">{publication.description}</p>
+        <div className="pet-card-tags">
+          {pet.sterilized && (
+            <span className="pet-tag sterilized">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Esterilizado
+            </span>
+          )}
+        </div>
+        
         <div className="pet-card-submitter">
-          <div>
-            <p className="pet-card-submitter-name">Publicado por: <strong>{submitterName}</strong></p>
-            <p className="pet-card-submitter-date">Fecha: {date}</p>
-          </div>
+            <p className="pet-card-submitter-name">Publicado por: <strong>{creator.name}</strong></p>
         </div>
       </div>
       <div className="pet-card-aside">
-        <img src={petImage} alt={petName} className="pet-card-pet-img" />
+        <img src={pet.image} alt={pet.name} className="pet-card-pet-img" />
         <div className="pet-card-actions">
           <button className="btn btn-primary">Ver Detalles</button>
         </div>

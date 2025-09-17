@@ -917,3 +917,28 @@ footer {
 .main-content-card .stats-bar {
   margin-top: -10px; 
 }
+
+.pet-details-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pet-detail-item {
+  background-color: #f0f0f0;
+  color: #555;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid #e0e0e0;
+}
+
+.pet-tag.sterilized {
+  background-color: #e8f5e9; 
+  color: #388e3c;          
+  display: inline-flex;     
+  align-items: center;
+  gap: 6px;                
+}
