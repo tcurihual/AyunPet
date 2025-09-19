@@ -1,4 +1,4 @@
-import { supabase } from "@supabase";
+import { supabase } from "@db/services/db_connection";
 
 export interface AdoptionRequest {
   id?: number;
