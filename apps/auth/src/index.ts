@@ -4,6 +4,8 @@ import helmet from "helmet"
 import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
 import authRouter from "./routs"
+import { loginController } from "./controllers/logincontroller"
+
 
 
 const app = express()
@@ -21,6 +23,8 @@ app.get("/", (_, res) => {
 })
 
 app.use("/",authRouter)
+
+app.post("/", loginController)
 
 app.use(errorHandler)
 app.listen(AUTH_PORT, () => {

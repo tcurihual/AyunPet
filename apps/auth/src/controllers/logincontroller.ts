@@ -1,74 +1,66 @@
 import { Request, Response, NextFunction } from "express";
-import bcrypt from "bcrypt"
-import { AppError, JsonResponse } from "@repo/utils";
 import { createAccessToken, createRefreshToken } from "@repo/utils/src/jwt"
-
-const fakeUser = {
-    UserId: "1",
-    username: "demo",
-    email: "demo@ayunpet.info",
-    role: "user",
-    password: "si"
-}
+import { supabase } from "../db_connection";
 
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body
+    const { email, password } = req.body as {
+      email: string;
+      password: string;
+    };
 
-        if (!email || !password) {
-            throw new AppError(400, "Email y contraseña son requeridos")
-        }
-
-        const user = fakeUser.email === email ? fakeUser : null
-        
-        if (!user) {
-            throw new AppError(401, "Credenciales inválidas")
-        }
-
-        const isPasswordValid = await bcrypt.compare(password, user.password)
-        
-        if (!isPasswordValid) {
-            throw new AppError(401, "Credenciales inválidas")
-        }
-
-        const userForToken = {
-            UserId: user.UserId,
-            UserName: user.username,
-            email: user.email,
-            role: user.role
-        }
-
-        const accessToken = createAccessToken(userForToken)
-        const refreshToken = createRefreshToken(userForToken)
-
-
-        const response: JsonResponse<{
-            user: {
-                id: string
-                name: string
-                email: string
-                role: string
-            }
-            accessToken: string
-            refreshToken: string
-        }> = {
-            message: "Login exitoso",
-            type: "success",
-            values: {
-                user: {
-                    id: user.UserId,
-                    name: user.username,
-                    email: user.email,
-                    role: user.role
-                },
-                accessToken,
-                refreshToken
-            }
-        }
-
-        return res.status(200).json(response)
-
-    } catch (error) {
-        next(error)
+    if (!email || !password) {
+      res.status(400).json({ success: false, message: "Email y contraseña son requeridos" });
+      return;
     }
-}
+
+    const { data: user, error: userError } = await supabase
+      .from("users")
+      .select("id, name, email, password, role, validated")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (userError) throw userError;
+
+    if (!user) {
+      res.status(401).json({ success: false, message: "Credenciales inválidas" });
+      return;
+    }
+
+    if (user.password !== password) {
+      res.status(401).json({ success: false, message: "Credenciales inválidas" });
+      return;
+    }
+
+    if (!user.validated) {
+      res.status(403).json({ success: false, message: "Usuario no validado" });
+      return;
+    }
+
+    const userForToken = {
+      UserId: user.id.toString(),
+      UserName: user.name,
+      email: user.email,
+      role: user.role.toString()
+    };
+
+    const accessToken = createAccessToken(userForToken);
+    const refreshToken = createRefreshToken(userForToken);
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      },
+      accessToken,
+      refreshToken
+    });
+
+  } catch (error: any) {
+    console.error("Error al hacer login:", error.message);
+    res.status(500).json({ success: false, message: "Error interno del servidor" });
+  }
+};
