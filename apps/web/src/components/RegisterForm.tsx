@@ -30,15 +30,7 @@ const RegisterForm: React.FC = () => {
     } finally {
       setLoading(false);
     }
-
-  } catch (error: any) {
-    console.error("Error al registrar el usuario:", error);
-    alert("Hubo un error al crear la cuenta. Por favor, inténtalo de nuevo.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="form-card">
