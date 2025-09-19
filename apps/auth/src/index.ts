@@ -1,8 +1,10 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import { errorHandler, AUTH_PORT } from "@repo/utils";
+import express from "express"
+import cors from "cors"
+import helmet from "helmet"
+import morgan from "morgan"
+import { errorHandler, AUTH_PORT } from "@repo/utils"
+import authRouter from "./routs"
+
 
 import userRoutes from "./routes/registerRoute"; 
 
@@ -25,6 +27,10 @@ app.use("/api/auth/users", userRoutes);
 
 app.use(errorHandler);
 
+
+app.use("/",authRouter)
+
+app.use(errorHandler)
 app.listen(AUTH_PORT, () => {
   console.log(`🚀 Auth service running on http://localhost:${AUTH_PORT}/api/auth`);
 });

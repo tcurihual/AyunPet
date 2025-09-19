@@ -6,10 +6,10 @@ export interface Pet{
   species: number;
   name: string;
   gender?: string;
-  age?: string;
-  size?: string;
-  sterillized?: string;
-  adopted?: string;
-  createdAt?: string;
-  updateAt?: string;
+  age?: number;
+  size?: number;
+  sterillized?: boolean;
+  adopted?: boolean;
+  createdAt?: timestamp;
+  updateAt?: timestamp;
 }
