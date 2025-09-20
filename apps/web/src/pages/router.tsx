@@ -3,6 +3,8 @@ import Header from '../components/Header';
 import Hero from '../components/Hero';
 import Faq from '../components/Faq';
 import Footer from '../components/Footer';
+import NotFound from './404_notfound';
+import Profile from "./Profile";
 
 const HomePage: React.FC = () => {
   return (

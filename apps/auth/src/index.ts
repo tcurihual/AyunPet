@@ -8,19 +8,27 @@ import { loginController } from "./controllers/logincontroller"
 
 
 
-const app = express()
+import userRoutes from "./routes/registerRoute"; 
 
-app.use(cors())
-app.use(helmet())
-app.use(morgan("dev"))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+const app = express();
+
+app.use(cors());
+app.use(helmet());
+app.use(morgan("dev"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (_, res) => {
-    return res.status(200).json({
-        message: "Microservicio Auth funcionando correctamente",
-    })
-})
+  return res.status(200).json({
+    message: "Microservicio Auth funcionando correctamente",
+  });
+});
+
+// 👇 monta las rutas de usuario en la API
+app.use("/api/auth/users", userRoutes);
+
+app.use(errorHandler);
+
 
 app.use("/",authRouter)
 
@@ -28,5 +36,5 @@ app.post("/", loginController)
 
 app.use(errorHandler)
 app.listen(AUTH_PORT, () => {
-    console.log("🚀 Auth service running on http://localhost/api/auth")
-})
+  console.log(`🚀 Auth service running on http://localhost:${AUTH_PORT}/api/auth`);
+});
