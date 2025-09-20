@@ -32,14 +32,3 @@ Si no solicitaste esto, puedes ignorar este correo.\n\nAccede al siguiente enlac
 }
 
 // Aquí hay un ejemplo de como se llama a la función
-async function main() {
-  try {
-    const resetLink = "https://ayunpet.com/reset-password?token=UNIQUE_TOKEN_AQUI"; // no cacho como será la parte del token
-  
-    await sendPasswordResetEmail("correodelAgustin@gmail.com", resetLink); // doexeale un correo gmail a alguien para probar
-  } catch (err) {
-    console.error("Error:", err);
-  }
-}
-
-main();
