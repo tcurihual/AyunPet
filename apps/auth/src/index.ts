@@ -5,9 +5,6 @@ import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
 import authRouter from "./routs"
 import passwordRoutes from "./routes/passwordRoutes";
-import testRoutes from "./routes/testRoutes";
-
-
 import userRoutes from "./routes/registerRoute"; 
 
 const app = express();
@@ -27,7 +24,6 @@ app.get("/", (_, res) => {
 // 👇 monta las rutas de usuario en la API
 app.use("/api/auth/users", userRoutes);
 app.use("/api/auth", passwordRoutes);
-app.use("/api/auth", testRoutes);
 
 app.use(errorHandler);
 
