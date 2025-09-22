@@ -1,4 +1,3 @@
-// apps/auth/src/routes/passwordRoutes.ts
 import { Router } from "express";
 import { PasswordController } from "../controllers/passwordController";
 
