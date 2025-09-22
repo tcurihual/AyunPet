@@ -5,6 +5,10 @@ import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
 import authRouter from "./routs"
 import passwordRoutes from "./routes/passwordRoutes";
+import { loginController } from "./controllers/logincontroller"
+
+
+
 import userRoutes from "./routes/registerRoute"; 
 
 const app = express();
@@ -29,6 +33,8 @@ app.use(errorHandler);
 
 
 app.use("/",authRouter)
+
+app.post("/", loginController)
 
 app.use(errorHandler)
 app.listen(AUTH_PORT, () => {
