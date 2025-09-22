@@ -7,7 +7,6 @@ import postRoutes from "./routes/postRoutes";
 import adoptionRequestRoutes from "./routes/adoptionRequestRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import adopRouter from "./adoprouter";
-import passwordRoutes from "../../auth/src/routes/passwordRoutes";
 
 const app = express();
 
@@ -27,7 +26,6 @@ app.use("/api/adoptions/posts", postRoutes);
 app.use("/api/adoptions/adoption-request", adoptionRequestRoutes);
 app.use("/api/adoptions/messages", messageRoutes);
 app.use("/", adopRouter);
-app.use("/api/auth", passwordRoutes);
 
 // middleware de errores al final
 app.use(errorHandler);
