@@ -4,6 +4,7 @@ import helmet from "helmet"
 import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
 import authRouter from "./routs"
+import passwordRoutes from "./routes/passwordRoutes";
 import { loginController } from "./controllers/logincontroller"
 import { logoutController } from "./controllers/logoutcontroller"
 
@@ -27,6 +28,7 @@ app.get("/", (_, res) => {
 
 // 👇 monta las rutas de usuario en la API
 app.use("/api/auth/users", userRoutes);
+app.use("/api/auth", passwordRoutes);
 
 app.use(errorHandler);
 
