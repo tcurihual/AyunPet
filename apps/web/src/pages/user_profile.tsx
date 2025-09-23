@@ -1,3 +1,6 @@
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
 export default function Profile() {
   const user = {
     nombre: "jose",
@@ -12,55 +15,61 @@ export default function Profile() {
   };
 
   return (
-    <div className="userprof-page">
-      <div className="userprof-container">
-        <main className="userprof-main">
-          <header className="userprof-header">
-            <div className="userprof-avatar">{user.nombre[0]}</div>
-            <div className="userprof-info">
-              <h2>{user.nombre}</h2>
-              <p>RUT: {user.rut}</p>
-            </div>
-          </header>
+    <div className="page-container">
+      <Header />
 
-          <div className="userprof-stats-bar">
-            <div className="userprof-stat-item">
-              <strong>{user.estadisticas.adopciones}</strong>
-              Adopciones
-            </div>
-            <div className="userprof-stat-item">
-              <strong>{user.estadisticas.favoritos}</strong>
-              Favoritos
-            </div>
-            <div className="userprof-stat-item">
-              <strong>{user.estadisticas.publicaciones}</strong>
-              Publicaciones
-            </div>
-          </div>
+      <div className="userprof-page">
+        <div className="userprof-container">
+          <main className="userprof-main">
+            <header className="userprof-header">
+              <div className="userprof-avatar">{user.nombre[0]}</div>
+              <div className="userprof-info">
+                <h2>{user.nombre}</h2>
+                <p>RUT: {user.rut}</p>
+              </div>
+            </header>
 
-          <section className="userprof-card">
-            <h3>Sobre mí</h3>
-            <p>{user.bio}</p>
-          </section>
-        </main>
+            <div className="userprof-stats-bar">
+              <div className="userprof-stat-item">
+                <strong>{user.estadisticas.adopciones}</strong>
+                Adopciones
+              </div>
+              <div className="userprof-stat-item">
+                <strong>{user.estadisticas.favoritos}</strong>
+                Favoritos
+              </div>
+              <div className="userprof-stat-item">
+                <strong>{user.estadisticas.publicaciones}</strong>
+                Publicaciones
+              </div>
+            </div>
 
-        <aside className="userprof-sidebar">
-          <div className="userprof-card">
-            <h3>Contacto</h3>
-            <p>Email: {user.email}</p>
-            <p>Teléfono: {user.telefono}</p>
-            <p>Ciudad: {user.ciudad}</p>
-            <p>Dirección: {user.direccion}</p>
-          </div>
+            <section className="userprof-card">
+              <h3>Sobre mí</h3>
+              <p>{user.bio}</p>
+            </section>
+          </main>
 
-          <div className="userprof-card">
-            <h3>Accesos rápidos</h3>
-            <a className="userprof-quick-link" href="#">Mis favoritos</a>
-            <a className="userprof-quick-link" href="#">Mis publicaciones</a>
-            <a className="userprof-quick-link" href="#">Solicitudes</a>
-          </div>
-        </aside>
+          <aside className="userprof-sidebar">
+            <div className="userprof-card">
+              <h3>Contacto</h3>
+              <p>Email: {user.email}</p>
+              <p>Teléfono: {user.telefono}</p>
+              <p>Ciudad: {user.ciudad}</p>
+              <p>Dirección: {user.direccion}</p>
+            </div>
+
+            <div className="userprof-card">
+              <h3>Accesos rápidos</h3>
+              <a className="userprof-quick-link" href="#">Mis favoritos</a>
+              <a className="userprof-quick-link" href="#">Mis publicaciones</a>
+              <a className="userprof-quick-link" href="#">Solicitudes</a>
+            </div>
+          </aside>
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 }
