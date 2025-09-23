@@ -12,40 +12,40 @@ export default function Profile() {
   };
 
   return (
-    <div className="profile-page">
-      <div className="profile-container">
-        <main className="profile-main">
-          <header className="profile-header">
-            <div className="profile-avatar">{user.nombre[0]}</div>
-            <div className="profile-info">
+    <div className="userprof-page">
+      <div className="userprof-container">
+        <main className="userprof-main">
+          <header className="userprof-header">
+            <div className="userprof-avatar">{user.nombre[0]}</div>
+            <div className="userprof-info">
               <h2>{user.nombre}</h2>
               <p>RUT: {user.rut}</p>
             </div>
           </header>
 
-          <div className="stats-bar">
-            <div className="stat-item">
+          <div className="userprof-stats-bar">
+            <div className="userprof-stat-item">
               <strong>{user.estadisticas.adopciones}</strong>
               Adopciones
             </div>
-            <div className="stat-item">
+            <div className="userprof-stat-item">
               <strong>{user.estadisticas.favoritos}</strong>
               Favoritos
             </div>
-            <div className="stat-item">
+            <div className="userprof-stat-item">
               <strong>{user.estadisticas.publicaciones}</strong>
               Publicaciones
             </div>
           </div>
 
-          <section className="card">
+          <section className="userprof-card">
             <h3>Sobre mí</h3>
             <p>{user.bio}</p>
           </section>
         </main>
 
-        <aside className="profile-sidebar">
-          <div className="card">
+        <aside className="userprof-sidebar">
+          <div className="userprof-card">
             <h3>Contacto</h3>
             <p>Email: {user.email}</p>
             <p>Teléfono: {user.telefono}</p>
@@ -53,11 +53,11 @@ export default function Profile() {
             <p>Dirección: {user.direccion}</p>
           </div>
 
-          <div className="card">
+          <div className="userprof-card">
             <h3>Accesos rápidos</h3>
-            <a className="quick-link" href="#">Mis favoritos</a>
-            <a className="quick-link" href="#">Mis publicaciones</a>
-            <a className="quick-link" href="#">Solicitudes</a>
+            <a className="userprof-quick-link" href="#">Mis favoritos</a>
+            <a className="userprof-quick-link" href="#">Mis publicaciones</a>
+            <a className="userprof-quick-link" href="#">Solicitudes</a>
           </div>
         </aside>
       </div>

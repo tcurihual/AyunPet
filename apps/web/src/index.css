@@ -988,7 +988,7 @@ footer {
   color: #388e3c;
 }
 
-.profile-page {
+.userprof-page {
   background-color: #f4f4f4;
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
@@ -996,25 +996,25 @@ footer {
   color: #333;
 }
 
-.profile-container {
+.userprof-container {
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
   gap: 30px;
 }
 
-.profile-main {
+.userprof-main {
   flex: 3;
 }
 
-.profile-sidebar {
+.userprof-sidebar {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.profile-header {
+.userprof-header {
   display: flex;
   align-items: center;
   gap: 20px;
@@ -1024,7 +1024,7 @@ footer {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.profile-avatar {
+.userprof-avatar {
   width: 80px;
   height: 80px;
   border-radius: 12px;
@@ -1032,19 +1032,19 @@ footer {
   background-color: #e0e0e0;
 }
 
-.profile-info h2 {
+.userprof-info h2 {
   margin: 0;
   font-size: 1.8rem;
   color: #3a332f;
 }
 
-.profile-info p {
+.userprof-info p {
   margin-top: 5px;
   font-size: 0.9rem;
   color: #777;
 }
 
-.stats-bar {
+.userprof-stats-bar {
   display: flex;
   justify-content: space-around;
   background-color: #fff;
@@ -1054,19 +1054,19 @@ footer {
   margin: 20px 0;
 }
 
-.stat-item {
+.userprof-stat-item {
   text-align: center;
   font-size: 0.9rem;
   color: #666;
 }
 
-.stat-item strong {
+.userprof-stat-item strong {
   display: block;
   font-size: 1.4rem;
   color: #333;
 }
 
-.card {
+.userprof-card {
   background-color: #fff;
   border-radius: 16px;
   padding: 20px;
@@ -1074,13 +1074,13 @@ footer {
   border: 1px solid #eee;
 }
 
-.card h3 {
+.userprof-card h3 {
   margin-bottom: 15px;
   font-size: 1.1rem;
   color: #3a332f;
 }
 
-.quick-link {
+.userprof-quick-link {
   display: block;
   padding: 10px 15px;
   background-color: #f2e8d5;
@@ -1092,6 +1092,6 @@ footer {
   transition: background 0.3s;
 }
 
-.quick-link:hover {
+.userprof-quick-link:hover {
   background-color: #e0d5c2;
 }
