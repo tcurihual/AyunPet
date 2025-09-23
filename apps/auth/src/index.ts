@@ -6,6 +6,7 @@ import { errorHandler, AUTH_PORT } from "@repo/utils"
 import authRouter from "./routs"
 import passwordRoutes from "./routes/passwordRoutes";
 import { loginController } from "./controllers/logincontroller"
+import { logoutController } from "./controllers/logoutcontroller"
 
 
 
@@ -35,6 +36,7 @@ app.use(errorHandler);
 app.use("/",authRouter)
 
 app.post("/", loginController)
+app.post("/", logoutController)
 
 app.use(errorHandler)
 app.listen(AUTH_PORT, () => {

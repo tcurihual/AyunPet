@@ -4,26 +4,24 @@ import { useLoading } from './LoadingContext';
 import { useAuth } from './AuthContext';
 
 export interface Publication {
-  id: string;
+  id: string; 
   title: string;
   description: string;
   createdAt: string; 
   status: 'active' | 'closed';
-  
-  creator: {
-    id: string;
-    name: string;
-  };
-  
+  creator: { id: string; name: string; };
   pet: {
     id: string;
     name: string;
-    image: string;
+    image: string; 
     species: string;
     age: number; 
     size: 'Pequeño' | 'Mediano' | 'Grande';
     gender: 'Macho' | 'Hembra';
     sterilized: boolean;
+    breed: string; 
+    healthStatus: string; 
+    tags: string[]; 
   };
 }
 
@@ -55,7 +53,8 @@ export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ childr
           creator: { id: '456', name: 'Fundación Sigma' },
           pet: { 
             id: 'p1', name: 'Luna', image: '/images/pets/firulais.jpg',
-            species: 'Perro', age: 7, size: 'Mediano', gender: 'Hembra', sterilized: true 
+            species: 'Perro', age: 7, size: 'Mediano', gender: 'Hembra', sterilized: true,
+            breed: 'Golden Retriever', healthStatus: 'Sano y vacunado', tags: ['Juguetona', 'Leal', 'Familiar'] 
           }
         },
         { 
@@ -63,7 +62,8 @@ export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ childr
           creator: { id: '789', name: 'Rescate Animal Temuco' },
           pet: { 
             id: 'p2', name: 'Rocky', image: '/images/pets/simba.jpg',
-            species: 'Gato', age: 24, size: 'Mediano', gender: 'Macho', sterilized: false 
+            species: 'Gato', age: 24, size: 'Mediano', gender: 'Macho', sterilized: false,
+            breed: 'Caracal', healthStatus: 'Sano y desparasitado', tags: ['Cariñoso', 'Independiente']
           }
         },
         { 
@@ -71,7 +71,8 @@ export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ childr
           creator: { id: '456', name: 'Fundación Sigma' },
           pet: { 
             id: 'p3', name: 'Pana Miguel', image: '/images/pets/Miguel.webp',
-            species: 'Gato', age: 10, size: 'Pequeño', gender: 'Macho', sterilized: true 
+            species: 'Gato', age: 10, size: 'Pequeño', gender: 'Macho', sterilized: true,
+            breed: 'Mestizo', healthStatus: 'Sano y vacunado', tags: ['Sociable', 'Curioso']
           }
         },
       ];
@@ -83,10 +84,7 @@ export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, [user?.id, setLoading]); 
 
-  const value = {
-    publications,
-    fetchPublications,
-  };
+  const value = { publications, fetchPublications };
 
   return (
     <PublicationsContext.Provider value={value}>
