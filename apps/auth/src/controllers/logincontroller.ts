@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { createAccessToken, createRefreshToken } from "@repo/utils/src/jwt"
+import { createAccessToken, createRefreshToken } from "@repo/utils"
 import { supabase } from "../db_connection";
 
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
