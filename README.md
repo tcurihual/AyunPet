@@ -168,4 +168,4 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para má
 * **Benjamin Rojas** - [@pvcdf](https://github.com/pvcdf)
 * **Diego Ortiz** - [@DiegoNicolasOrtiz](https://github.com/DiegoNicolasOrtiz)
 * **Sebastian Mena** [@SebasMenas](https://github.com/SebasMenas)
-* 
+
