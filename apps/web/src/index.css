@@ -634,32 +634,30 @@ footer {
   color: #D32F2F;
 }
 
+
 .pet-card {
   background-color: #fefdfa;
   border: 1px solid #f2e8d5;
   border-radius: 16px;
   padding: 24px;
-  display: flex;
-  gap: 24px;
-  align-items: stretch; 
   margin-bottom: 24px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  height: 100%; 
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px; 
+  gap: 24px;
 }
 
 .pet-card-content {
-  flex: 1; 
   display: flex;
-  flex-direction: column; 
-  min-width: 0;
+  flex-direction: column;
+  padding-right: 8px;
 }
 
 .pet-card-aside { 
   display: flex;
   flex-direction: column; 
   align-items: center; 
-  width: 180px;
-  flex-shrink: 0;
-  justify-content: space-between; 
 }
 
 .pet-card-pet-img {
@@ -671,27 +669,38 @@ footer {
 }
 
 .pet-card h3 {
-  font-size: 1.8rem; 
-  margin: 0 0 10px; 
+  font-size: 2.2rem; 
+  margin: 0 0 16px; 
   color: #3a332f; 
+  line-height: 1.1;
 }
 
 .pet-card-description { 
-  font-size: 0.9rem; 
-  color: #555; 
-  line-height: 1.6; 
-  margin-bottom: 16px;
-  flex-grow: 1; 
+  font-size: 1rem;           
+  line-height: 1.8;          
+  color: #666; 
+  padding: 10px;          
+  background-color: #f8f6f2;
+  border-radius: 12px;
+  margin-top: 16px;                  
+  margin-bottom: 32px;       
+}
+
+.pet-card-footer {
+  margin-top: 16px;
 }
 
 .pet-card-submitter { 
   font-size: 0.8rem;
   color: #777;
-  margin-top: auto; 
 }
 
 .pet-card-actions { 
   display: flex; 
+  width: 100%;
+}
+
+.pet-card-actions .btn {
   width: 100%;
 }
 
@@ -726,7 +735,7 @@ footer {
 
 .pets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
   gap: 32px;
   justify-content: center;
 }
@@ -936,14 +945,20 @@ footer {
 }
 
 .pet-detail-item {
-  background-color: #f0f0f0;
+  background-color: transparent; 
   color: #555;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 500; 
   padding: 4px 12px;
   border-radius: 99px;
-  border: 1px solid #e0e0e0;
-  white-space: nowrap;
+  border: 1px solid #e0e0e0; 
+  white-space: normal;
+  text-align: center; 
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pet-card-tags {
