@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express"
-import jwt from "jsonwebtoken"
 export * from "./constants"
 
 export type JsonResponse<T> = {
@@ -24,18 +23,6 @@ export class AppError extends Error {
 export const log = (...args: unknown[]): void => {
     console.log("LOGGER: ", ...args)
 }
-
-export const createAccessToken = (payload: object) => {
-    return jwt.sign(payload, process.env.JWT_SECRET ?? 'default-secret', {
-        expiresIn: '15m',
-    });
-};
-
-export const createRefreshToken = (payload: object) => {
-    return jwt.sign(payload, process.env.JWT_REFRESH_SECRET ?? 'default-refresh-secret', {
-        expiresIn: '7d',
-    });
-};
 
 export const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
     log((err as Error).stack || "Uknown error from the error handler")
