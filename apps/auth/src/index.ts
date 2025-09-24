@@ -5,11 +5,9 @@ import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
 import authRouter from "./routs"
 import passwordRoutes from "./routes/passwordRoutes";
+import emailVerificationRoutes from "./routes/emailVerificationRoutes";
 import { loginController } from "./controllers/logincontroller"
 import { logoutController } from "./controllers/logoutcontroller"
-
-
-
 import userRoutes from "./routes/registerRoute"; 
 
 const app = express();
@@ -29,11 +27,10 @@ app.get("/", (_, res) => {
 // 👇 monta las rutas de usuario en la API
 app.use("/api/auth/users", userRoutes);
 app.use("/api/auth", passwordRoutes);
+app.use("/",authRouter)
+app.use("/api/auth", emailVerificationRoutes);
 
 app.use(errorHandler);
-
-
-app.use("/",authRouter)
 
 app.post("/", loginController)
 app.post("/", logoutController)
