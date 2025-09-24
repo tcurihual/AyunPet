@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { createAccessToken, createRefreshToken } from "@repo/utils/src/jwt"
+import { createAccessToken, createRefreshToken } from "@repo/utils/src/jwt";
 import { supabase } from "../db_connection";
+import bcrypt from "bcrypt";
 
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -10,11 +11,10 @@ export const loginController = async (req: Request, res: Response, next: NextFun
         };
 
         if (!email || !password) {
-            res.status(400).json({ 
+            return res.status(400).json({ 
                 success: false, 
                 message: "Email y contraseña son requeridos" 
             });
-            return;
         }
 
         const { data: user, error: userError } = await supabase
@@ -23,31 +23,30 @@ export const loginController = async (req: Request, res: Response, next: NextFun
             .eq("email", email)
             .maybeSingle();
 
-        if (userError) throw userError;
-
-        if (!user) {
-            res.status(401).json({ 
+        if (userError || !user) {
+            return res.status(401).json({ 
                 success: false, 
                 message: "Credenciales inválidas" 
             });
-            return;
         }
 
-        if (user.password !== password) {
-            res.status(401).json({ 
+        // --- ESTA ES LA CORRECCIÓN FINAL Y MÁS IMPORTANTE ---
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordMatch) {
+            return res.status(401).json({ 
                 success: false, 
                 message: "Credenciales inválidas" 
             });
-            return;
         }
+        // ---------------------------------------------------
 
         if (!user.validated) {
-            res.status(403).json({ 
+            return res.status(403).json({ 
                 success: false, 
                 message: "Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.",
                 requiresVerification: true
             });
-            return;
         }
 
         const userForToken = {
