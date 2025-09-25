@@ -3,7 +3,7 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { errorHandler, AUTH_PORT } from "@repo/utils"
-import authRouter from "./routs"
+import authRouter from "./routs"; 
 import passwordRoutes from "./routes/passwordRoutes";
 import emailVerificationRoutes from "./routes/emailVerificationRoutes";
 import { loginController } from "./controllers/logincontroller"
