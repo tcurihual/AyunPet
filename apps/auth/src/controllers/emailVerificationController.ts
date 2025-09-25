@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { supabase } from "../db_connection";
-import { sendPasswordResetEmail } from "../../../../packages/utils/email";
+import { sendVerificationEmail } from "../../../../packages/utils/email"; 
 import "dotenv/config";
 
 export const EmailVerificationController = {
@@ -46,7 +46,8 @@ export const EmailVerificationController = {
       const verificationLink = `${FRONTEND_ORIGIN}/verify-email?token=${token}`;
 
       try {
-        await sendPasswordResetEmail(user.email, verificationLink);
+        await sendVerificationEmail(user.email, verificationLink);
+        
         console.log(`Email de verificación enviado a ${user.email}`);
       } catch (mailErr) {
         console.error("Error enviando correo de verificación:", mailErr);

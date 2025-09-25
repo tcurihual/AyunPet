@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import { loginController } from "./controllers/logincontroller";
 import { logoutController } from "./controllers/logoutcontroller";
