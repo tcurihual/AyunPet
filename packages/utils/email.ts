@@ -43,7 +43,7 @@ export async function sendVerificationEmail(to: string, verificationLink: string
     to,
     subject: "Verifica tu cuenta - Ayün Pet",
     html: `
-      <h2>¡Bienvenido a Ayün Pet!</h2>
+      <h2>Bienvenido a Ayün Pet</h2>
       <p>Gracias por registrarte.</p>
       <p>Por favor, haz clic en el siguiente enlace para verificar tu dirección de correo electrónico:</p>
       <a href="${verificationLink}" target="_blank">Verificar mi cuenta</a>
