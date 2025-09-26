@@ -38,6 +38,9 @@ const Header: React.FC = () => {
             <li><Link to="/adopta">Adopta</Link></li>
             <li><Link to="/refugios">Refugios y Organizaciones</Link></li>
             <li><Link to="/nosotros">Nosotros</Link></li>
+            {user && user.role === 'tester' && (
+              <li><Link to="/pruebas" style={{ color: '#ff0000ff' }}>Pruebas</Link></li>
+            )}
           </ul>
         </nav>
       </div>
