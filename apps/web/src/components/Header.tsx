@@ -60,11 +60,11 @@ const Header: React.FC = () => {
                   <strong>{user.name}</strong>
                 </div>
                 
-                {user.role === 'institution' && (
+                {(user.role === 'institution' || user.role === 'tester') && (
                    <Link to="/muro-institucion" className="dropdown-item">Muro de Institución</Link>
                 )}
                 
-                {user.role === 'normal' && (
+                {(user.role === 'normal' || user.role === 'tester') && (
                   <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
                 )}
 
