@@ -54,7 +54,7 @@ const Header: React.FC = () => {
               <div className="dropdown-menu">
                 <div className="dropdown-header">
                   Bienvenido de vuelta
-                  <strong>{user.fullName}</strong>
+                  <strong>{user.name}</strong>
                 </div>
                 
                 {user.role === 'institution' && (
