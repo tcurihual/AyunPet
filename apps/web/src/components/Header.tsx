@@ -38,6 +38,9 @@ const Header: React.FC = () => {
             <li><Link to="/adopta">Adopta</Link></li>
             <li><Link to="/refugios">Refugios y Organizaciones</Link></li>
             <li><Link to="/nosotros">Nosotros</Link></li>
+            {user && user.role === 'tester' && (
+              <li><Link to="/pruebas" style={{ color: '#ff0000ff' }}>Pruebas</Link></li>
+            )}
           </ul>
         </nav>
       </div>
@@ -57,11 +60,11 @@ const Header: React.FC = () => {
                   <strong>{user.name}</strong>
                 </div>
                 
-                {user.role === 'institution' && (
+                {(user.role === 'institution' || user.role === 'tester') && (
                    <Link to="/muro-institucion" className="dropdown-item">Muro de Institución</Link>
                 )}
                 
-                {user.role === 'normal' && (
+                {(user.role === 'normal' || user.role === 'tester') && (
                   <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
                 )}
 
