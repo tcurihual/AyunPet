@@ -6,13 +6,13 @@ interface BarChartData {
   [key: string]: any; 
 }
 
-interface GraficoDeBarrasProps {
+interface GraficoBarrasProps {
   data: BarChartData[];
   barKey: string;
   barColor: string; 
 }
 
-const GraficoDeBarras: React.FC<GraficoDeBarrasProps> = ({ data, barKey, barColor }) => {
+const GraficoBarras: React.FC<GraficoBarrasProps> = ({ data, barKey, barColor }) => {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <BarChart
@@ -30,4 +30,4 @@ const GraficoDeBarras: React.FC<GraficoDeBarrasProps> = ({ data, barKey, barColo
   );
 };
 
-export default GraficoDeBarras;
+export default GraficoBarras;

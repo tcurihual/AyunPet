@@ -1,8 +1,8 @@
 import React from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import GraficoAdopciones from './components/charts/GraficoTorta';
-import GraficoDeBarras from './components/charts/GraficoBarras';
+import GraficoTorta from './components/charts/PieChart';
+import GraficoBarras from './components/charts/BarChart';
 
 const datosAdopciones = [
   { name: 'Mascotas Adoptadas', value: 45 },
@@ -104,19 +104,19 @@ const Pruebas: React.FC = () => {
         </p>
         <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px', marginBottom: '20px' }}>
           <h3 style={{ textAlign: 'center' }}>Estado Actual de Adopciones</h3>
-          <GraficoAdopciones data={datosAdopciones} />
+          <GraficoTorta data={datosAdopciones} />
         </div>
         <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px' }}>
           <h3 style={{ textAlign: 'center' }}>Distribución por Especie</h3>
-          <GraficoAdopciones data={datosPorEspecie} colors={coloresEspecie} />
+          <GraficoTorta data={datosPorEspecie} colors={coloresEspecie} />
         </div>
         <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px', marginTop: '20px' }}>
           <h3 style={{ textAlign: 'center' }}>Adopciones por Mes</h3>
-          <GraficoDeBarras data={datosMensuales} barKey="adopciones" barColor="#8884d8" />
+          <GraficoBarras data={datosMensuales} barKey="adopciones" barColor="#8884d8" />
         </div>
         <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px' }}>
           <h3 style={{ textAlign: 'center' }}>Adopciones a Través del Tiempo</h3>
-          <GraficoDeBarras data={datosParaGrafico} barKey="adopciones" barColor="#82ca9d" />
+          <GraficoBarras data={datosParaGrafico} barKey="adopciones" barColor="#82ca9d" />
 
         </div>
 

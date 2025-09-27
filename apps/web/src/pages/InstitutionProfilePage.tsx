@@ -10,7 +10,7 @@ import PetAdoptionCard from '../components/PetAdoptionCard';
 import { usePublications } from '../context/PublicationsContext';
 import banner from '../assets/sigma.png';
 
-const GraficoAdopciones = lazy(() => import('../components/charts/GraficoTorta'));
+const GraficoTorta = lazy(() => import('../components/charts/PieChart'));
 
 const InstitutionProfilePage: React.FC = () => {
   const { publications, fetchPublications } = usePublications();
@@ -92,7 +92,7 @@ const InstitutionProfilePage: React.FC = () => {
                       Distribución de Especies
                     </h3>
                     {datosPorEspecie.length > 0 ? (
-                      <GraficoAdopciones data={datosPorEspecie} colors={coloresEspecie} />
+                      <GraficoTorta data={datosPorEspecie} colors={coloresEspecie} />
                     ) : (
                       <p style={{ textAlign: 'center', marginTop: '20px' }}>
                         No hay datos suficientes para mostrar estadísticas.
