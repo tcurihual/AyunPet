@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       let fakeUserData: User | null = null;
       let fakeToken = "";
-      // Corregí los emails para que coincidan con los que hemos usado
       if (data.email === "normal@test.com" && data.password === "password123") {
         fakeUserData = { id: '123', name: 'Usuario de Prueba', email: data.email, role: 'normal' };
         fakeToken = "token_para_usuario_normal_123";

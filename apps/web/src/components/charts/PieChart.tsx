@@ -8,14 +8,14 @@ interface ChartData {
   [key: string]: any;
 }
 
-interface GraficoAdopcionesProps {
+interface GraficoTortaProps {
   data: ChartData[];
   colors?: string[];
 }
 
 const DEFAULT_COLORS = ['#8884d8', '#82ca9d', '#ffc658']; 
 
-const GraficoAdopciones: React.FC<GraficoAdopcionesProps> = ({ data, colors = DEFAULT_COLORS }) => {
+const GraficoTorta: React.FC<GraficoTortaProps> = ({ data, colors = DEFAULT_COLORS }) => {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <PieChart>
@@ -47,4 +47,4 @@ const GraficoAdopciones: React.FC<GraficoAdopcionesProps> = ({ data, colors = DE
   );
 };
 
-export default GraficoAdopciones;
+export default GraficoTorta;
