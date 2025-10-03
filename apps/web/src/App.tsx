@@ -6,6 +6,7 @@ import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage'; 
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import Profile from "./pages/user_profile";
+import Pruebas from './PruebasComponentes';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Route path="/adopta" element={<AdoptionPage/>}/> 
       <Route path="/muro-institucion" element={<InstitutionProfilePage/>}/>
       <Route path="/perfil" element={<Profile/>}/>
+      <Route path="/pruebas" element={<Pruebas />}/>
     </Routes>
   );
 }

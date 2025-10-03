@@ -1,13 +1,28 @@
 import React from 'react';
 
-const ProfileTabs: React.FC = () => {
+interface ProfileTabsProps {
+  activeTab: string;
+  setActiveTab: (tabName: string) => void;
+}
+
+const TABS = ['Publicaciones', 'Sobre Nosotros', 'Estadísticas', 'Equipo', 'Documentos'];
+
+const ProfileTabs: React.FC<ProfileTabsProps> = ({ activeTab, setActiveTab }) => {
   return (
     <nav className="profile-tabs">
-      <a href="#" className="tab-item active">Publicaciones</a>
-      <a href="#" className="tab-item">Sobre Nosotros</a>
-      <a href="#" className="tab-item">Reseñas</a>
-      <a href="#" className="tab-item">Equipo</a>
-      <a href="#" className="tab-item">Documentos</a>
+      {TABS.map(tab => (
+        <a
+          key={tab}
+          href="#"
+          className={`tab-item ${activeTab === tab ? 'active' : ''}`}
+          onClick={(e) => {
+            e.preventDefault();
+            setActiveTab(tab);
+          }}
+        >
+          {tab}
+        </a>
+      ))}
     </nav>
   );
 };

@@ -7,7 +7,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: 'normal' | 'institution';
+  role: 'normal' | 'institution' | 'tester';
   rut?: string;
   address?: string;
   description?: string;
@@ -34,13 +34,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       let fakeUserData: User | null = null;
       let fakeToken = "";
-      if (data.email === "test@test.com" && data.password === "password123") {
+      if (data.email === "normal@test.com" && data.password === "password123") {
         fakeUserData = { id: '123', name: 'Usuario de Prueba', email: data.email, role: 'normal' };
         fakeToken = "token_para_usuario_normal_123";
       } 
       else if (data.email === "institucion@test.com" && data.password === "password123") {
         fakeUserData = { id: '456', name: 'Fundación Sigma', email: data.email, role: 'institution' };
         fakeToken = "token_para_institucion_456";
+      }
+      else if (data.email === "tester@test.com" && data.password === "password123") {
+        fakeUserData = { id: '789', name: 'Usuario Tester', email: data.email, role: 'tester' };
+        fakeToken = "token_para_usuario_tester_789";
       }
 
       if (fakeUserData && fakeToken) {
@@ -72,11 +76,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (token && role) {
       try {
         await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const userData: User = role === 'institution' 
-          ? { id: '456', name: 'Fundación Sigma', email: 'institucion@test.com', role: 'institution' }
-          : { id: '123', name: 'Usuario de Prueba', email: 'test@test.com', role: 'normal' };
-          
+        let userData: User | null = null;
+        if (role === 'institution') {
+          userData = { id: '456', name: 'Fundación Sigma', email: 'institucion@test.com', role: 'institution' };
+        } else if (role === 'tester') {
+          userData = { id: '789', name: 'Usuario Tester', email: 'tester@test.com', role: 'tester' };
+        } else { 
+          userData = { id: '123', name: 'Usuario de Prueba', email: 'normal@test.com', role: 'normal' };
+        }
+        
         setUser(userData);
       } catch (error) {
         logout();

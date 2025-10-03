@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, lazy, Suspense } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProfileHeader from '../components/ProfileHeader';
@@ -10,9 +10,12 @@ import PetAdoptionCard from '../components/PetAdoptionCard';
 import { usePublications } from '../context/PublicationsContext';
 import banner from '../assets/sigma.png';
 
+const GraficoTorta = lazy(() => import('../components/charts/PieChart'));
+
 const InstitutionProfilePage: React.FC = () => {
   const { publications, fetchPublications } = usePublications();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [activeTab, setActiveTab] = useState('Publicaciones');
 
   useEffect(() => {
     fetchPublications().finally(() => {
@@ -23,6 +26,17 @@ const InstitutionProfilePage: React.FC = () => {
   const institutionPublications = publications.filter(
     (pub) => pub.creator.name === 'Fundación Sigma'
   );
+
+  const datosPorEspecie = useMemo(() => {
+    const conteo = institutionPublications.reduce((acc, pub) => {
+      const especie = pub.pet.species || 'Otro';
+      acc[especie] = (acc[especie] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    return Object.entries(conteo).map(([name, value]) => ({ name, value }));
+  }, [institutionPublications]);
+
+  const coloresEspecie = ['#FFBB28', '#00C49F', '#AF19FF'];
 
   if (isInitialLoad) {
     return (
@@ -51,18 +65,52 @@ const InstitutionProfilePage: React.FC = () => {
           <div className="profile-main">
             <div className="main-content-card">
               <StatsBar />
-              <ProfileTabs />
-              <div className="pets-grid">
-                {institutionPublications.length > 0 ? (
-                  institutionPublications.map(pub => (
-                    <PetAdoptionCard key={pub.id} publication={pub} />
-                  ))
-                ) : (
-                  <div className="full-width-message">
-                    <p>Esta fundación no tiene mascotas en adopción en este momento.</p>
+              <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              
+              {activeTab === 'Publicaciones' && (
+                <div className="pets-grid">
+                  {institutionPublications.length > 0 ? (
+                    institutionPublications.map(pub => (
+                      <PetAdoptionCard key={pub.id} publication={pub} />
+                    ))
+                  ) : (
+                    <div className="full-width-message">
+                      <p>Esta fundación no tiene mascotas en adopción en este momento.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              {activeTab === 'Sobre Nosotros' && (
+                <div style={{ padding: '20px' }}>
+                  <p>Aquí iría la información sobre la fundación...</p>
+                </div>
+              )}
+              {activeTab === 'Estadísticas' && (
+                <Suspense fallback={<div style={{ textAlign: 'center', padding: '40px' }}>Cargando gráfico...</div>}>
+                  <div>
+                    <h3 style={{ textAlign: 'center', marginTop: '40px' }}>
+                      Distribución de Especies
+                    </h3>
+                    {datosPorEspecie.length > 0 ? (
+                      <GraficoTorta data={datosPorEspecie} colors={coloresEspecie} />
+                    ) : (
+                      <p style={{ textAlign: 'center', marginTop: '20px' }}>
+                        No hay datos suficientes para mostrar estadísticas.
+                      </p>
+                    )}
                   </div>
-                )}
-              </div>
+                </Suspense>
+              )}
+              {activeTab === 'Equipo' && (
+                <div style={{ padding: '20px' }}>
+                  <p>Aquí iría la información sobre el equipo...</p>
+                </div>
+              )}
+              {activeTab === 'Documentos' && (
+                <div style={{ padding: '20px' }}>
+                  <p>Aquí irían los documentos...</p>
+                </div>
+              )}
             </div>
           </div>
           
