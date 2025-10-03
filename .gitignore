@@ -60,7 +60,7 @@ xcuserdata
 # VSCode
 .history/
 
-
+.env
 
 **/dist
 */dist
