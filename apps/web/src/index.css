@@ -213,15 +213,6 @@ html {
     background-color: rgba(242, 232, 213, 1);
     transform: translateY(-2px);
 }
-footer {
-    background-color: #3a2d26;
-    padding: 20px 40px;
-    margin-top: 40px;
-}
-
-.footer-logo {
-    height: 170px;
-}
 
 .login-page-container {
   display: flex;
@@ -1094,4 +1085,85 @@ footer {
 
 .userprof-quick-link:hover {
   background-color: #e0d5c2;
+}
+
+.site-footer {
+  background-color: #3a2d26;
+  color: #f2e8d5;
+  padding: 60px 40px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-logo-info .footer-brand-logo {
+  width: 80px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.footer-logo-info address {
+  font-style: normal;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.footer-column a {
+  color: #f2e8d5;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer-contact a {
+  font-size: 1.1em;
+  text-decoration: underline;
+}
+
+.footer-legal .footer-copyright {
+  font-size: 0.9em;
+  color: #a0958a;
+  margin-top: auto;
+}
+
+.footer-back-to-top {
+  align-items: flex-end;
+}
+
+.back-to-top-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f2e8d5;
+  color: #3a2d26;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.back-to-top-btn:hover {
+  background-color: #ffffff;
+  transform: translateY(-5px);
 }
