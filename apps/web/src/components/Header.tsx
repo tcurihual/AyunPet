@@ -45,9 +45,9 @@ const Header: React.FC = () => {
         </Link>
         <nav>
           <ul>
-            <li><Link to="#">Adopta</Link></li>
-            <li><Link to="#">Refugios y Organizaciones</Link></li>
-            <li><Link to="#">Nosotros</Link></li>
+            <li><Link to="/adopta">Adopta</Link></li>
+            <li><Link to="/refugios">Refugios y Organizaciones</Link></li>
+            <li><Link to="/nosotros">Nosotros</Link></li>
           </ul>
         </nav>
       </div>
@@ -66,13 +66,20 @@ const Header: React.FC = () => {
                 <div className="dropdown-menu">
                   <div className="dropdown-header">
                     Bienvenido de vuelta
-                    <strong>{user.fullName}</strong>
-                  </div>
-                  <Link to="#" className="dropdown-item">Mi Perfil</Link>
-                  <Link to="#" className="dropdown-item">Mis Solicitudes</Link>
-                  <Link to="#" className="dropdown-item">Ajustes</Link>
-                  <button onClick={handleLogout} className="dropdown-item logout-button">
-                    Cerrar sesión
+                    <strong>{user.name}</strong>
+                </div>
+                
+                {(user.role === 'institution' || user.role === 'tester') && (
+                   <Link to="/muro-institucion" className="dropdown-item">Muro de Institución</Link>
+                )}
+                
+                {(user.role === 'normal' || user.role === 'tester') && (
+                  <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
+                )}
+
+                <Link to="/solicitudes" className="dropdown-item">Mis Solicitudes</Link>
+                <button onClick={handleLogout} className="dropdown-item logout-button">
+                  Cerrar sesión
                   </button>
                 </div>
               )}
