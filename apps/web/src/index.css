@@ -213,15 +213,6 @@ html {
     background-color: rgba(242, 232, 213, 1);
     transform: translateY(-2px);
 }
-footer {
-    background-color: #3a2d26;
-    padding: 20px 40px;
-    margin-top: 40px;
-}
-
-.footer-logo {
-    height: 170px;
-}
 
 .login-page-container {
   display: flex;
@@ -634,27 +625,30 @@ footer {
   color: #D32F2F;
 }
 
+
 .pet-card {
   background-color: #fefdfa;
   border: 1px solid #f2e8d5;
   border-radius: 16px;
   padding: 24px;
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
   margin-bottom: 24px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  height: 100%; 
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px; 
+  gap: 24px;
 }
 
 .pet-card-content {
-  flex-grow: 1; 
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
 }
 
 .pet-card-aside { 
   display: flex;
   flex-direction: column; 
-  align-items: flex-end; 
-  gap: 16px; 
+  align-items: center; 
 }
 
 .pet-card-pet-img {
@@ -666,30 +660,34 @@ footer {
 }
 
 .pet-card h3 {
-  font-size: 1.8rem; 
-  margin: 0 0 10px; 
+  font-size: 2.2rem; 
+  margin: 0 0 16px; 
   color: #3a332f; 
+  line-height: 1.1;
 }
 
 .pet-card-description { 
-  font-size: 0.9rem; 
-  color: #555; 
-  line-height: 1.6; 
-  margin-bottom: 16px;
+  font-size: 1rem;           
+  line-height: 1.8;          
+  color: #666; 
+  padding: 10px;          
+  background-color: #f8f6f2;
+  border-radius: 12px;
+  margin-top: 16px;                  
+  margin-bottom: 32px;       
+}
+
+.pet-card-footer {
+  margin-top: 16px;
 }
 
 .pet-card-submitter { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  margin-top: 16px; 
   font-size: 0.8rem;
   color: #777;
 }
 
 .pet-card-actions { 
   display: flex; 
-  gap: 10px;
   width: 100%;
 }
 
@@ -697,6 +695,18 @@ footer {
   width: 100%;
 }
 
+.pet-card-actions .btn:hover {
+  transform: translateY(-2px) scale(1.03); 
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); 
+}
+
+.card-spacer {
+  flex-grow: 1;
+}
+
+.pet-card-actions .btn {
+  width: 100%;
+}
 
 .adoption-page-container {
   padding: 40px 20px;
@@ -716,7 +726,7 @@ footer {
 
 .pets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
   gap: 32px;
   justify-content: center;
 }
@@ -916,4 +926,244 @@ footer {
 
 .main-content-card .stats-bar {
   margin-top: -10px; 
+}
+
+.pet-details-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pet-detail-item {
+  background-color: transparent; 
+  color: #555;
+  font-size: 0.75rem;
+  font-weight: 500; 
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid #e0e0e0; 
+  white-space: normal;
+  text-align: center; 
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pet-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pet-tag {
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 99px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pet-tag svg {
+  flex-shrink: 0;
+}
+
+.pet-tag.sterilized,
+.pet-tag.healthy {
+  background-color: #e8f5e9; 
+  color: #388e3c;
+}
+
+.userprof-page {
+  background-color: #f4f4f4;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+  color: #333;
+}
+
+.userprof-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+}
+
+.userprof-main {
+  flex: 3;
+}
+
+.userprof-sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.userprof-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.userprof-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  background-color: #e0e0e0;
+}
+
+.userprof-info h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #3a332f;
+}
+
+.userprof-info p {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.userprof-stats-bar {
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+.userprof-stat-item {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.userprof-stat-item strong {
+  display: block;
+  font-size: 1.4rem;
+  color: #333;
+}
+
+.userprof-card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+}
+
+.userprof-card h3 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #3a332f;
+}
+
+.userprof-quick-link {
+  display: block;
+  padding: 10px 15px;
+  background-color: #f2e8d5;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #4f4641;
+  text-align: center;
+  transition: background 0.3s;
+}
+
+.userprof-quick-link:hover {
+  background-color: #e0d5c2;
+}
+
+.site-footer {
+  background-color: #3a2d26;
+  color: #f2e8d5;
+  padding: 60px 40px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-logo-info .footer-brand-logo {
+  width: 80px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.footer-logo-info address {
+  font-style: normal;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.footer-column a {
+  color: #f2e8d5;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.footer-contact a {
+  font-size: 1.1em;
+  text-decoration: underline;
+}
+
+.footer-legal .footer-copyright {
+  font-size: 0.9em;
+  color: #a0958a;
+  margin-top: auto;
+}
+
+.footer-back-to-top {
+  align-items: flex-end;
+}
+
+.back-to-top-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #f2e8d5;
+  color: #3a2d26;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.back-to-top-btn:hover {
+  background-color: #ffffff;
+  transform: translateY(-5px);
 }

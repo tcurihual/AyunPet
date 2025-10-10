@@ -18,7 +18,7 @@
        alt="Licencia" />
 </p>
 
-# 🐾 AyudPet 🐾
+# 🐾 AyünPet 🐾
 
 <p align="center">
   <img src="https://img.shields.io/badge/Estado-En_Desarrollo-orange?style=for-the-badge" alt="Estado del Proyecto">
@@ -47,7 +47,7 @@
 
 ## 📝 Descripción del Proyecto
 
-**AyudPet** es una solución integral que incluye una plataforma web y una aplicación móvil, desarrollada para la asignatura `Taller de Integración II y IV` en la `Universidad Católica de Temuco`.
+**AyünPet** es una solución integral que incluye una plataforma web y una aplicación móvil, desarrollada para la asignatura `Taller de Integración II y IV` en la `Universidad Católica de Temuco`.
 
 El proyecto busca optimizar el proceso de adopción de mascotas, conectando de forma eficiente a fundaciones y rescatistas con potenciales adoptantes. A través de nuestras plataformas, ofrecemos herramientas centralizadas para la gestión de animales, estandarizando la información y mejorando la visibilidad para aumentar la tasa de adopciones responsables.
 
@@ -168,4 +168,4 @@ Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para má
 * **Benjamin Rojas** - [@pvcdf](https://github.com/pvcdf)
 * **Diego Ortiz** - [@DiegoNicolasOrtiz](https://github.com/DiegoNicolasOrtiz)
 * **Sebastian Mena** [@SebasMenas](https://github.com/SebasMenas)
-* 
+

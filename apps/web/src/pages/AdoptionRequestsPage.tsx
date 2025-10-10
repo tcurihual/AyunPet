@@ -56,8 +56,19 @@ export default function AdoptionRequestsPage() {
         );
     }
     
-    const requestsToShow = user.role === 'normal' ? mockUserSentRequests : mockInstitutionReceivedRequests;
-    const pageTitle = user.role === 'normal' ? 'Mis Solicitudes Enviadas' : 'Solicitudes Recibidas';
+    let requestsToShow;
+    let pageTitle;
+
+    if (user.role === 'tester') {
+        requestsToShow = [...mockUserSentRequests, ...mockInstitutionReceivedRequests];
+        pageTitle = 'Vista de Tester: Todas las Solicitudes';
+    } else if (user.role === 'normal') {
+        requestsToShow = mockUserSentRequests;
+        pageTitle = 'Mis Solicitudes Enviadas';
+    } else { 
+        requestsToShow = mockInstitutionReceivedRequests;
+        pageTitle = 'Solicitudes Recibidas';
+    }
 
     return (
         <div className="page-container">
@@ -67,8 +78,8 @@ export default function AdoptionRequestsPage() {
                     {pageTitle}
                 </h1>
                 <div>
-                    {requestsToShow.map((request) => (
-                        <RequestStatusCard key={request.petName} {...request} />
+                    {requestsToShow.map((request, index) => (
+                        <RequestStatusCard key={`${request.petName}-${index}`} {...request} />
                     ))}
                 </div>
             </main>

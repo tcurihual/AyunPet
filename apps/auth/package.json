@@ -14,12 +14,15 @@
     "packageManager": "pnpm@10.14.0",
     "dependencies": {
         "@repo/utils": "workspace:*",
+        "bcrypt": "^6.0.0",
         "cors": "^2.8.5",
         "express": "^5.1.0",
         "helmet": "^8.1.0",
-        "morgan": "^1.10.1"
+        "morgan": "^1.10.1",
+        "nodemailer": "^7.0.6"
     },
     "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.3",
         "@types/morgan": "^1.9.10",

@@ -6,6 +6,8 @@ import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage'; 
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
+import Profile from "./pages/user_profile";
+import Pruebas from './PruebasComponentes';
 
 function App() {
   return (
@@ -45,6 +47,10 @@ function App() {
           </ProtectedRoute>
         } 
       />
+
+      {/* Rutas adicionales */}
+      <Route path="/perfil" element={<Profile />} />
+      <Route path="/pruebas" element={<Pruebas />} />
     </Routes>
   );
 }
