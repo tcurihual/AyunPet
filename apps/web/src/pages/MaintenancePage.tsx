@@ -1,34 +1,31 @@
-import React from "react"
-const Maintenance: React.FC = () => {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-            <div className="max-w-xl text-center">
-                <div className="w-20 h-20 bg-indigo-600 rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <span className="text-4xl">🐾</span>
-                </div>
-                
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                    Ayün Pet
-                </h1>
-                
-                <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                    Estamos en Mantenimiento
-                </h2>
-                
-                <p className="text-gray-600 mb-6">
-                    Estamos mejorando nuestro sitio. Volveremos pronto.
-                </p>
-                
-                <div className="bg-gray-200 rounded-full h-2 mb-6">
-                    <div className="bg-indigo-600 h-2 rounded-full w-3/4 animate-pulse"></div>
-                </div>
-                
-                <a href="mailto:contacto@ayunpet.com" className="text-indigo-600 hover:underline">
-                    contacto@ayunpet.com
-                </a>
-            </div>
-        </div>
-    )
-}
+import React from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import logo from '../assets/logo.png';
 
-export default Maintenance
+const MaintenancePage: React.FC = () => {
+  return (
+    <div className="page-container">
+      <Header />
+      <main className="maintenance-container">
+        <div className="maintenance-content">
+          <img src={logo} alt="Logo Ayün Pet" className="maintenance-logo" />
+          <h1>Estamos en Mantenimiento</h1>
+          <p className="maintenance-subtitle">
+            Estamos trabajando para mejorar tu experiencia. Volveremos pronto.
+          </p>
+          <div className="maintenance-progress">
+            <div className="progress-bar"></div>
+          </div>
+          <p className="maintenance-contact">
+            ¿Necesitas ayuda? Contáctanos en{' '}
+            <a href="mailto:ayunpet@alu.uct.cl">ayunpet@alu.uct.cl</a>
+          </p>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default MaintenancePage;
