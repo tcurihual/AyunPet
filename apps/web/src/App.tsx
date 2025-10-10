@@ -8,6 +8,8 @@ import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Profile from "./pages/user_profile";
 import Pruebas from './PruebasComponentes';
+import AboutPage from './pages/AboutPage';       // ✅ Nueva vista
+import CreatePostPage from './pages/CreatePostPage.tsx'; // ✅ Nueva vista
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/nosotros" element={<AboutPage />} />  {/* ✅ Nueva ruta pública */}
 
       {/* Rutas protegidas */}
       {/* Solo usuarios normales pueden ver solicitudes */}
@@ -51,6 +54,7 @@ function App() {
       {/* Rutas adicionales */}
       <Route path="/perfil" element={<Profile />} />
       <Route path="/pruebas" element={<Pruebas />} />
+      <Route path="/crear-post" element={<CreatePostPage />} /> {/* ✅ Nueva ruta */}
     </Routes>
   );
 }
