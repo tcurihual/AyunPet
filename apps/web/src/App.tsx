@@ -7,9 +7,19 @@ import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import Profile from "./pages/user_profile";
 import Pruebas from './PruebasComponentes';
+import Maintenance from './pages/MaintenancePage';
 
 
 function App() {
+  const maintenanceMode = false;
+  if (maintenanceMode) {
+    return (
+      <Routes>
+        <Route path='*' element= {<Maintenance/>} />
+      </Routes>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/" element={<HomePage/>}/>
@@ -20,6 +30,7 @@ function App() {
       <Route path="/muro-institucion" element={<InstitutionProfilePage/>}/>
       <Route path="/perfil" element={<Profile/>}/>
       <Route path="/pruebas" element={<Pruebas />}/>
+      <Route path='/maintenance' element={<Maintenance />}/>
     </Routes>
   );
 }

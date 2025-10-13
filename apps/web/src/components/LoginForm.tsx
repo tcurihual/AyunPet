@@ -60,6 +60,9 @@ const LoginForm: React.FC = () => {
             disabled={isLoading}
           />
           {errors.password && <p className="error-message">{errors.password.message}</p>}
+  <Link to="/forgot-password" style={{ fontSize: '14px', color: '#8c6e4a', textDecoration: 'none' }}>
+    ¿Olvidaste tu contraseña?
+  </Link>
         </div>
         
         <button type="submit" className="btn btn-submit" disabled={isLoading}>
