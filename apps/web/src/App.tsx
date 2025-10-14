@@ -8,6 +8,7 @@ import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import Profile from "./pages/user_profile";
 import Pruebas from './PruebasComponentes';
 import Maintenance from './pages/MaintenancePage';
+import Admin from './pages/AdminPage';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
       <Route path="/perfil" element={<Profile/>}/>
       <Route path="/pruebas" element={<Pruebas />}/>
       <Route path='/maintenance' element={<Maintenance />}/>
+      <Route path='/admin' element={<Admin />}/>
     </Routes>
   );
 }
