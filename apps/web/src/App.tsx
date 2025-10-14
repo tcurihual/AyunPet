@@ -8,7 +8,7 @@ import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import Profile from "./pages/user_profile";
 import Pruebas from './PruebasComponentes';
 import Maintenance from './pages/MaintenancePage';
-
+import PostPage from './pages/PostPage';
 
 function App() {
   const maintenanceMode = false;
@@ -22,6 +22,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/post" element={<PostPage />} />
       <Route path="/" element={<HomePage/>}/>
       <Route path="/login" element={<LoginPage/>}/>
       <Route path="/register" element={<RegisterPage/>}/> 
