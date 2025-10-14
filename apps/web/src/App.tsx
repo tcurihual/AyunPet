@@ -2,26 +2,37 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/router';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import AdoptionRequestsPage from './pages/AdoptionRequestsPage'; 
-import AdoptionPage from './pages/AdoptionPage'; 
+import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
+import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import Profile from "./pages/user_profile";
 import Pruebas from './PruebasComponentes';
-import AboutPage from './pages/AboutPage';       // ✅ Nueva vista
-import CreatePostPage from './pages/CreatePostPage.tsx'; // ✅ Nueva vista
+import AboutPage from './pages/AboutPage';       
+import CreatePostPage from './pages/CreatePostPage.tsx'; 
+import Maintenance from './pages/MaintenancePage';
+import Admin from './pages/AdminPage';
 
 function App() {
+  const maintenanceMode = false;
+
+  if (maintenanceMode) {
+    return (
+      <Routes>
+        <Route path="*" element={<Maintenance />} />
+      </Routes>
+    );
+  }
+
   return (
     <Routes>
       {/* Rutas públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/nosotros" element={<AboutPage />} />  {/* ✅ Nueva ruta pública */}
+      <Route path="/nosotros" element={<AboutPage />} />
 
       {/* Rutas protegidas */}
-      {/* Solo usuarios normales pueden ver solicitudes */}
       <Route 
         path="/solicitudes" 
         element={
@@ -31,7 +42,6 @@ function App() {
         } 
       />
 
-      {/* Solo usuarios normales pueden acceder a adoptar */}
       <Route 
         path="/adopta" 
         element={
@@ -41,7 +51,6 @@ function App() {
         } 
       />
 
-      {/* Solo instituciones pueden acceder a su muro */}
       <Route 
         path="/muro-institucion" 
         element={
@@ -51,10 +60,12 @@ function App() {
         } 
       />
 
-      {/* Rutas adicionales */}
+      {/* Otras rutas */}
       <Route path="/perfil" element={<Profile />} />
       <Route path="/pruebas" element={<Pruebas />} />
-      <Route path="/crear-post" element={<CreatePostPage />} /> {/* ✅ Nueva ruta */}
+      <Route path="/crear-post" element={<CreatePostPage />} />
+      <Route path="/maintenance" element={<Maintenance />} />
+      <Route path="/admin" element={<Admin />} />
     </Routes>
   );
 }
