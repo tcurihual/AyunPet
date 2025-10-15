@@ -1,0 +1,3 @@
+
+> ayunpet@ dev /app
+> pnpm --filter web dev

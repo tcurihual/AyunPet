@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const role = data.userType === 'empresa' ? 'institution' : 'normal';
       const newUser: User = {
         id: (Math.floor(Math.random() * 10000)).toString(),
-        fullName: data.fullName,
+        name: data.fullName,
         email: data.email,
         role
       };

@@ -102,7 +102,7 @@ const PostPage: React.FC = () => {
             </div>
           </article>
 
-          <CommentsList postId={currentPost.id} />
+          <CommentsList />
         </div>
       </main>
 

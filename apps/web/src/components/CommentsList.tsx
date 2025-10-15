@@ -7,11 +7,7 @@ export type Comment = {
   date: string;
 };
 
-interface CommentsListProps {
-  postId: number;
-}
-
-const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
+const CommentsList: React.FC = () => {
   const [comments, setComments] = useState<Comment[]>([
     {
       id: 1,
