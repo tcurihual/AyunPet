@@ -13,6 +13,8 @@ import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
 import PostPage from './pages/PostPage';
 import Admin from './pages/AdminPage';
+import SavedPostsPage from './pages/SavedPostsPage';
+
 
 function App() {
   const maintenanceMode = false;
@@ -62,6 +64,7 @@ function App() {
 
       {/* Otras rutas */}
       <Route path="/perfil" element={<Profile />} />
+      <Route path="/favoritos" element={<SavedPostsPage />} />
       <Route path="/pruebas" element={<Pruebas />} />
       <Route path="/crear-post" element={<CreatePostPage />} />
       <Route path="/maintenance" element={<Maintenance />} />
