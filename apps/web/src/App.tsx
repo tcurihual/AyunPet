@@ -11,7 +11,7 @@ import Maintenance from './pages/MaintenancePage';
 
 
 function App() {
-  const maintenanceMode = false;
+  const maintenanceMode = true;
   if (maintenanceMode) {
     return (
       <Routes>
