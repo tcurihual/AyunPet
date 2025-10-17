@@ -11,10 +11,11 @@ import Pruebas from './PruebasComponentes';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
+import SearchAccountsPage from './pages/search_acounts.tsx';
 import PostPage from './pages/PostPage';
 import Admin from './pages/AdminPage';
 import SavedPostsPage from './pages/SavedPostsPage';
-
+import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 
 function App() {
   const maintenanceMode = false;
@@ -69,6 +70,8 @@ function App() {
       <Route path="/crear-post" element={<CreatePostPage />} />
       <Route path="/maintenance" element={<Maintenance />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/BuscarCuentas" element={<SearchAccountsPage />} />
+      <Route path="/verificar" element={<VerificacionAdminPage />} />
     </Routes>
   );
 }

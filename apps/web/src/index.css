@@ -1572,7 +1572,6 @@ html {
   font-style: italic;
 }
 
-/* Responsive */
 @media (max-width: 968px) {
   .post-article-card {
     grid-template-columns: 1fr;
