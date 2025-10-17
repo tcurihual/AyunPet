@@ -56,7 +56,7 @@ function App() {
       <Route 
         path="/muro-institucion" 
         element={
-          <ProtectedRoute roles={['institution']}>
+          <ProtectedRoute roles={['institution','tester']}>
             <InstitutionProfilePage />
           </ProtectedRoute>
         } 
