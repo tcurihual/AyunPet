@@ -11,6 +11,7 @@ import Pruebas from './PruebasComponentes';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
+import SearchAccountsPage from './pages/search_acounts.tsx';
 import PostPage from './pages/PostPage';
 import Admin from './pages/AdminPage';
 
@@ -66,6 +67,7 @@ function App() {
       <Route path="/crear-post" element={<CreatePostPage />} />
       <Route path="/maintenance" element={<Maintenance />} />
       <Route path="/admin" element={<Admin />} />
+      <Route path="/BuscarCuentas" element={<SearchAccountsPage />} />
     </Routes>
   );
 }
