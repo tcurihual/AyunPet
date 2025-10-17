@@ -32,22 +32,6 @@ const SearchAccountsPage: React.FC = () => {
       phone: '+56 9 123 456 78',
       location: 'algun lugar de temuco',
       role: 'Adoptante' as const
-    },
-    {
-      age: '25 años',
-      name: 'María González',
-      email: 'maria.gonzalez@email.com',
-      phone: '+56 9 987 654 32',
-      location: 'Santiago, Chile',
-      role: 'Publicante' as const
-    },
-    {
-      age: '30 años',
-      name: 'Carlos Pérez',
-      email: 'carlos.perez@email.com',
-      phone: '+56 9 111 222 33',
-      location: 'Valparaíso, Chile',
-      role: 'Adoptante' as const
     }
   ];
 

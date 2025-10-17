@@ -1572,7 +1572,6 @@ html {
   font-style: italic;
 }
 
-/* Responsive */
 @media (max-width: 968px) {
   .post-article-card {
     grid-template-columns: 1fr;
@@ -1632,7 +1631,6 @@ html {
   min-height: 60vh;
 }
 
-/* Barra de búsqueda */
 .search-bar-wrapper {
   display: flex;
   justify-content: center;
@@ -1765,7 +1763,6 @@ html {
   background-color: #F5C9A5;
 }
 
-/* Columna izquierda: edad, avatar, badge */
 .user-card-left {
   display: flex;
   flex-direction: column;
@@ -1783,11 +1780,11 @@ html {
   white-space: nowrap;
 }
 .user-card.adoptante .user-card-age {
-  background-color: #5A9BD5;  /* Mismo color que badge adoptante */
+  background-color: #5A9BD5;  
 }
 
 .user-card.publicante .user-card-age {
-  background-color: #E89B6F;  /* Mismo color que badge publicante */
+  background-color: #E89B6F;  
 }
 
 .user-card-avatar {
@@ -1819,7 +1816,6 @@ html {
   background-color: #E89B6F;
 }
 
-/* Contenido derecho */
 .user-card-content {
   flex: 1;
   min-width: 0;
