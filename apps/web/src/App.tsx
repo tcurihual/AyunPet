@@ -16,6 +16,7 @@ import PostPage from './pages/PostPage';
 import Admin from './pages/AdminPage';
 import SavedPostsPage from './pages/SavedPostsPage';
 import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
+import AdminReportsPage from './pages/AdminReportsPage';
 
 function App() {
   const maintenanceMode = false;
@@ -29,7 +30,7 @@ function App() {
   }
 
   return (
-    <Routes>
+    <Routes>  
       {/* Rutas públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -72,6 +73,7 @@ function App() {
       <Route path="/admin" element={<Admin />} />
       <Route path="/BuscarCuentas" element={<SearchAccountsPage />} />
       <Route path="/verificar" element={<VerificacionAdminPage />} />
+      <Route path="/admin/reportes" element={<AdminReportsPage />} />
     </Routes>
   );
 }

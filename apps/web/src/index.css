@@ -1824,3 +1824,229 @@ html {
     padding: 18px;
   }
 }
+
+/* ==== Admin Reports Page ==== */
+.admin-reports-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.admin-reports-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3a332f;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.admin-reports-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 35px;
+  flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: 2px solid #E0E0E0;
+  background-color: #fff;
+  color: #4f4641;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+}
+
+.admin-tab-btn:hover {
+  background-color: #f9f9f9;
+  transform: translateY(-2px);
+  border-color: #8c6e4a;
+}
+
+.admin-tab-btn.active {
+  background-color: #4f4641;
+  color: #f2e8d5;
+  border-color: #4f4641;
+  box-shadow: 0 4px 15px rgba(79, 70, 65, 0.2);
+}
+
+.admin-reports-table-wrapper {
+  background-color: #fefdfa;
+  border: 1px solid #f2e8d5;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  overflow-x: auto;
+}
+
+.admin-reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-reports-table thead {
+  background-color: #f2e8d5;
+}
+
+.admin-reports-table th {
+  padding: 14px 18px;
+  text-align: left;
+  color: #3a332f;
+  font-weight: 600;
+  text-transform: capitalize;
+  border-bottom: 2px solid #E5D5BE;
+  font-size: 0.95rem;
+}
+
+.admin-reports-table th:first-child {
+  border-top-left-radius: 12px;
+}
+
+.admin-reports-table th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.admin-reports-table tbody tr {
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f2e8d5;
+}
+
+.admin-reports-table tbody tr:hover {
+  background-color: #f9f6f2;
+}
+
+.admin-reports-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.admin-reports-table td {
+  padding: 16px 18px;
+  color: #555;
+}
+
+.report-status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.status-pendiente {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-revisado {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-revision {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.report-denuncias-badge {
+  display: inline-block;
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+/* Acciones en la tabla */
+.report-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action-small {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-view {
+  background-color: #4f4641;
+  color: #f2e8d5;
+}
+
+.btn-view:hover {
+  background-color: #3a332f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-resolve {
+  background-color: #4caf50;
+  color: white;
+}
+
+.btn-resolve:hover {
+  background-color: #388e3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-reports-container {
+    padding: 30px 15px;
+  }
+
+  .admin-reports-title {
+    font-size: 2rem;
+  }
+
+  .admin-reports-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-tab-btn {
+    width: 100%;
+  }
+
+  .admin-reports-table-wrapper {
+    padding: 20px 15px;
+  }
+
+  .admin-reports-table {
+    font-size: 0.85rem;
+  }
+
+  .admin-reports-table th,
+  .admin-reports-table td {
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-reports-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
