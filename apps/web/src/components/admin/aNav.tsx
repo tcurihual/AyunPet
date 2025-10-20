@@ -1,20 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import VerificacionAdminPage from '../../pages/VerificationAdminPage';
+import SearchAccountsPage from '../../pages/search_acounts';
+
+import "./aNav.css"; 
+
+const Pesta = ["Datos Generales", "Cuentas", "solicitudes de Verificación", "Reportes"]
+
+// Un solo array con los textos
+const textos = [
+  <VerificacionAdminPage/>, //Graficas
+  <SearchAccountsPage/>,    //Cuentas
+  <VerificacionAdminPage/>, //Verificador
+  <VerificacionAdminPage/>, //Reportes
+];
 
 const Dashboard: React.FC = () => {
-  const [info, setInfo] = useState<string>('Usuarios');
+  const [pesActivo, setpesActivo] = useState(0);
+
+  const siguiente = () => {
+    if (pesActivo < Pesta.length - 1) setpesActivo(pesActivo + 1);
+  };
+
+  const anterior = () => {
+    if (pesActivo > 0) setpesActivo(pesActivo - 1);
+  };
 
   return (
-    <div className="aPubs" style={{ textAlign: 'center' }}>
-      
+    <div className="dashboard-container">
+      {/* NAV de Pesta */}
+      <div className="navContainer">
+        <button className="flecha" onClick={anterior} disabled={pesActivo === 0}>
+          ‹
+        </button>
 
-      <div style={{ marginTop: '10px' }}>
-        <button onClick={() => setInfo('Cuentas Admin')}>Ventas</button>
-        <button onClick={() => setInfo('Datos Generales')}>Datos Generales</button>
-        <button onClick={() => setInfo('Verificaciones')}>solicitudes</button>
-        <button onClick={() => setInfo('Reportes')}>Reportes</button>
+        <div className="Pesta">
+          {Pesta.map((pes, index) => (
+            <span
+              key={index}
+              className={index === pesActivo ? "pes activo" : "pes"}
+              onClick={() => setpesActivo(index)}
+            >
+              {pes}
+            </span>
+          ))}
+        </div>
+
+        <button
+          className="flecha"
+          onClick={siguiente}
+          disabled={pesActivo === Pesta.length - 1}
+        >
+          ›
+        </button>
       </div>
-      <div className="pub">
-        <p>{info}</p>
+
+      {/* Texto dinámico */}
+      <div className="texto-pes">
+        <p>{textos[pesActivo]}</p>
       </div>
     </div>
   );

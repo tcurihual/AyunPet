@@ -1,0 +1,49 @@
+.navContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f2e8d59d;
+  padding: 12px 20px;
+  border-radius: 4px;
+  width: 80%;
+  margin: 20px auto;
+}
+
+.Pesta {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.pes {
+  font-size: 16px;
+  color: #5f2f2fbf;
+  cursor: pointer;
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+.pes:hover {
+  color: rgba(107, 75, 36, 0.2);;
+}
+
+.pes.activo {
+  color:  rgb(102, 60, 9);
+  font-weight: bold;
+}
+
+.flecha {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: rgb(102, 60, 9);
+  transition: opacity 0.2s;
+}
+
+.flecha:disabled {
+  color: #2b2727;
+  cursor: default;
+  opacity: 0.5;
+}
