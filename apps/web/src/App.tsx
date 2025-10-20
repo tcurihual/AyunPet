@@ -17,6 +17,7 @@ import Admin from './pages/AdminPage';
 import SavedPostsPage from './pages/SavedPostsPage';
 import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 import AdminReportsPage from './pages/AdminReportsPage';
+import EmailOrgPending from './pages/EmailOrgPending';
 
 function App() {
   const maintenanceMode = false;
@@ -74,6 +75,8 @@ function App() {
       <Route path="/BuscarCuentas" element={<SearchAccountsPage />} />
       <Route path="/verificar" element={<VerificacionAdminPage />} />
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
+      <Route path="/email-org-pending" element={<EmailOrgPending />} />
+
     </Routes>
   );
 }

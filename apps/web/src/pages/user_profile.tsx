@@ -13,6 +13,7 @@ export default function Profile() {
     bio: "Amante de los animales, voluntaria en rescates y hogar temporal.",
     intereses: ["Perros", "Gatos", "Adopción", "Voluntariado"],
     estadisticas: { adopciones: 3, favoritos: 8, publicaciones: 2 },
+    rol: "tester", 
   };
 
   return (
@@ -65,6 +66,13 @@ export default function Profile() {
             <Link to="/favoritos" className="userprof-quick-link">Mis favoritos</Link>
             <Link to="/crear-post" className="userprof-quick-link">Mis publicaciones</Link>
             <Link to="/solicitudes" className="userprof-quick-link">Solicitudes</Link>
+            {(user.rol === "admin" || user.rol === "tester") && (
+              <Link to="/admin/reportes" className="userprof-quick-link admin-link">
+                Ver reportes
+              </Link>
+            )}
+
+
           </div>
           </aside>
         </div>
