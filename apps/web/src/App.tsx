@@ -13,7 +13,7 @@ import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
 import SearchAccountsPage from './pages/search_acounts.tsx';
 import PostPage from './pages/PostPage';
-import Admin from './pages/AdminPage';
+import AdminPage from './pages/AdminPage';
 import SavedPostsPage from './pages/SavedPostsPage';
 import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 import AdminReportsPage from './pages/AdminReportsPage';
@@ -71,7 +71,7 @@ function App() {
       <Route path="/pruebas" element={<Pruebas />} />
       <Route path="/crear-post" element={<CreatePostPage />} />
       <Route path="/maintenance" element={<Maintenance />} />
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="/BuscarCuentas" element={<SearchAccountsPage />} />
       <Route path="/verificar" element={<VerificacionAdminPage />} />
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
