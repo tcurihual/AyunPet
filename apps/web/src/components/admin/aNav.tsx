@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import VerificacionAdminPage from '../../pages/VerificationAdminPage';
 import SearchAccountsPage from '../../pages/search_acounts';
+import AdminReportsPage from "../../pages/AdminReportsPage";
 
 import "./aNav.css"; 
 
@@ -8,10 +9,10 @@ const Pesta = ["Datos Generales", "Cuentas", "solicitudes de Verificación", "Re
 
 // Un solo array con los textos
 const textos = [
-  <VerificacionAdminPage/>, //Graficas
+  "insertar Graficos", //Graficas
   <SearchAccountsPage/>,    //Cuentas
   <VerificacionAdminPage/>, //Verificador
-  <VerificacionAdminPage/>, //Reportes
+  <AdminReportsPage/>, //Reportes
 ];
 
 const Dashboard: React.FC = () => {

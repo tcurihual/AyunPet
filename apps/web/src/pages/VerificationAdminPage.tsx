@@ -23,7 +23,7 @@ const VerificacionAdminPage: React.FC = () => {
 
   return (
     <div className="page-container">
-      <Header />
+    
       <main className="main-content" style={{ display: 'block', padding: '40px' }}>
         <div className="verification-header">
           <h1 className="title-center" style={{ color: '#c7a77b', margin: 0 }}>Verificación de usuarios</h1>
@@ -40,7 +40,7 @@ const VerificacionAdminPage: React.FC = () => {
           ))}
         </div>
       </main>
-      <Footer />
+     
     </div>
   );
 };

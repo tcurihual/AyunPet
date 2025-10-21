@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+
 
 interface Report {
   id: number;
@@ -88,7 +87,7 @@ const AdminReportsPage: React.FC = () => {
 
   return (
     <div className="page-container">
-      <Header />
+    
 
       <main className="main-content">
         <div className="admin-reports-container">
@@ -115,7 +114,7 @@ const AdminReportsPage: React.FC = () => {
         </div>
       </main>
 
-      <Footer />
+     
     </div>
   );
 };

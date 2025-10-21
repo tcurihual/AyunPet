@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+
 import UserCard from '../components/UserCard';
 import '../index.css';
 
@@ -42,7 +41,6 @@ const SearchAccountsPage: React.FC = () => {
 
   return (
     <div className="page-container">
-      <Header />
       <main className="search-accounts-container">
         {/* Barra de búsqueda */}
         <div className="search-bar-wrapper">
@@ -80,7 +78,7 @@ const SearchAccountsPage: React.FC = () => {
           </div>
         )}
       </main>
-      <Footer />
+   
     </div>
   );
 };
