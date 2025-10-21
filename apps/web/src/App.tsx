@@ -6,7 +6,6 @@ import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
-import Profile from "./pages/user_profile";
 import Pruebas from './PruebasComponentes';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
@@ -18,6 +17,7 @@ import SavedPostsPage from './pages/SavedPostsPage';
 import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 import AdminReportsPage from './pages/AdminReportsPage';
 import EmailOrgPending from './pages/EmailOrgPending';
+import UserProfile from './pages/perfil.tsx';
 
 function App() {
   const maintenanceMode = false;
@@ -66,7 +66,7 @@ function App() {
       />
 
       {/* Otras rutas */}
-      <Route path="/perfil" element={<Profile />} />
+      <Route path="/perfil" element={<UserProfile/>} />
       <Route path="/favoritos" element={<SavedPostsPage />} />
       <Route path="/pruebas" element={<Pruebas />} />
       <Route path="/crear-post" element={<CreatePostPage />} />
@@ -76,7 +76,6 @@ function App() {
       <Route path="/verificar" element={<VerificacionAdminPage />} />
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
       <Route path="/email-org-pending" element={<EmailOrgPending />} />
-
     </Routes>
   );
 }
