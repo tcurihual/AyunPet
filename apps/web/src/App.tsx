@@ -43,7 +43,7 @@ function App() {
       <Route 
         path="/solicitudes" 
         element={
-          <ProtectedRoute roles={['normal']}>
+          <ProtectedRoute roles={['normal','tester']}>
             <AdoptionRequestsPage />
           </ProtectedRoute>
         } 
@@ -51,7 +51,7 @@ function App() {
       <Route 
         path="/adopta" 
         element={
-          <ProtectedRoute roles={['normal']}>
+          <ProtectedRoute roles={['normal','tester']}>
             <AdoptionPage />
           </ProtectedRoute>
         } 

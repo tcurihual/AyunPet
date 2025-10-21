@@ -97,7 +97,7 @@ const Header: React.FC = () => {
                   )}
 
                   <Link to="/solicitudes" className="dropdown-item">Mis Solicitudes</Link>
-
+                  <Link to="/admin" className="dropdown-item">Vista Admin</Link>
                   <button onClick={handleLogout} className="dropdown-item logout-button">
                     Cerrar sesión
                   </button>
