@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/router';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
@@ -38,6 +40,10 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/nosotros" element={<AboutPage />} />
       <Route path="/post" element={<PostPage />} />
+      
+      {/* Rutas de autenticación - Recuperación de contraseña */}
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Rutas protegidas */}
       <Route 
