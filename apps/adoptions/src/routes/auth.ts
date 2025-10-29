@@ -8,14 +8,19 @@ const router = Router();
 
 const APP_BASE_URL = (process.env.APP_BASE_URL || process.env.WEB_ORIGIN || 'http://localhost:8000').replace(/\/$/, '');
 
+// IMPORTANTE: Todas las tablas con inicial minúscula según indicación
+const TBL_USER = 'user';
+const TBL_RESET_TOKENS = 'reset_tokens';
+
 // POST /v1/auth/forgot-password
 router.post('/forgot-password', async (req, res) => {
   try {
     const email = String(req.body?.email || '').trim().toLowerCase();
     if (!email) return res.status(400).json({ error: 'Email requerido' });
 
+    // Buscar usuario por email en tabla "user" (minúscula)
     const { data: user, error: userErr } = await supabaseServer
-      .from('user')
+      .from(TBL_USER)
       .select('id, email')
       .eq('email', email)
       .single();
@@ -24,11 +29,12 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
 
+    // Generar token y registrar en tabla de tokens (minúscula)
     const token = generateResetToken(24);
     const expiresAt = addMinutes(new Date(), 30).toISOString();
 
     const { error: insertErr } = await supabaseServer
-      .from('reset_tokens')
+      .from(TBL_RESET_TOKENS)
       .insert({ user_id: user.id, token, expires_at: expiresAt, used: false });
 
     if (insertErr) {
@@ -60,8 +66,9 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'Las contraseñas no coinciden' });
     }
 
+    // Validar token vigente en tabla "reset_tokens"
     const { data: tokenRow, error: tokenErr } = await supabaseServer
-      .from('reset_tokens')
+      .from(TBL_RESET_TOKENS)
       .select('id, user_id, expires_at, used')
       .eq('token', token)
       .single();
@@ -78,8 +85,9 @@ router.post('/reset-password', async (req, res) => {
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
 
+    // Actualizar password en tabla "user" (minúscula)
     const { error: updErr } = await supabaseServer
-      .from('user')
+      .from(TBL_USER)
       .update({ password: passwordHash, updatedAt: new Date().toISOString() })
       .eq('id', tokenRow.user_id);
 
@@ -88,8 +96,9 @@ router.post('/reset-password', async (req, res) => {
       return res.status(500).json({ error: 'No se pudo actualizar la contraseña' });
     }
 
+    // Marcar token como usado
     await supabaseServer
-      .from('reset_tokens')
+      .from(TBL_RESET_TOKENS)
       .update({ used: true })
       .eq('id', tokenRow.id);
 
