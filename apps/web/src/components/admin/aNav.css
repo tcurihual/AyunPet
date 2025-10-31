@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: var(--color-text-primary);
+  color: black
 }
 
 .kpiRow {
@@ -113,4 +113,9 @@
   font-weight: 600;
   margin-bottom: 1em;
   text-align: center;
+}
+
+.recharts-tooltip-cursor {
+  fill: transparent !important;
+  opacity: 0 !important;
 }

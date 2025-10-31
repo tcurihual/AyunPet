@@ -1,8 +1,6 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const getCSSVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name);
-
 interface BarChartData {
   name: string;
   [key: string]: any;
@@ -19,16 +17,7 @@ const GraficoBarras: React.FC<GraficoBarrasProps> = ({ data, barKeys, barColors 
       <CartesianGrid strokeDasharray="3 3" />
       <XAxis dataKey="name" />
       <YAxis allowDecimals={false} />
-      <Tooltip
-        contentStyle={{
-          background: getCSSVar('--color-bg-content'),
-          color: getCSSVar('--color-text-primary'),
-          border: "none",
-          borderRadius: "10px",
-          fontWeight: 500,
-          fontSize: "1.08em"
-        }}
-      />
+      <Tooltip />
       <Legend />
       {barKeys.map((key, idx) => (
         <Bar
