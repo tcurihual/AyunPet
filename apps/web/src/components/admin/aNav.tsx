@@ -2,14 +2,42 @@ import React, { useState } from "react";
 import VerificacionAdminPage from '../../pages/VerificationAdminPage';
 import SearchAccountsPage from '../../pages/search_acounts';
 import AdminReportsPage from "../../pages/AdminReportsPage";
-
+import GraficoTorta from '../charts/PieChart';
+import GraficoBarras from '../charts/BarChart';
 import "./aNav.css"; 
+
+const mascotasData = [
+  { name: "Totales", value: 120 },
+  { name: "Adoptadas", value: 80 },
+];
+const barrasMascotasData = [
+  { name: "Mascotas", Totales: 120, Adoptadas: 80 },
+];
+
+
 
 const Pesta = ["Datos Generales", "Cuentas", "solicitudes de Verificación", "Reportes"]
 
 // Un solo array con los textos
 const textos = [
-  "insertar Graficos", //Graficas
+  <div className="adminCard">
+    <div className="dashboard-title">Mascotas Totales vs Adoptadas</div>
+    <div className="kpiRow">
+      <div className="kpiBox kpiBox--totales">Totales: <span style={{color: "#1976d2"}}>120</span></div>
+      <div className="kpiBox kpiBox--adoptadas">Adoptadas: <span style={{color: "#43a047"}}>80</span></div>
+    </div>
+    <div className="dashboard-chart">
+      <GraficoTorta data={mascotasData} colors={["#1976D2", "#43A047"]} />
+    </div>
+    <div className="dashboard-subtitle">Comparativa en Barras</div>
+    <div className="dashboard-chart" style={{marginTop: '0'}}>
+      <GraficoBarras
+        data={barrasMascotasData}
+        barKeys={["Totales", "Adoptadas"]}
+        barColors={["#1976D2", "#43A047"]}
+      />
+    </div>
+  </div>,
   <SearchAccountsPage/>,    //Cuentas
   <VerificacionAdminPage/>, //Verificador
   <AdminReportsPage/>, //Reportes
