@@ -6,7 +6,6 @@ import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
-import Pruebas from './PruebasComponentes';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
@@ -68,7 +67,6 @@ function App() {
       {/* Otras rutas */}
       <Route path="/perfil" element={<UserProfile/>} />
       <Route path="/favoritos" element={<SavedPostsPage />} />
-      <Route path="/pruebas" element={<Pruebas />} />
       <Route path="/crear-post" element={<CreatePostPage />} />
       <Route path="/maintenance" element={<Maintenance />} />
       <Route path="/admin" element={<AdminPage />} />
