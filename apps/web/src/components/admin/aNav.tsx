@@ -2,14 +2,30 @@ import React, { useState } from "react";
 import VerificacionAdminPage from '../../pages/VerificationAdminPage';
 import SearchAccountsPage from '../../pages/search_acounts';
 import AdminReportsPage from "../../pages/AdminReportsPage";
-
+import GraficoTorta from '../charts/PieChart';
+import GraficoBarras from '../charts/BarChart';
 import "./aNav.css"; 
+
+const mascotasData = [
+  { name: "Totales", value: 120 },
+  { name: "Adoptadas", value: 80 },
+];
+const barrasMascotasData = [
+  { name: "Mascotas", totales: 120, adoptadas: 80 },
+];
+
 
 const Pesta = ["Datos Generales", "Cuentas", "solicitudes de Verificación", "Reportes"]
 
 // Un solo array con los textos
 const textos = [
-  "insertar Graficos", //Graficas
+  <div>
+    <h2>Mascotas Totales vs Adoptadas</h2>
+    <GraficoTorta data={mascotasData} colors={["#1976D2", "#43A047"]} />
+    <h2>Comparativa en Barras</h2>
+    <GraficoBarras data={barrasMascotasData} barKey="totales" barColor="#1976D2" />
+    <GraficoBarras data={barrasMascotasData} barKey="adoptadas" barColor="#43A047" />
+  </div>,
   <SearchAccountsPage/>,    //Cuentas
   <VerificacionAdminPage/>, //Verificador
   <AdminReportsPage/>, //Reportes
