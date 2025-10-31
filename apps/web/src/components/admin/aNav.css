@@ -1,3 +1,15 @@
+:root {
+  --color-bg-graphic: #fffbf6;  
+  --color-bg-kpi: #fffbf6;           
+  --color-text-kpi: #181922;     
+}
+
+html.dark {
+  --color-bg-graphic: #181922;
+  --color-bg-kpi: #181922;        
+  --color-text-kpi: #fffffa;    
+}
+
 .navContainer {
   display: flex;
   align-items: center;
@@ -70,14 +82,14 @@
 }
 
 .kpiBox {
-  background: #181922;
-  color: #fafaff;
+  background: var(--color-bg-kpi);
+  color: var(--color-text-kpi);
   padding: 1em 1.6em;
   border-radius: 12px;
   font-size: 1.35em;
   font-weight: 700;
   box-shadow: 0 2px 10px rgba(35,35,45,0.08);
-  transition: background 0.18s;
+  transition: background 0.18s, color 0.18s;
 }
 
 .kpiBox--totales {
@@ -101,10 +113,11 @@
   max-width: 420px;
   min-width: 280px;
   margin: 1.2em auto 2em auto;
-  background: #181922;
+  background: var(--color-bg-graphic); 
   border-radius: 14px;
   padding: 1.7em 0;
   box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  transition: background 0.2s;
 }
 
 .dashboard-subtitle {
