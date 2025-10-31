@@ -12,6 +12,8 @@
         "build:example": "turbo build --filter=\"...{./apps/example}\""
     },
     "devDependencies": {
+        "@types/express": "^5.0.5",
+        "@types/nodemailer": "^7.0.3",
         "dotenv": "^17.2.1",
         "tsup": "^8.5.0",
         "turbo": "^2.5.6",
