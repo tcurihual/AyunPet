@@ -19,7 +19,7 @@ import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 import AdminReportsPage from './pages/AdminReportsPage';
 import EmailOrgPending from './pages/EmailOrgPending';
 import UserProfile from './pages/perfil.tsx';
-import NewsPage from './pages/NewsPage';
+import VistaNoticias from './pages/VistaNoticias';
 
 function App() {
   const maintenanceMode = false;
@@ -40,7 +40,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/nosotros" element={<AboutPage />} />
       <Route path="/post" element={<PostPage />} />
-      <Route path="/noticias" element={<NewsPage />} />
+      <Route path="/noticias" element={<VistaNoticias />} />
       
       {/* Rutas de autenticación - Recuperación de contraseña */}
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
