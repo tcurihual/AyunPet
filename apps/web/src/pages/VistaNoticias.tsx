@@ -1,4 +1,6 @@
 import React from 'react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import './VistaNoticias.css';
 
 interface NewsArticle {
@@ -71,40 +73,44 @@ const VistaNoticias: React.FC = () => {
   ];
 
   return (
-    <div className="news-page-container">
-      <div className="news-header">
-        <h1 className="news-title">Noticias y Novedades</h1>
-        <p className="news-subtitle">Mantente informado sobre el mundo de las adopciones</p>
-      </div>
+    <div className="page-container">
+      <Header />
+      <main className="news-page-container">
+        <div className="news-header">
+          <h1 className="news-title">Noticias y Novedades</h1>
+          <p className="news-subtitle">Mantente informado sobre el mundo de las adopciones</p>
+        </div>
 
-      <div className="news-grid">
-        {newsArticles.map((article) => (
-          <article key={article.id} className="news-card">
-            <div className="news-card-image-wrapper">
-              <img 
-                src={article.imageUrl} 
-                alt={article.title} 
-                className="news-card-image"
-              />
-            </div>
-            <div className="news-card-content">
-              <span className="news-card-category">{article.category}</span>
-              <h3 className="news-card-title">{article.title}</h3>
-              <p className="news-card-excerpt">{article.excerpt}</p>
-              <div className="news-card-meta">
-                <span className="news-card-date">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                  </svg>
-                  {article.date}
-                </span>
-                <span className="news-card-author">{article.author}</span>
+        <div className="news-grid">
+          {newsArticles.map((article) => (
+            <article key={article.id} className="news-card">
+              <div className="news-card-image-wrapper">
+                <img 
+                  src={article.imageUrl} 
+                  alt={article.title} 
+                  className="news-card-image"
+                />
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+              <div className="news-card-content">
+                <span className="news-card-category">{article.category}</span>
+                <h3 className="news-card-title">{article.title}</h3>
+                <p className="news-card-excerpt">{article.excerpt}</p>
+                <div className="news-card-meta">
+                  <span className="news-card-date">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 6v6l4 2"/>
+                    </svg>
+                    {article.date}
+                  </span>
+                  <span className="news-card-author">{article.author}</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
