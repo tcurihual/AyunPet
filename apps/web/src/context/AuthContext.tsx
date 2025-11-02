@@ -1,13 +1,19 @@
-import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import type { ReactNode } from 'react';
-import { useLoading } from './LoadingContext';
-import { type LoginData, type RegisterData } from '../lib/schemas';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+} from "react";
+import type { ReactNode } from "react";
+import { useLoading } from "./LoadingContext";
+import { type LoginData, type RegisterData } from "../lib/schemas";
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: 'normal' | 'institution' | 'tester';
+  role: "normal" | "institution" | "tester";
   rut?: string;
   address?: string;
   description?: string;
@@ -23,60 +29,79 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
+  const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
+
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      let fakeUserData: User | null = null;
-      let fakeToken = "";
-      if (data.email === "normal@test.com" && data.password === "password123") {
-        fakeUserData = { id: '123', name: 'Usuario de Prueba', email: data.email, role: 'normal' };
-        fakeToken = "token_para_usuario_normal_123";
-      } 
-      else if (data.email === "institucion@test.com" && data.password === "password123") {
-        fakeUserData = { id: '456', name: 'Fundación Sigma', email: data.email, role: 'institution' };
-        fakeToken = "token_para_institucion_456";
-      }
-      else if (data.email === "tester@test.com" && data.password === "password123") {
-        fakeUserData = { id: '789', name: 'Usuario Tester', email: data.email, role: 'tester' };
-        fakeToken = "token_para_usuario_tester_789";
+      const result = await response.json();
+      console.log("🟢 Respuesta del servidor:", result);
+
+      if (!response.ok) {
+        // Si la API devuelve error 401 o 404, mostramos el mensaje
+        throw new Error(result.message || "Error al iniciar sesión");
       }
 
-      if (fakeUserData && fakeToken) {
-        localStorage.setItem('authToken', fakeToken);
-        localStorage.setItem('userRole', fakeUserData.role);
-        setUser(fakeUserData);
-      } else {
-        throw new Error("Credenciales inválidas");
+      if (!result.data || !result.data.token || !result.data.user) {
+        throw new Error("Formato inesperado de respuesta del servidor.");
       }
+
+      const { token, user } = result.data;
+
+      // Traducimos el rol numérico del backend a texto local
+      const mappedRole = mapRole(user.role);
+
+      const mappedUser: User = {
+        id: String(user.id),
+        name: user.name,
+        email: user.email,
+        rut: user.rut,
+        role: mappedRole,
+        address: user.address,
+        description: user.description,
+      };
+
+      // Guardamos token y usuario en localStorage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userData", JSON.stringify(mappedUser));
+
+      setUser(mappedUser);
+    } catch (err: any) {
+      console.error("❌ Error en login:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  // 🧩 Registro simulado (puedes reemplazarlo con la API real)
   const register = async (data: RegisterData) => {
+    console.warn("⚠️ Función register aún no conectada a API real");
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Simulación de registro exitoso
-      const fakeToken = "token_generico_registro_" + Math.floor(Math.random() * 1000);
-      const role = data.userType === 'empresa' ? 'institution' : 'normal';
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const role = data.userType === "empresa" ? "institution" : "normal";
       const newUser: User = {
-        id: (Math.floor(Math.random() * 10000)).toString(),
-        fullName: data.fullName,
+        id: String(Math.floor(Math.random() * 10000)),
+        name: data.fullName,
         email: data.email,
-        role
+        role,
       };
-
-      localStorage.setItem('authToken', fakeToken);
-      localStorage.setItem('userRole', role);
+      localStorage.setItem("authToken", "fake_token_" + Date.now());
+      localStorage.setItem("userData", JSON.stringify(newUser));
       setUser(newUser);
     } finally {
       setLoading(false);
@@ -84,28 +109,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userData");
     setUser(null);
   };
 
   const checkAuthStatus = useCallback(async () => {
-    const token = localStorage.getItem('authToken');
-    const role = localStorage.getItem('userRole') as User['role'] | null;
+    const token = localStorage.getItem("authToken");
+    const userData = localStorage.getItem("userData");
 
-    if (token && role) {
+    if (token && userData) {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        let userData: User | null = null;
-        if (role === 'institution') {
-          userData = { id: '456', name: 'Fundación Sigma', email: 'institucion@test.com', role: 'institution' };
-        } else if (role === 'tester') {
-          userData = { id: '789', name: 'Usuario Tester', email: 'tester@test.com', role: 'tester' };
-        } else { 
-          userData = { id: '123', name: 'Usuario de Prueba', email: 'normal@test.com', role: 'normal' };
-        }
-        
-        setUser(userData);
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
       } catch {
         logout();
       }
@@ -117,8 +133,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     checkAuthStatus();
   }, [checkAuthStatus]);
 
+  // Traduce roles numéricos de la API al formato string local
+  const mapRole = (roleValue: number): User["role"] => {
+    switch (roleValue) {
+      case 10:
+        return "normal";
+      case 20:
+        return "institution";
+      case 30:
+        return "tester";
+      default:
+        return "normal";
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthLoading }}>
+    <AuthContext.Provider
+      value={{ user, login, register, logout, isAuthLoading }}
+    >
       {!isAuthLoading && children}
     </AuthContext.Provider>
   );
@@ -126,6 +158,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  if (!context)
+    throw new Error("useAuth debe ser usado dentro de un AuthProvider");
   return context;
 };
