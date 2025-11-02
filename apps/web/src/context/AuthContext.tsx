@@ -8,7 +8,6 @@ import React, {
 import type { ReactNode } from "react";
 import { useLoading } from "./LoadingContext";
 import { type LoginData, type RegisterData } from "../lib/schemas";
-import { supabase } from '../lib/supabaseClient';
 
 interface User {
   id: string;
@@ -47,12 +46,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
       const result = await response.json();
       console.log("🟢 Respuesta del servidor:", result);
 
       if (!response.ok) {
-        // Si la API devuelve error 401 o 404, mostramos el mensaje
         throw new Error(result.message || "Error al iniciar sesión");
       }
 
@@ -61,8 +58,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       }
 
       const { token, user } = result.data;
-
-      // Traducimos el rol numérico del backend a texto local
       const mappedRole = mapRole(user.role);
 
       const mappedUser: User = {
@@ -75,10 +70,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         description: user.description,
       };
 
-      // Guardamos token y usuario en localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(mappedUser));
-
       setUser(mappedUser);
     } catch (err: any) {
       console.error("❌ Error en login:", err);
@@ -88,30 +81,48 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register";
+
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-      const role = data.userType;
-      const { data: newUser, error } = await supabase.from('users').insert([
-        {
-          name: data.fullName,
-          email: data.email,
-          password: data.password,
+      const role =
+        data.userType === "empresa"
+          ? 20 
+          : 10; 
+
+      const response = await fetch(REGISTER_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role,
           rut: data.rut,
+          email: data.email,
+          name: data.fullName,
+          password: data.password, 
           address: data.address,
           description: data.description,
-          role
-        }
-      ]).select().single();
+        }),
+      });
+      const result = await response.json();
 
-      if (error) {
-        alert("Error al registrar: " + error.message);
-        console.error("Error creando usuario:", error.message);
-        return;
+      if (!response.ok) {
+        throw new Error(result.message || "Error al registrar usuario");
       }
-      alert("Registro exitoso. Ahora puedes iniciar sesión.");
-      setUser(newUser);
+      const user = result.values.user;
+      const mappedRole = mapRole(user.role);
+      const newUser: User = {
+        id: String(user.id),
+        name: user.name,
+        email: user.email,
+        rut: user.rut,
+        role: mappedRole,
+        address: user.address,
+        description: user.description,
+      };
       localStorage.setItem("userData", JSON.stringify(newUser));
+      setUser(newUser);
+      alert("Registro exitoso. Ahora puedes validar tu correo e iniciar sesión.");
     } catch (err) {
       alert("Error inesperado en el registro.");
       console.error("Error global en registro:", err);
@@ -146,7 +157,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  // Traduce roles numéricos de la API al formato string local
   const mapRole = (roleValue: number): User["role"] => {
     switch (roleValue) {
       case 10:
