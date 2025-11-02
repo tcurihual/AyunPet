@@ -96,7 +96,7 @@ const register = async (data: RegisterData) => {
       {
         name: data.fullName,
         email: data.email,
-        password: data.password, 
+        password: data.password,
         rut: data.rut,
         address: data.address,
         description: data.description,
@@ -105,14 +105,16 @@ const register = async (data: RegisterData) => {
     ]).select().single();
 
     if (error) {
+      alert("Error al registrar: " + error.message);
       console.error("Error creando usuario:", error.message);
-      throw error;
+      return;
     }
-
-    localStorage.setItem("userData", JSON.stringify(newUser));
+    alert("Registro exitoso. Ahora puedes iniciar sesión.");
     setUser(newUser);
-
-    alert("¡Registro exitoso!");
+    localStorage.setItem("userData", JSON.stringify(newUser));
+  } catch (err) {
+    alert("Error inesperado en el registro.");
+    console.error("Error global en registro:", err);
   } finally {
     setLoading(false);
   }
