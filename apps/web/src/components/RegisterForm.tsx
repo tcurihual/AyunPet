@@ -10,7 +10,12 @@ const RegisterForm: React.FC = () => {
   const { isLoading, setLoading } = useLoading();
   const { register: registerUser } = useAuth();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
     defaultValues: { userType: '' },
   });
@@ -20,6 +25,7 @@ const RegisterForm: React.FC = () => {
     try {
       await registerUser(data);
       alert('Registro exitoso');
+      reset(); 
     } catch (error) {
       console.error(error);
       alert('Error en el registro');
