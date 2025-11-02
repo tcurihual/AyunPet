@@ -23,7 +23,8 @@ export async function createPost(token: string, input: CreatePostInput): Promise
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(input),
-      credentials: 'include',
+      // Importante: no enviar credenciales para evitar CORS con '*'
+      // credentials: 'omit' // (omit es el valor por defecto)
     });
 
     const payload = await res.json().catch(() => ({}));
