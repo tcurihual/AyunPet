@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLoading } from '../context/LoadingContext';
 import { useAuth } from '../context/AuthContext';
+import { createPost } from '../lib/postsService';
 
 const createPostSchema = z.object({
   title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
@@ -17,21 +18,31 @@ type CreatePostData = z.infer<typeof createPostSchema>;
 
 const CreatePostPage: React.FC = () => {
   const { isLoading, setLoading } = useLoading();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<CreatePostData>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<CreatePostData>({
     resolver: zodResolver(createPostSchema),
   });
 
   const onSubmit = async (data: CreatePostData) => {
     setLoading(true);
     try {
-      // Aquí iría la lógica para enviar la publicación a tu backend
-      console.log('Publicación creada:', data);
+      const payload = {
+        title: data.title.trim(),
+        description: data.description.trim(),
+        imageUrl: data.imageUrl?.trim() || undefined,
+      };
+
+      const result = await createPost(token || '', payload);
+      if (!result.ok) {
+        throw new Error(result.error || 'Error al crear la publicación');
+      }
+
+      reset();
       alert('Publicación creada correctamente');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert('Error al crear la publicación');
+      alert(err.message || 'Error al crear la publicación');
     } finally {
       setLoading(false);
     }
