@@ -89,21 +89,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
 const register = async (data: RegisterData) => {
-  console.warn("Registro: Prueba de conexión Supabase");
   setLoading(true);
   try {
-    // Prueba básica: obtener un registro de usuarios (o área equivalente)
-    const { data: users, error } = await supabase.from('users').select('*').limit(1);
+    const role = data.userType === "empresa" ? "institution" : "normal";
+    const { data: newUser, error } = await supabase.from('users').insert([
+      {
+        name: data.fullName,
+        email: data.email,
+        password: data.password, 
+        rut: data.rut,
+        address: data.address,
+        description: data.description,
+        role
+      }
+    ]).select().single();
+
     if (error) {
-      console.error("Error probando Supabase:", error.message);
-    } else {
-      console.log("Supabase usuarios ejemplo:", users);
+      console.error("Error creando usuario:", error.message);
+      throw error;
     }
+
+    localStorage.setItem("userData", JSON.stringify(newUser));
+    setUser(newUser);
+
+    alert("¡Registro exitoso!");
   } finally {
     setLoading(false);
   }
 };
-
 
   const logout = () => {
     localStorage.removeItem("authToken");
