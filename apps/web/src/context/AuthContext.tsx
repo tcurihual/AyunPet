@@ -88,37 +88,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-const register = async (data: RegisterData) => {
-  setLoading(true);
-  try {
-    const role = data.userType;
-    const { data: newUser, error } = await supabase.from('users').insert([
-      {
-        name: data.fullName,
-        email: data.email,
-        password: data.password,
-        rut: data.rut,
-        address: data.address,
-        description: data.description,
-        role
-      }
-    ]).select().single();
+  const register = async (data: RegisterData) => {
+    setLoading(true);
+    try {
+      const role = data.userType;
+      const { data: newUser, error } = await supabase.from('users').insert([
+        {
+          name: data.fullName,
+          email: data.email,
+          password: data.password,
+          rut: data.rut,
+          address: data.address,
+          description: data.description,
+          role
+        }
+      ]).select().single();
 
-    if (error) {
-      alert("Error al registrar: " + error.message);
-      console.error("Error creando usuario:", error.message);
-      return;
+      if (error) {
+        alert("Error al registrar: " + error.message);
+        console.error("Error creando usuario:", error.message);
+        return;
+      }
+      alert("Registro exitoso. Ahora puedes iniciar sesión.");
+      setUser(newUser);
+      localStorage.setItem("userData", JSON.stringify(newUser));
+    } catch (err) {
+      alert("Error inesperado en el registro.");
+      console.error("Error global en registro:", err);
+    } finally {
+      setLoading(false);
     }
-    alert("Registro exitoso. Ahora puedes iniciar sesión.");
-    setUser(newUser);
-    localStorage.setItem("userData", JSON.stringify(newUser));
-  } catch (err) {
-    alert("Error inesperado en el registro.");
-    console.error("Error global en registro:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   const logout = () => {
