@@ -74,7 +74,7 @@ const CreatePostPage: React.FC = () => {
 
           <div className="form-group">
             <label htmlFor="description">Descripción</label>
-            <textarea id="description" {...register('description')} disabled={isLoading} />
+            <textarea id="description" {...register('description')} disabled={isLoading} className="textarea-control" rows={5} />
             {errors.description && <p className="error-message">{errors.description.message}</p>}
           </div>
 
