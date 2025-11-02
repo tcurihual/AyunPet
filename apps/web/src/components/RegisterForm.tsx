@@ -124,8 +124,8 @@ const RegisterForm: React.FC = () => {
           />
           {errors.description && <p className="error-message">{errors.description.message}</p>}
         </div>
-
-        <div className="form-group">
+      {/* Rol  */}
+      {/*  
           <label htmlFor="userType">Tipo de cuenta</label>
           <select {...register('userType')} disabled={isLoading} className="form-select">
             <option value="">Selecciona una opción...</option>
@@ -133,7 +133,8 @@ const RegisterForm: React.FC = () => {
             <option value="empresa">Empresa</option>
           </select>
           {errors.userType && <p className="error-message">{errors.userType.message}</p>}
-        </div>
+        </div> 
+      */}
 
         <div className="terms-group">
           <input type="checkbox" {...register('agreedToTerms')} disabled={isLoading} />

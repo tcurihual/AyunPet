@@ -86,51 +86,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-      const role =
-        data.userType === "empresa"
-          ? 20 
-          : 10; 
-
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          role,
-          rut: data.rut,
-          email: data.email,
           name: data.fullName,
-          password: data.password, 
+          email: data.email,
+          password: data.password,
+          rut: data.rut,
           address: data.address,
           description: data.description,
         }),
       });
       const result = await response.json();
-
       if (!response.ok) {
         throw new Error(result.message || "Error al registrar usuario");
       }
       const user = result.values.user;
-      const mappedRole = mapRole(user.role);
       const newUser: User = {
         id: String(user.id),
         name: user.name,
         email: user.email,
         rut: user.rut,
-        role: mappedRole,
+        role: mapRole(user.role),
         address: user.address,
         description: user.description,
       };
       localStorage.setItem("userData", JSON.stringify(newUser));
       setUser(newUser);
-      alert("Registro exitoso. Ahora puedes validar tu correo e iniciar sesión.");
     } catch (err) {
-      alert("Error inesperado en el registro.");
       console.error("Error global en registro:", err);
+      throw err; 
     } finally {
       setLoading(false);
     }
   };
-
 
   const logout = () => {
     localStorage.removeItem("authToken");
