@@ -11,6 +11,7 @@ import { createPost } from '../lib/postsService';
 const createPostSchema = z.object({
   title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
   description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
+  petid: z.coerce.number({ invalid_type_error: 'Ingresa un ID de mascota válido' }).min(1, 'petid debe ser mayor a 0'),
   imageUrl: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
 });
 
@@ -30,22 +31,14 @@ const CreatePostPage: React.FC = () => {
       const payload = {
         title: data.title.trim(),
         description: data.description.trim(),
+        petid: Number(data.petid),
         imageUrl: data.imageUrl?.trim() || undefined,
       };
 
-      // Preferir token del contexto y usar fallback desde storage
-      const tokenFromStorage =
-        token ||
-        localStorage.getItem('authToken') ||
-        sessionStorage.getItem('authToken') ||
-        '';
-
+      const tokenFromStorage = token || localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
       const result = await createPost(tokenFromStorage, payload);
       if (!result.ok) {
-        // Mensaje claro según estado de autenticación
-        if (!tokenFromStorage) {
-          throw new Error('No estás autenticado. Debes incluir un token de autorización');
-        }
+        if (!tokenFromStorage) throw new Error('No estás autenticado. Debes incluir un token de autorización');
         throw new Error(result.error || 'Error al crear la publicación');
       }
 
@@ -87,6 +80,12 @@ const CreatePostPage: React.FC = () => {
             <label htmlFor="description">Descripción</label>
             <textarea id="description" {...register('description')} disabled={isLoading} />
             {errors.description && <p className="error-message">{errors.description.message}</p>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="petid">ID de mascota (petid)</label>
+            <input id="petid" type="number" min={1} step={1} {...register('petid')} disabled={isLoading} />
+            {errors.petid && <p className="error-message">{errors.petid.message}</p>}
           </div>
 
           <div className="form-group">
