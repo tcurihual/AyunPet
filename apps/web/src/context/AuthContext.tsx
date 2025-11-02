@@ -79,7 +79,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-
+      console.log("Preparando payload para el backend:", {
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+        rut: data.rut,
+        address: data.address,
+        description: data.description,
+      });
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,11 +99,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
           description: data.description,
         }),
       });
+      console.log("Respuesta raw del backend:", response);
       const result = await response.json();
+      console.log("Body JSON parseado:", result);
       if (!response.ok) {
+        console.log("Registro fallido, error:", result);
         throw new Error(result.message || "Error al registrar usuario");
+      } else {
+        console.log("Registro exitoso! result.values:", result.values);
       }
       const user = result.values.user;
+      console.log("Usuario recibido desde la API:", user);
+
       const newUser: User = {
         id: String(user.id),
         name: user.name,
@@ -106,6 +120,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         address: user.address,
         description: user.description,
       };
+      console.log("newUser mapeado (y guardado):", newUser);
       localStorage.setItem("userData", JSON.stringify(newUser));
       setUser(newUser);
     } catch (err) {
@@ -115,6 +130,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(false);
     }
   };
+
 
   const logout = () => {
     localStorage.removeItem("authToken");

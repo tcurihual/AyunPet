@@ -23,11 +23,13 @@ const RegisterForm: React.FC = () => {
   const onSubmit = async (data: RegisterData) => {
     setLoading(true);
     try {
+      console.log("Enviando datos de registro:", data);
       await registerUser(data);
-      alert('Registro exitoso');
-      reset(); 
+      console.log("¡Éxito! El registro terminó sin error");
+      alert('Registro exitoso. Revisa tu correo para validar tu cuenta.');
+      reset();
     } catch (error) {
-      console.error(error);
+      console.error("Catch en el submit del formulario:", error);
       alert('Error en el registro');
     } finally {
       setLoading(false);
