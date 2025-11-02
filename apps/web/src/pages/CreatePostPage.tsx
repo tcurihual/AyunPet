@@ -11,8 +11,7 @@ import { createPost } from '../lib/postsService';
 const createPostSchema = z.object({
   title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
   description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres'),
-  petid: z.coerce.number({ invalid_type_error: 'Ingresa un ID de mascota válido' }).min(1, 'petid debe ser mayor a 0'),
-  imageUrl: z.string().url('Debe ser una URL válida').optional().or(z.literal('')),
+  pet_id: z.coerce.number({ invalid_type_error: 'Ingresa un ID de mascota válido' }).min(1, 'pet_id debe ser mayor a 0'),
 });
 
 type CreatePostData = z.infer<typeof createPostSchema>;
@@ -31,8 +30,7 @@ const CreatePostPage: React.FC = () => {
       const payload = {
         title: data.title.trim(),
         description: data.description.trim(),
-        petid: Number(data.petid),
-        imageUrl: data.imageUrl?.trim() || undefined,
+        pet_id: Number(data.pet_id),
       };
 
       const tokenFromStorage = token || localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
@@ -83,15 +81,9 @@ const CreatePostPage: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="petid">ID de mascota (petid)</label>
-            <input id="petid" type="number" min={1} step={1} {...register('petid')} disabled={isLoading} />
-            {errors.petid && <p className="error-message">{errors.petid.message}</p>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="imageUrl">URL de la imagen (opcional)</label>
-            <input id="imageUrl" type="text" {...register('imageUrl')} disabled={isLoading} />
-            {errors.imageUrl && <p className="error-message">{errors.imageUrl.message}</p>}
+            <label htmlFor="pet_id">ID de mascota (pet_id)</label>
+            <input id="pet_id" type="number" min={1} step={1} {...register('pet_id')} disabled={isLoading} />
+            {errors.pet_id && <p className="error-message">{errors.pet_id.message}</p>}
           </div>
 
           <button type="submit" className="btn btn-submit" disabled={isLoading}>
