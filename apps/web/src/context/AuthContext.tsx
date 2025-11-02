@@ -37,6 +37,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
@@ -47,19 +48,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(data),
       });
       const result = await response.json();
-      console.log("🟢 Respuesta del servidor:", result);
-
       if (!response.ok) {
         throw new Error(result.message || "Error al iniciar sesión");
       }
-
       if (!result.data || !result.data.token || !result.data.user) {
         throw new Error("Formato inesperado de respuesta del servidor.");
       }
-
       const { token, user } = result.data;
       const mappedRole = mapRole(user.role);
-
       const mappedUser: User = {
         id: String(user.id),
         name: user.name,
@@ -69,7 +65,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         address: user.address,
         description: user.description,
       };
-
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(mappedUser));
       setUser(mappedUser);
@@ -81,11 +76,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register";
-
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
+
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,7 +110,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setUser(newUser);
     } catch (err) {
       console.error("Error global en registro:", err);
-      throw err; 
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -131,7 +125,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const checkAuthStatus = useCallback(async () => {
     const token = localStorage.getItem("authToken");
     const userData = localStorage.getItem("userData");
-
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
