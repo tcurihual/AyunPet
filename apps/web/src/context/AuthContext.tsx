@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 const register = async (data: RegisterData) => {
   setLoading(true);
   try {
-    const role = data.userType === "empresa" ? "institution" : "normal";
+    const role = data.userType;
     const { data: newUser, error } = await supabase.from('users').insert([
       {
         name: data.fullName,
@@ -117,6 +117,7 @@ const register = async (data: RegisterData) => {
     setLoading(false);
   }
 };
+
 
   const logout = () => {
     localStorage.removeItem("authToken");
