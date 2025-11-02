@@ -33,8 +33,19 @@ const CreatePostPage: React.FC = () => {
         imageUrl: data.imageUrl?.trim() || undefined,
       };
 
-      const result = await createPost(token || '', payload);
+      // Preferir token del contexto y usar fallback desde storage
+      const tokenFromStorage =
+        token ||
+        localStorage.getItem('authToken') ||
+        sessionStorage.getItem('authToken') ||
+        '';
+
+      const result = await createPost(tokenFromStorage, payload);
       if (!result.ok) {
+        // Mensaje claro según estado de autenticación
+        if (!tokenFromStorage) {
+          throw new Error('No estás autenticado. Debes incluir un token de autorización');
+        }
         throw new Error(result.error || 'Error al crear la publicación');
       }
 
@@ -74,7 +85,7 @@ const CreatePostPage: React.FC = () => {
 
           <div className="form-group">
             <label htmlFor="description">Descripción</label>
-            <textarea id="description" {...register('description')} disabled={isLoading} className="textarea-control" rows={5} />
+            <textarea id="description" {...register('description')} disabled={isLoading} />
             {errors.description && <p className="error-message">{errors.description.message}</p>}
           </div>
 
