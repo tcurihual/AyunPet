@@ -8,6 +8,7 @@ import React, {
 import type { ReactNode } from "react";
 import { useLoading } from "./LoadingContext";
 import { type LoginData, type RegisterData } from "../lib/schemas";
+import { supabase } from '../lib/supabaseClient';
 
 interface User {
   id: string;
@@ -87,26 +88,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  // 🧩 Registro simulado (puedes reemplazarlo con la API real)
-  const register = async (data: RegisterData) => {
-    console.warn("⚠️ Función register aún no conectada a API real");
-    setLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const role = data.userType === "empresa" ? "institution" : "normal";
-      const newUser: User = {
-        id: String(Math.floor(Math.random() * 10000)),
-        name: data.fullName,
-        email: data.email,
-        role,
-      };
-      localStorage.setItem("authToken", "fake_token_" + Date.now());
-      localStorage.setItem("userData", JSON.stringify(newUser));
-      setUser(newUser);
-    } finally {
-      setLoading(false);
+const register = async (data: RegisterData) => {
+  console.warn("Registro: Prueba de conexión Supabase");
+  setLoading(true);
+  try {
+    // Prueba básica: obtener un registro de usuarios (o área equivalente)
+    const { data: users, error } = await supabase.from('users').select('*').limit(1);
+    if (error) {
+      console.error("Error probando Supabase:", error.message);
+    } else {
+      console.log("Supabase usuarios ejemplo:", users);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const logout = () => {
     localStorage.removeItem("authToken");
