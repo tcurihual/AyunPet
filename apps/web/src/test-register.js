@@ -1,4 +1,4 @@
-// Script de prueba para testear el endpoint de registro contra el gateway
+// Script de prueba para testear el endpoint de registro contra la API real de Azure
 // Ejecutar con: node apps/web/src/test-register.js
 
 const testRegister = async () => {
@@ -15,7 +15,7 @@ const testRegister = async () => {
     console.log("🧪 Iniciando prueba de registro...");
     console.log("📝 Datos de prueba:", testData);
     
-    const response = await fetch("http://localhost:3000/v1/auth/api/auth/users/register", {
+    const response = await fetch("http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -32,7 +32,9 @@ const testRegister = async () => {
     try {
       const json = JSON.parse(text);
       console.log("📡 Respuesta JSON:", json);
-    } catch {}
+    } catch {
+      console.log("⚠️ Respuesta no es JSON válido");
+    }
     
     if (response.ok) {
       console.log("✅ Prueba de registro exitosa!");
