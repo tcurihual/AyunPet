@@ -36,9 +36,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  // URLs corregidas para apuntar al gateway local
-  const API_URL = "http://localhost:3001/v1/auth/login";
-  const REGISTER_API_URL = "http://localhost:3001/v1/auth/register";
+  // URLs corregidas para apuntar al gateway local (puerto 3000)
+  const API_URL = "http://localhost:3000/v1/auth/login";
+  const REGISTER_API_URL = "http://localhost:3000/v1/auth/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
