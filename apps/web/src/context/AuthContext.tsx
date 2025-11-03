@@ -36,24 +36,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  // URLs corregidas para apuntar al gateway local (puerto 3000)
-  const API_URL = "http://localhost:3000/v1/auth/login";
-  const REGISTER_API_URL = "http://localhost:3000/v1/auth/register";
+  // Gateway -> microservicio auth expone /api/auth/*
+  const API_URL = "http://localhost:3000/v1/auth/api/auth/login";
+  const REGISTER_API_URL = "http://localhost:3000/v1/auth/api/auth/users/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
-      console.log("[AUTH] Intentando login con:", { email: data.email });
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
-      console.log("[AUTH] Respuesta del login:", result);
-      
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(result.message || "Error al iniciar sesión");
+        const msg = result?.message || result?.error || `Error ${response.status}`;
+        throw new Error(msg);
       }
       if (!result.data || !result.data.token || !result.data.user) {
         throw new Error("Formato inesperado de respuesta del servidor.");
@@ -83,46 +81,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-      console.log("[AUTH] Preparando datos para registro:", {
-        fullName: data.fullName,
-        email: data.email,
-        rut: data.rut,
-        address: data.address,
-        description: data.description,
-      });
-      
       const payload = {
-        fullName: data.fullName,
+        name: data.fullName,
         email: data.email,
         password: data.password,
         rut: data.rut,
         address: data.address,
         description: data.description,
       };
-      
-      console.log("[AUTH] Enviando registro a:", REGISTER_API_URL);
-      console.log("[AUTH] Payload:", payload);
-      
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      
-      console.log("[AUTH] Status de respuesta:", response.status);
-      const result = await response.json();
-      console.log("[AUTH] Respuesta del registro:", result);
-      
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        console.error("[AUTH] Registro fallido:", result);
-        throw new Error(result.error || result.message || "Error al registrar usuario");
+        const msg = result?.message || result?.error || `Error ${response.status}`;
+        throw new Error(msg);
       }
-      
-      console.log("[AUTH] ¡Registro exitoso!");
-      // No auto-login después del registro, solo mostrar mensaje de éxito
-      
+      // Opcional: mostrar mensaje sin auto-login
+      return;
     } catch (err: any) {
-      console.error("[AUTH] Error en registro:", err);
+      console.error("Error global en registro:", err);
       throw err;
     } finally {
       setLoading(false);
