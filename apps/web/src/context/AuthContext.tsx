@@ -35,18 +35,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
   const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user";
 
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
+      console.log("[AUTH] Intentando login con:", { email: data.email });
+      console.log("[AUTH] URL de login:", API_URL);
+      
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      
       const result = await response.json().catch(() => ({}));
+      console.log("[AUTH] Status login:", response.status);
+      console.log("[AUTH] Respuesta login:", result);
+      
       if (!response.ok) {
         const msg = result?.message || result?.error || `Error ${response.status}`;
         throw new Error(msg);
@@ -79,6 +87,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
+      console.log("🚀 [AUTH] Iniciando registro...");
+      console.log("🚀 [AUTH] URL de registro:", REGISTER_API_URL);
+      
       const payload = {
         name: data.fullName,
         email: data.email,
@@ -87,20 +98,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         address: data.address,
         description: data.description,
       };
+      
+      console.log("🚀 [AUTH] Payload de registro:", payload);
+      
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const result = await response.json().catch(() => ({}));
+      
+      console.log("🚀 [AUTH] Status de respuesta:", response.status);
+      console.log("🚀 [AUTH] Headers de respuesta:", Object.fromEntries(response.headers.entries()));
+      
+      const result = await response.json().catch((e) => {
+        console.error("🚀 [AUTH] Error parseando JSON:", e);
+        return {};
+      });
+      
+      console.log("🚀 [AUTH] Respuesta del registro:", result);
+      
       if (!response.ok) {
         const msg = result?.message || result?.error || `Error ${response.status}`;
+        console.error("🚀 [AUTH] Registro fallido:", msg);
         throw new Error(msg);
       }
-      // Opcional: mostrar mensaje sin auto-login
+      
+      console.log("✅ [AUTH] ¡Registro exitoso!");
+      // No auto-login después del registro
       return;
     } catch (err: any) {
-      console.error("Error global en registro:", err);
+      console.error("❌ [AUTH] Error global en registro:", err);
+      console.error("❌ [AUTH] Error stack:", err.stack);
       throw err;
     } finally {
       setLoading(false);
