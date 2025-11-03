@@ -36,8 +36,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   
+  // URLs corregidas según el backend
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
-  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user";
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/users/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
@@ -59,9 +60,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         const msg = result?.message || result?.error || `Error ${response.status}`;
         throw new Error(msg);
       }
+      
       if (!result.data || !result.data.token || !result.data.user) {
         throw new Error("Formato inesperado de respuesta del servidor.");
       }
+      
       const { token, user } = result.data;
       const mappedRole = mapRole(user.role);
       const mappedUser: User = {
@@ -73,6 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         address: user.address,
         description: user.description,
       };
+      
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(mappedUser));
       setUser(mappedUser);
@@ -90,13 +94,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       console.log("🚀 [AUTH] Iniciando registro...");
       console.log("🚀 [AUTH] URL de registro:", REGISTER_API_URL);
       
+      // Payload que coincide con lo que espera el backend
       const payload = {
-        name: data.fullName,
+        fullName: data.fullName,
         email: data.email,
         password: data.password,
         rut: data.rut,
-        address: data.address,
-        description: data.description,
+        address: data.address || undefined,
+        description: data.description || undefined,
       };
       
       console.log("🚀 [AUTH] Payload de registro:", payload);
@@ -112,20 +117,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       
       const result = await response.json().catch((e) => {
         console.error("🚀 [AUTH] Error parseando JSON:", e);
-        return {};
+        return { error: "Respuesta inválida del servidor" };
       });
       
       console.log("🚀 [AUTH] Respuesta del registro:", result);
       
       if (!response.ok) {
-        const msg = result?.message || result?.error || `Error ${response.status}`;
+        // Manejo mejorado de errores según el backend
+        const msg = result?.error || result?.message || `Error ${response.status}`;
         console.error("🚀 [AUTH] Registro fallido:", msg);
         throw new Error(msg);
       }
       
-      console.log("✅ [AUTH] ¡Registro exitoso!");
-      // No auto-login después del registro
-      return;
+      // Verificar respuesta exitosa
+      if (result?.message || result?.userId) {
+        console.log("✅ [AUTH] ¡Registro exitoso!");
+        console.log("✅ [AUTH] Mensaje del servidor:", result.message);
+        if (result.userId) {
+          console.log("✅ [AUTH] ID del usuario creado:", result.userId);
+        }
+        return result;
+      } else {
+        throw new Error("Respuesta inesperada del servidor");
+      }
     } catch (err: any) {
       console.error("❌ [AUTH] Error global en registro:", err);
       console.error("❌ [AUTH] Error stack:", err.stack);
