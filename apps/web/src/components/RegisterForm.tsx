@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 
 const RegisterForm: React.FC = () => {
   const { isLoading, setLoading } = useLoading();
-  const { register: registerUser } = useAuth();
+  const { register: registerUser, login } = useAuth();
 
   const {
     register,
@@ -21,27 +21,23 @@ const RegisterForm: React.FC = () => {
   });
 
   const onSubmit = async (data: RegisterData) => {
-    console.log("🚀 [REGISTRO] Iniciando proceso de registro");
-    console.log("📝 [REGISTRO] Datos del formulario:", data);
-    
+    console.log('[REGISTRO] Enviando datos:', data);
     setLoading(true);
-    
     try {
-      console.log("⏳ [REGISTRO] Llamando a registerUser...");
-      await registerUser(data);
-      console.log("✅ [REGISTRO] ¡Éxito! El registro terminó sin error");
-      
-      // Mostrar mensaje de éxito
-      alert('🎉 ¡Registro exitoso! Revisa tu correo para validar tu cuenta.');
+      // 1) Llamamos a register igual que login (misma estructura de manejo)
+      const payload = { ...data };
+      await registerUser(payload as any);
+      console.log('[REGISTRO] Registro completado, sin auto login');
+
+      // 2) Feedback uniforme al de login
+      alert('Registro exitoso. Revisa tu correo para validar tu cuenta.');
+
+      // 3) Limpieza de formulario
       reset();
-      
     } catch (error: any) {
-      console.error("❌ [REGISTRO] Error capturado en el formulario:", error);
-      const errorMessage = typeof error?.message === 'string' ? error.message : 'Error desconocido en el registro';
-      alert(`❌ Error en el registro: ${errorMessage}`);
-      
+      console.error('[REGISTRO] Error:', error?.message || error);
+      alert(`Error en el registro: ${error?.message || 'intenta nuevamente'}`);
     } finally {
-      console.log("🏁 [REGISTRO] Finalizando proceso de registro");
       setLoading(false);
     }
   };
@@ -55,93 +51,48 @@ const RegisterForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-group">
           <label htmlFor="fullName">Nombre completo</label>
-          <input 
-            type="text" 
-            id="fullName" 
-            placeholder="Ej: Sofía González Pérez" 
-            {...register("fullName")}
-            disabled={isLoading}
-          />
+          <input id="fullName" placeholder="Ej: Sofía González Pérez" {...register('fullName')} disabled={isLoading} />
           {errors.fullName && <p className="error-message">{errors.fullName.message}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="email">Correo electrónico</label>
-          <input 
-            type="email" 
-            id="email" 
-            placeholder="sofia.gonzalez@email.com" 
-            {...register("email")}
-            disabled={isLoading}
-          />
+          <input id="email" type="email" placeholder="sofia@email.com" {...register('email')} disabled={isLoading} />
           {errors.email && <p className="error-message">{errors.email.message}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="rut">RUT</label>
-          <input 
-            type="text" 
-            id="rut" 
-            placeholder="12.345.678-9" 
-            {...register("rut")}
-            disabled={isLoading}
-          />
+          <input id="rut" placeholder="12.345.678-9" {...register('rut')} disabled={isLoading} />
           {errors.rut && <p className="error-message">{errors.rut.message}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="password">Contraseña</label>
-          <input 
-            type="password" 
-            id="password"
-            placeholder="••••••••" 
-            {...register("password")}
-            disabled={isLoading}
-          />
+          <input id="password" type="password" placeholder="••••••••" {...register('password')} disabled={isLoading} />
           {errors.password && <p className="error-message">{errors.password.message}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="confirmPassword">Confirmar contraseña</label>
-          <input 
-            type="password" 
-            id="confirmPassword"
-            placeholder="••••••••" 
-            {...register("confirmPassword")}
-            disabled={isLoading}
-          />
+          <input id="confirmPassword" type="password" placeholder="••••••••" {...register('confirmPassword')} disabled={isLoading} />
           {errors.confirmPassword && <p className="error-message">{errors.confirmPassword.message}</p>}
         </div>
 
         <div className="form-group">
           <label htmlFor="address">Dirección (opcional)</label>
-          <input 
-            type="text" 
-            id="address" 
-            placeholder="Ej: El Sauco 7490480 Praderas Santa Carolina" 
-            {...register("address")}
-            disabled={isLoading}
-          />
+          <input id="address" {...register('address')} disabled={isLoading} />
         </div>
 
         <div className="form-group">
           <label htmlFor="description">Descripción (opcional)</label>
-          <input 
-            type="text" 
-            id="description" 
-            placeholder="Ej: Amante de los animales y voluntario" 
-            {...register("description")}
-            disabled={isLoading}
-            className="form-input"
-          />
+          <input id="description" {...register('description')} disabled={isLoading} />
           {errors.description && <p className="error-message">{errors.description.message}</p>}
         </div>
 
         <div className="terms-group">
           <input type="checkbox" {...register('agreedToTerms')} disabled={isLoading} />
-          <label>
-            Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a>.
-          </label>
+          <label>Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a>.</label>
         </div>
         {errors.agreedToTerms && <p className="error-message terms-error">{errors.agreedToTerms.message}</p>}
 
