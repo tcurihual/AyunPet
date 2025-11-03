@@ -36,18 +36,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
-  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register";
+  // URLs corregidas para apuntar al gateway local
+  const API_URL = "http://localhost:3001/v1/auth/login";
+  const REGISTER_API_URL = "http://localhost:3001/v1/auth/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
+      console.log("[AUTH] Intentando login con:", { email: data.email });
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       const result = await response.json();
+      console.log("[AUTH] Respuesta del login:", result);
+      
       if (!response.ok) {
         throw new Error(result.message || "Error al iniciar sesión");
       }
@@ -79,58 +83,51 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-      console.log("Preparando payload para el backend:", {
-        name: data.fullName,
+      console.log("[AUTH] Preparando datos para registro:", {
+        fullName: data.fullName,
+        email: data.email,
+        rut: data.rut,
+        address: data.address,
+        description: data.description,
+      });
+      
+      const payload = {
+        fullName: data.fullName,
         email: data.email,
         password: data.password,
         rut: data.rut,
         address: data.address,
         description: data.description,
-      });
+      };
+      
+      console.log("[AUTH] Enviando registro a:", REGISTER_API_URL);
+      console.log("[AUTH] Payload:", payload);
+      
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.fullName,
-          email: data.email,
-          password: data.password,
-          rut: data.rut,
-          address: data.address,
-          description: data.description,
-        }),
+        body: JSON.stringify(payload),
       });
-      console.log("Respuesta raw del backend:", response);
+      
+      console.log("[AUTH] Status de respuesta:", response.status);
       const result = await response.json();
-      console.log("Body JSON parseado:", result);
+      console.log("[AUTH] Respuesta del registro:", result);
+      
       if (!response.ok) {
-        console.log("Registro fallido, error:", result);
-        throw new Error(result.message || "Error al registrar usuario");
-      } else {
-        console.log("Registro exitoso! result.values:", result.values);
+        console.error("[AUTH] Registro fallido:", result);
+        throw new Error(result.error || result.message || "Error al registrar usuario");
       }
-      const user = result.values.user;
-      console.log("Usuario recibido desde la API:", user);
-
-      const newUser: User = {
-        id: String(user.id),
-        name: user.name,
-        email: user.email,
-        rut: user.rut,
-        role: mapRole(user.role),
-        address: user.address,
-        description: user.description,
-      };
-      console.log("newUser mapeado (y guardado):", newUser);
-      localStorage.setItem("userData", JSON.stringify(newUser));
-      setUser(newUser);
-    } catch (err) {
-      console.error("Error global en registro:", err);
+      
+      console.log("[AUTH] ¡Registro exitoso!");
+      // No auto-login después del registro, solo mostrar mensaje de éxito
+      
+    } catch (err: any) {
+      console.error("[AUTH] Error en registro:", err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
-
 
   const logout = () => {
     localStorage.removeItem("authToken");
