@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { resetPasswordService, isValidPassword } from '../lib/authService';
-import '../styles/ResetPasswordPage.css';
 
 interface ResetPasswordPageProps {
   // Props opcionales para testing
@@ -145,7 +144,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
                   aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   tabIndex={-1}
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                  {showPassword ? '🔓' : '🔒'}
                 </button>
               </div>
               {passwordErrors.length > 0 && (
@@ -189,7 +188,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
                   aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   tabIndex={-1}
                 >
-                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                  {showConfirmPassword ? '🔓' : '🔒'}
                 </button>
               </div>
               {confirmPassword && newPassword !== confirmPassword && (
