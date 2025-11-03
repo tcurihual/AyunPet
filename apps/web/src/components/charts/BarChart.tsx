@@ -2,32 +2,35 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface BarChartData {
-  name: string; 
-  [key: string]: any; 
+  name: string;
+  [key: string]: any;
 }
-
 interface GraficoBarrasProps {
   data: BarChartData[];
-  barKey: string;
-  barColor: string; 
+  barKeys: string[];
+  barColors: string[];
 }
 
-const GraficoBarras: React.FC<GraficoBarrasProps> = ({ data, barKey, barColor }) => {
-  return (
-    <ResponsiveContainer width="100%" height={400}>
-      <BarChart
-        data={data}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" /> 
-        <XAxis dataKey="name" /> 
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey={barKey} fill={barColor} name={barKey.charAt(0).toUpperCase() + barKey.slice(1)} />
-      </BarChart>
-    </ResponsiveContainer>
-  );
-};
+const GraficoBarras: React.FC<GraficoBarrasProps> = ({ data, barKeys, barColors }) => (
+  <ResponsiveContainer width="100%" height={300}>
+    <BarChart data={data} margin={{ top: 8, right: 40, left: 40, bottom: 10 }}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="name" />
+      <YAxis allowDecimals={false} />
+      <Tooltip />
+      <Legend />
+      {barKeys.map((key, idx) => (
+        <Bar
+          key={key}
+          dataKey={key}
+          fill={barColors[idx % barColors.length]}
+          name={key}
+          barSize={40}
+          radius={[8, 8, 8, 8]}
+        />
+      ))}
+    </BarChart>
+  </ResponsiveContainer>
+);
 
 export default GraficoBarras;

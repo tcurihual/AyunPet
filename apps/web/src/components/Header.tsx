@@ -38,9 +38,6 @@ const Header: React.FC = () => {
             <li><Link to="/adopta">Adopta</Link></li>
             <li><Link to="/refugios">Refugios y Organizaciones</Link></li>
             <li><Link to="/nosotros">Nosotros</Link></li>
-            {user && user.role === 'tester' && (
-              <li><Link to="/pruebas" style={{ color: '#ff0000ff' }}>Pruebas</Link></li>
-            )}
           </ul>
         </nav>
       </div>
@@ -50,27 +47,25 @@ const Header: React.FC = () => {
             <button 
               className="profile-button" 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-            </button>
-            
+            />
             {isMenuOpen && (
               <div className="dropdown-menu">
                 <div className="dropdown-header">
                   Bienvenido de vuelta
                   <strong>{user.name}</strong>
-                </div>
-                
-                {(user.role === 'institution' || user.role === 'tester') && (
-                   <Link to="/muro-institucion" className="dropdown-item">Muro de Institución</Link>
-                )}
-                
-                {(user.role === 'normal' || user.role === 'tester') && (
-                  <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
-                )}
+              </div>
+              
+              {(user.role === 'institution' || user.role === 'tester') && (
+                 <Link to="/muro-institucion" className="dropdown-item">Muro de Institución</Link>
+              )}
+              
+              {(user.role === 'normal' || user.role === 'tester') && (
+                <Link to="/perfil" className="dropdown-item">Mi Perfil</Link>
+              )}
 
-                <Link to="/solicitudes" className="dropdown-item">Mis Solicitudes</Link>
-                <button onClick={handleLogout} className="dropdown-item logout-button">
-                  Cerrar sesión
+              <Link to="/solicitudes" className="dropdown-item">Mis Solicitudes</Link>
+              <button onClick={handleLogout} className="dropdown-item logout-button">
+                Cerrar sesión
                 </button>
               </div>
             )}

@@ -1,5 +1,6 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { Link } from 'react-router-dom'; 
 
 export default function Profile() {
   const user = {
@@ -12,6 +13,7 @@ export default function Profile() {
     bio: "Amante de los animales, voluntaria en rescates y hogar temporal.",
     intereses: ["Perros", "Gatos", "Adopción", "Voluntariado"],
     estadisticas: { adopciones: 3, favoritos: 8, publicaciones: 2 },
+    rol: "tester", 
   };
 
   return (
@@ -59,12 +61,19 @@ export default function Profile() {
               <p>Dirección: {user.direccion}</p>
             </div>
 
-            <div className="userprof-card">
-              <h3>Accesos rápidos</h3>
-              <a className="userprof-quick-link" href="#">Mis favoritos</a>
-              <a className="userprof-quick-link" href="#">Mis publicaciones</a>
-              <a className="userprof-quick-link" href="#">Solicitudes</a>
-            </div>
+          <div className="userprof-card">
+            <h3>Accesos rápidos</h3>
+            <Link to="/favoritos" className="userprof-quick-link">Mis favoritos</Link>
+            <Link to="/crear-post" className="userprof-quick-link">Mis publicaciones</Link>
+            <Link to="/solicitudes" className="userprof-quick-link">Solicitudes</Link>
+            {(user.rol === "admin" || user.rol === "tester") && (
+              <Link to="/admin/reportes" className="userprof-quick-link admin-link">
+                Ver reportes
+              </Link>
+            )}
+
+
+          </div>
           </aside>
         </div>
       </div>

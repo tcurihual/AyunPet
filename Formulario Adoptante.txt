@@ -1,0 +1,46 @@
+Información del Adoptante
+
+
+
+Hogar:
+-(opciones) En donde vives?:
+	-Casa.
+	-Departamento.
+	-(dar opción de escribir) Otro Tipo de vivienda.
+
+-La vivienda es propia o arrendada?
+	-(Mostrar "Si" o "No" si la opcion es arrendada) Tu arredandor permite mascotas?
+		-(Mostrar si la respuesta es "No" y dar opcion de escribir) De que manera vas lo vas a manterner?
+-(Dar Opcion de escribir)Hay patio o algun espacio Exterior?
+
+-(Dar Opcion de escribir)Vives Solo o con mas personas? Hay niños? (Especificar edades)
+
+3. Experiencia
+
+(Todas las preguntas Con opcion de escribir)
+- Has Tenido Mascotas Antes? Cuales?
+- Que sucedio con las mascotas anteriores
+- Tienes otras mascotas actualmente? (Especifica tipo y cantidad)
+- estas dispuesto a invertir en la mantencion de la mascota referente su salud y alimentación.
+
+4. Razones de la Adopción
+-¿Por qué quieres adoptar una mascota?
+-¿Qué esperas de esta adopción?
+-¿Qué harías si la mascota presenta problemas de comportamiento o salud?
+-¿Qué harías si tienes que mudarte o viajar?
+-¿Qué harías si alguien en casa no quiere a la mascota?
+-¿Estás dispuesto(a) a realizar visitas de seguimiento por parte de la organización?	
+ 
+5. Cuidados y rutinas
+-¿Dónde dormirá la mascota?
+-¿Cuánto tiempo pasará sola al día?
+-¿Quién será responsable de su alimentación y cuidado diario?
+-¿Conoces la importancia de la esterilización y las vacunas?
+-¿Llevarás a la mascota al veterinario regularmente?
+	
+
+
+Trabajo: 
+-Trabajo Remoto o Presencial?
+
+
