@@ -35,10 +35,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-
-  // Gateway -> microservicio auth expone /api/auth/*
-  const API_URL = "http://localhost:3000/v1/auth/api/auth/login";
-  const REGISTER_API_URL = "http://localhost:3000/v1/auth/api/auth/users/register";
+  const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user";
 
   const login = async (data: LoginData) => {
     setLoading(true);
