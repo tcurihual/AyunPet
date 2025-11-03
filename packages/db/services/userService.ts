@@ -18,6 +18,14 @@ export interface RegisterResult {
   };
 }
 
+function getDefaultRoleIdFromEnv(): string | null {
+  const envId = process.env.AUTH_DEFAULT_ROLE_ID;
+  if (envId && String(envId).trim().length > 0) {
+    return String(envId).trim();
+  }
+  return null;
+}
+
 export const UserService = {
   async register(input: RegisterInput): Promise<RegisterResult> {
     console.log("[userService][register] Starting registration for email:", input.email);
@@ -38,8 +46,8 @@ export const UserService = {
       }
 
       if (existingUsers && existingUsers.length > 0) {
-        const duplicateEmail = existingUsers.find(u => u.email === email);
-        const duplicateRut = existingUsers.find(u => u.rut === rut);
+        const duplicateEmail = existingUsers.find((u: any) => u.email === email);
+        const duplicateRut = existingUsers.find((u: any) => u.rut === rut);
         
         let errorType: 'duplicate_email' | 'duplicate_rut' | 'duplicate_both';
         let message: string;
@@ -62,26 +70,40 @@ export const UserService = {
         };
       }
 
-      // 2. Obtener rol por defecto
-      console.log("[userService][register] Getting default role...");
-      const { data: roleData, error: roleError } = await supabase
-        .from("role")
-        .select("id")
-        .eq("roletype", "user")
-        .maybeSingle();
+      // 2. Obtener rol por defecto de ENV, si existe
+      const envRoleId = getDefaultRoleIdFromEnv();
+      let roleId: string | null = envRoleId;
 
-      if (roleError) {
-        console.error("[userService][register] Error getting role:", roleError);
-        throw roleError;
+      if (!envRoleId) {
+        // 2.b Si no hay ENV, intentar obtener rol por defecto por nombre/columna flexible
+        console.log("[userService][register] AUTH_DEFAULT_ROLE_ID not set. Trying to fetch default role from DB...");
+        // Intento 1: tabla role, columna name = 'user'
+        try {
+          const { data: roleByName, error: roleByNameErr } = await supabase
+            .from("role")
+            .select("id, name, roletype")
+            .or("name.eq.user,roletype.eq.user")
+            .maybeSingle();
+
+          if (roleByNameErr) {
+            console.warn("[userService][register] Role fetch warning (name/roletype):", roleByNameErr.message);
+          }
+
+          if (roleByName && roleByName.id) {
+            roleId = String(roleByName.id);
+          }
+        } catch (innerErr: any) {
+          console.warn("[userService][register] Role fetch attempt failed:", innerErr?.message);
+        }
       }
-      
-      if (!roleData) {
-        console.error("[userService][register] No default role found");
+
+      if (!roleId) {
+        console.error("[userService][register] No default role found (ENV nor DB)");
         return {
           success: false,
           error: { 
             type: 'role_not_found', 
-            message: 'No se encontró el rol por defecto' 
+            message: 'No se encontró el rol por defecto. Define AUTH_DEFAULT_ROLE_ID en .env' 
           }
         };
       }
@@ -93,7 +115,7 @@ export const UserService = {
       // 4. Insertar usuario
       console.log("[userService][register] Inserting new user...");
       const newUser = {
-        role: roleData.id,
+        role: roleId,
         rut,
         email,
         name: fullName,
@@ -115,7 +137,7 @@ export const UserService = {
         console.error("[userService][register] Error inserting user:", insertError);
         
         // Manejar error de duplicado que podría haber ocurrido en una condición de carrera
-        if (insertError.code === '23505') {
+        if ((insertError as any).code === '23505') {
           return {
             success: false,
             error: { 
@@ -131,7 +153,7 @@ export const UserService = {
       console.log("[userService][register] User created successfully with ID:", insertData.id);
       return {
         success: true,
-        userId: insertData.id
+        userId: String(insertData.id)
       };
 
     } catch (error: any) {
@@ -140,7 +162,7 @@ export const UserService = {
         success: false,
         error: {
           type: 'database_error',
-          message: error.message || 'Error inesperado en la base de datos'
+          message: error?.message || 'Error inesperado en la base de datos'
         }
       };
     }
