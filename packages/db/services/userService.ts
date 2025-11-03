@@ -77,7 +77,7 @@ export const UserService = {
       if (!envRoleId) {
         // 2.b Si no hay ENV, intentar obtener rol por defecto por nombre/columna flexible
         console.log("[userService][register] AUTH_DEFAULT_ROLE_ID not set. Trying to fetch default role from DB...");
-        // Intento 1: tabla role, columna name = 'user'
+        // Intento 1: tabla role, columna name = 'user' o roletype = 'user'
         try {
           const { data: roleByName, error: roleByNameErr } = await supabase
             .from("role")
@@ -89,8 +89,8 @@ export const UserService = {
             console.warn("[userService][register] Role fetch warning (name/roletype):", roleByNameErr.message);
           }
 
-          if (roleByName && roleByName.id) {
-            roleId = String(roleByName.id);
+          if (roleByName && (roleByName as any).id) {
+            roleId = String((roleByName as any).id);
           }
         } catch (innerErr: any) {
           console.warn("[userService][register] Role fetch attempt failed:", innerErr?.message);
@@ -112,19 +112,17 @@ export const UserService = {
       console.log("[userService][register] Hashing password...");
       const hashedPassword = await genHash(password);
 
-      // 4. Insertar usuario
+      // 4. Insertar usuario (sin createdat/updatedat para evitar dependencia del esquema)
       console.log("[userService][register] Inserting new user...");
-      const newUser = {
+      const newUser: any = {
         role: roleId,
         rut,
         email,
         name: fullName,
-        password: hashedPassword, // Guardamos la contraseña hasheada
+        password: hashedPassword,
         validated: false,
         address: "Sin dirección",
-        description: "Nuevo usuario registrado",
-        createdat: new Date().toISOString(),
-        updatedat: new Date().toISOString(),
+        description: "Nuevo usuario registrado"
       };
 
       const { data: insertData, error: insertError } = await supabase
@@ -136,7 +134,6 @@ export const UserService = {
       if (insertError) {
         console.error("[userService][register] Error inserting user:", insertError);
         
-        // Manejar error de duplicado que podría haber ocurrido en una condición de carrera
         if ((insertError as any).code === '23505') {
           return {
             success: false,
@@ -150,10 +147,10 @@ export const UserService = {
         throw insertError;
       }
 
-      console.log("[userService][register] User created successfully with ID:", insertData.id);
+      console.log("[userService][register] User created successfully with ID:", (insertData as any).id);
       return {
         success: true,
-        userId: String(insertData.id)
+        userId: String((insertData as any).id)
       };
 
     } catch (error: any) {
