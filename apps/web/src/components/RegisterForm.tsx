@@ -21,18 +21,50 @@ const RegisterForm: React.FC = () => {
   });
 
   const onSubmit = async (data: RegisterData) => {
+    console.log("🚀 [REGISTRO] Iniciando proceso de registro");
+    console.log("📝 [REGISTRO] Datos del formulario:", data);
+    
     setLoading(true);
+    
     try {
-      console.log("Enviando datos de registro:", data);
+      console.log("⏳ [REGISTRO] Llamando a registerUser...");
       await registerUser(data);
-      console.log("¡Éxito! El registro terminó sin error");
-      alert('Registro exitoso. Revisa tu correo para validar tu cuenta.');
+      console.log("✅ [REGISTRO] ¡Éxito! El registro terminó sin error");
+      
+      // Mostrar mensaje de éxito
+      alert('🎉 ¡Registro exitoso! Revisa tu correo para validar tu cuenta.');
       reset();
-    } catch (error) {
-      console.error("Catch en el submit del formulario:", error);
-      alert('Error en el registro');
+      
+    } catch (error: any) {
+      console.error("❌ [REGISTRO] Error capturado en el formulario:", error);
+      console.error("📊 [REGISTRO] Tipo de error:", typeof error);
+      console.error("📊 [REGISTRO] Error message:", error.message);
+      console.error("📊 [REGISTRO] Error stack:", error.stack);
+      
+      // Mostrar mensaje de error específico
+      const errorMessage = error.message || 'Error desconocido en el registro';
+      alert(`❌ Error en el registro: ${errorMessage}`);
+      
     } finally {
+      console.log("🏁 [REGISTRO] Finalizando proceso de registro");
       setLoading(false);
+    }
+  };
+
+  // Función para debug - agregar botón temporal
+  const testConnection = async () => {
+    console.log("🧪 [TEST] Probando conexión al gateway...");
+    try {
+      const response = await fetch('http://localhost:3000/v1/docs');
+      console.log("🧪 [TEST] Status del gateway:", response.status);
+      if (response.ok) {
+        alert('✅ Gateway está funcionando!');
+      } else {
+        alert('❌ Gateway responde pero con error: ' + response.status);
+      }
+    } catch (error: any) {
+      console.error("🧪 [TEST] Error de conexión:", error);
+      alert('❌ No se puede conectar al gateway. ¿Está corriendo en puerto 3000?');
     }
   };
 
@@ -41,6 +73,23 @@ const RegisterForm: React.FC = () => {
       <img src={logo} alt="Logo Ayün Pet" className="form-logo" />
       <h2>Crea tu cuenta</h2>
       <p className="form-subtitle">Únete a Ayün Pet</p>
+
+      {/* Botón temporal de debug */}
+      <button 
+        type="button" 
+        onClick={testConnection}
+        style={{ 
+          marginBottom: '10px', 
+          padding: '5px 10px', 
+          backgroundColor: '#007bff', 
+          color: 'white', 
+          border: 'none', 
+          borderRadius: '4px',
+          fontSize: '12px'
+        }}
+      >
+        🧪 Test Conexión Gateway
+      </button>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-group">
@@ -147,7 +196,7 @@ const RegisterForm: React.FC = () => {
         {errors.agreedToTerms && <p className="error-message terms-error">{errors.agreedToTerms.message}</p>}
 
         <button type="submit" className="btn btn-submit" disabled={isLoading}>
-          {isLoading ? 'Registrando...' : 'Registrarse'}
+          {isLoading ? '⏳ Registrando...' : '🚀 Registrarse'}
         </button>
       </form>
     </div>
