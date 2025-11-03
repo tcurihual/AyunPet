@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { UserService, RegisterInput } from "@db/services/userService";
+import { UserService, RegisterInput, RegisterResult } from "@db/services/userService";
 import { sendWelcomeEmail } from "../../../../packages/utils/email";
 import { AppError } from "@repo/utils";
 
@@ -51,22 +51,41 @@ export const UserController = {
 
       console.log("[auth][register] Attempting to register user with email:", registerInput.email);
       
-      const success = await UserService.register(registerInput);
+      const result: RegisterResult = await UserService.register(registerInput);
       
-      if (!success) {
-        console.error("[auth][register] Registration failed - duplicate RUT or email");
-        return res.status(409).json({ 
-          error: "El RUT o correo ya está registrado",
-          details: "Por favor, verifica tus datos o intenta iniciar sesión"
-        });
+      if (!result.success) {
+        console.error("[auth][register] Registration failed:", result.error);
+        
+        // Mapear tipos de error a respuestas HTTP apropiadas
+        switch (result.error?.type) {
+          case 'duplicate_email':
+          case 'duplicate_rut':
+          case 'duplicate_both':
+            return res.status(409).json({ 
+              error: result.error.message,
+              details: "Por favor, verifica tus datos o intenta iniciar sesión"
+            });
+          case 'role_not_found':
+            return res.status(500).json({ 
+              error: "Error de configuración del sistema",
+              details: "Contacta al administrador"
+            });
+          case 'database_error':
+          default:
+            return res.status(500).json({ 
+              error: "Error interno del servidor",
+              details: result.error?.message || "Error desconocido"
+            });
+        }
       }
 
-      console.log("[auth][register] User registered successfully");
+      console.log("[auth][register] User registered successfully with ID:", result.userId);
       
       // Responder inmediatamente con éxito
       res.status(201).json({ 
         message: "Usuario registrado con éxito",
-        details: "Se ha enviado un correo de bienvenida a tu dirección de email"
+        details: "Se ha enviado un correo de bienvenida a tu dirección de email",
+        userId: result.userId
       });
 
       // Enviar email de bienvenida en segundo plano (no bloquea la respuesta)
@@ -81,20 +100,12 @@ export const UserController = {
         });
 
     } catch (err: any) {
-      console.error("[auth][register] Registration error:", err.message);
+      console.error("[auth][register] Unexpected registration error:", err.message);
       console.error("[auth][register] Error stack:", err.stack);
       
-      // Si es un error de Supabase, darle un mensaje más claro
-      if (err.message?.includes('duplicate key') || err.code === '23505') {
-        return res.status(409).json({ 
-          error: "El RUT o correo ya está registrado",
-          details: "Este usuario ya existe en el sistema"
-        });
-      }
-      
-      res.status(400).json({ 
-        error: "Error en el registro",
-        details: err.message || "Error interno del servidor"
+      res.status(500).json({ 
+        error: "Error interno del servidor",
+        details: "Ocurrió un error inesperado durante el registro"
       });
     }
   },
