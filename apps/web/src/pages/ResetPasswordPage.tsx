@@ -17,6 +17,8 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
   const [token, setToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
@@ -125,16 +127,27 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
           <form onSubmit={handleSubmit} className="reset-password-form">
             <div className="form-group">
               <label htmlFor="newPassword">Nueva Contraseña</label>
-              <input
-                id="newPassword"
-                type="password"
-                value={newPassword}
-                onChange={(e) => handlePasswordChange(e.target.value)}
-                placeholder="Ingresa tu nueva contraseña"
-                disabled={isLoading}
-                className={passwordErrors.length > 0 ? 'error' : ''}
-                data-testid="new-password-input"
-              />
+              <div className="password-input-wrapper">
+                <input
+                  id="newPassword"
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  placeholder="Ingresa tu nueva contraseña"
+                  disabled={isLoading}
+                  className={passwordErrors.length > 0 ? 'error' : ''}
+                  data-testid="new-password-input"
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
               {passwordErrors.length > 0 && (
                 <div className="password-requirements">
                   <p className="requirements-title">Requisitos de contraseña:</p>
@@ -158,16 +171,27 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({
 
             <div className="form-group">
               <label htmlFor="confirmPassword">Confirmar Contraseña</label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirma tu nueva contraseña"
-                disabled={isLoading}
-                className={confirmPassword && newPassword !== confirmPassword ? 'error' : ''}
-                data-testid="confirm-password-input"
-              />
+              <div className="password-input-wrapper">
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirma tu nueva contraseña"
+                  disabled={isLoading}
+                  className={confirmPassword && newPassword !== confirmPassword ? 'error' : ''}
+                  data-testid="confirm-password-input"
+                />
+                <button
+                  type="button"
+                  className="toggle-password"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
               {confirmPassword && newPassword !== confirmPassword && (
                 <div className="field-error">Las contraseñas no coinciden</div>
               )}
