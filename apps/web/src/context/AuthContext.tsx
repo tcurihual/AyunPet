@@ -13,7 +13,8 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "normal" | "institution" | "tester";
+  role: 'normal' | 'institution' | 'tester';
+  emailVerified: boolean;
   rut?: string;
   address?: string;
   description?: string;
@@ -24,6 +25,7 @@ interface AuthContextType {
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
+  updateUserVerification: (verified: boolean) => void;
   isAuthLoading: boolean;
 }
 
@@ -35,38 +37,35 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
-  
-  // URLs corregidas según el backend
+
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
-  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/users/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
-      console.log("[AUTH] Intentando login con:", { email: data.email });
-      console.log("[AUTH] URL de login:", API_URL);
-      
       const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      
-      const result = await response.json().catch(() => ({}));
-      console.log("[AUTH] Status login:", response.status);
-      console.log("[AUTH] Respuesta login:", result);
-      
+
+      const result = await response.json();
+      console.log("🟢 Respuesta del servidor:", result);
+
       if (!response.ok) {
-        const msg = result?.message || result?.error || `Error ${response.status}`;
-        throw new Error(msg);
+        // Si la API devuelve error 401 o 404, mostramos el mensaje
+        throw new Error(result.message || "Error al iniciar sesión");
       }
-      
+
       if (!result.data || !result.data.token || !result.data.user) {
         throw new Error("Formato inesperado de respuesta del servidor.");
       }
-      
+
       const { token, user } = result.data;
+
+      // Traducimos el rol numérico del backend a texto local
       const mappedRole = mapRole(user.role);
+
       const mappedUser: User = {
         id: String(user.id),
         name: user.name,
@@ -76,9 +75,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         address: user.address,
         description: user.description,
       };
-      
+
+      // Guardamos token y usuario en localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(mappedUser));
+
       setUser(mappedUser);
     } catch (err: any) {
       console.error("❌ Error en login:", err);
@@ -88,81 +89,98 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // 🧩 Registro simulado (puedes reemplazarlo con la API real)
   const register = async (data: RegisterData) => {
+    console.warn("⚠️ Función register aún no conectada a API real");
     setLoading(true);
     try {
-      console.log("🚀 [AUTH] Iniciando registro...");
-      console.log("🚀 [AUTH] URL de registro:", REGISTER_API_URL);
-      
-      // Payload que coincide con lo que espera el backend
-      const payload = {
-        fullName: data.fullName,
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const role = data.userType === "empresa" ? "institution" : "normal";
+      const newUser: User = {
+        id: String(Math.floor(Math.random() * 10000)),
+        name: data.fullName,
         email: data.email,
-        password: data.password,
-        rut: data.rut,
-        address: data.address || undefined,
-        description: data.description || undefined,
+        role,
       };
-      
-      console.log("🚀 [AUTH] Payload de registro:", payload);
-      
-      const response = await fetch(REGISTER_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      
-      console.log("🚀 [AUTH] Status de respuesta:", response.status);
-      console.log("🚀 [AUTH] Headers de respuesta:", Object.fromEntries(response.headers.entries()));
-      
-      const result = await response.json().catch((e) => {
-        console.error("🚀 [AUTH] Error parseando JSON:", e);
-        return { error: "Respuesta inválida del servidor" };
-      });
-      
-      console.log("🚀 [AUTH] Respuesta del registro:", result);
-      
-      if (!response.ok) {
-        // Manejo mejorado de errores según el backend
-        const msg = result?.error || result?.message || `Error ${response.status}`;
-        console.error("🚀 [AUTH] Registro fallido:", msg);
-        throw new Error(msg);
-      }
-      
-      // Verificar respuesta exitosa
-      if (result?.message || result?.userId) {
-        console.log("✅ [AUTH] ¡Registro exitoso!");
-        console.log("✅ [AUTH] Mensaje del servidor:", result.message);
-        if (result.userId) {
-          console.log("✅ [AUTH] ID del usuario creado:", result.userId);
-        }
-        return result;
-      } else {
-        throw new Error("Respuesta inesperada del servidor");
-      }
-    } catch (err: any) {
-      console.error("❌ [AUTH] Error global en registro:", err);
-      console.error("❌ [AUTH] Error stack:", err.stack);
-      throw err;
+      localStorage.setItem("authToken", "fake_token_" + Date.now());
+      localStorage.setItem("userData", JSON.stringify(newUser));
+      setUser(newUser);
     } finally {
       setLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('user'); // ← Limpiar usuario guardado
     setUser(null);
   };
 
+  // Nueva función para actualizar el estado de verificación
+  const updateUserVerification = useCallback((verified: boolean) => {
+    if (user) {
+      const updatedUser = { ...user, emailVerified: verified };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      console.log(`Usuario ${user.email} - emailVerified actualizado a: ${verified}`);
+    }
+  }, [user]);
+
   const checkAuthStatus = useCallback(async () => {
-    const token = localStorage.getItem("authToken");
-    const userData = localStorage.getItem("userData");
+    const token = localStorage.getItem('authToken');
+    const role = localStorage.getItem('userRole') as User['role'] | null;
+    const storedUser = localStorage.getItem('user');
+
     if (token && userData) {
       try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-      } catch {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        let userData: User | null = null;
+
+        // Si hay usuario guardado en localStorage, usarlo
+        if (storedUser) {
+          try {
+            userData = JSON.parse(storedUser);
+            console.log('Usuario recuperado de localStorage:', userData);
+          } catch (error) {
+            console.error('Error al parsear usuario guardado:', error);
+          }
+        }
+
+        // Fallback: crear usuario basado en role (para compatibilidad con versiones antiguas)
+        if (!userData) {
+          if (role === 'institution') {
+            userData = { 
+              id: '456', 
+              name: 'Fundación Sigma', 
+              email: 'institucion@test.com', 
+              role: 'institution',
+              emailVerified: true
+            };
+          } else if (role === 'tester') {
+            userData = { 
+              id: '789', 
+              name: 'Usuario Tester', 
+              email: 'tester@test.com', 
+              role: 'tester',
+              emailVerified: true
+            };
+          } else { 
+            userData = { 
+              id: '123', 
+              name: 'Usuario de Prueba', 
+              email: 'normal@test.com', 
+              role: 'normal',
+              emailVerified: false
+            };
+          }
+          // Guardar el usuario creado
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+        
+        setUser(userData);
+      } catch (error) {
         logout();
       }
     }
@@ -173,6 +191,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     checkAuthStatus();
   }, [checkAuthStatus]);
 
+  // Traduce roles numéricos de la API al formato string local
   const mapRole = (roleValue: number): User["role"] => {
     switch (roleValue) {
       case 10:
