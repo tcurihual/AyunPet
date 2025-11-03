@@ -37,12 +37,7 @@ const RegisterForm: React.FC = () => {
       
     } catch (error: any) {
       console.error("❌ [REGISTRO] Error capturado en el formulario:", error);
-      console.error("📊 [REGISTRO] Tipo de error:", typeof error);
-      console.error("📊 [REGISTRO] Error message:", error.message);
-      console.error("📊 [REGISTRO] Error stack:", error.stack);
-      
-      // Mostrar mensaje de error específico
-      const errorMessage = error.message || 'Error desconocido en el registro';
+      const errorMessage = typeof error?.message === 'string' ? error.message : 'Error desconocido en el registro';
       alert(`❌ Error en el registro: ${errorMessage}`);
       
     } finally {
@@ -51,45 +46,11 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-  // Función para debug - agregar botón temporal
-  const testConnection = async () => {
-    console.log("🧪 [TEST] Probando conexión al gateway...");
-    try {
-      const response = await fetch('http://localhost:3000/v1/docs');
-      console.log("🧪 [TEST] Status del gateway:", response.status);
-      if (response.ok) {
-        alert('✅ Gateway está funcionando!');
-      } else {
-        alert('❌ Gateway responde pero con error: ' + response.status);
-      }
-    } catch (error: any) {
-      console.error("🧪 [TEST] Error de conexión:", error);
-      alert('❌ No se puede conectar al gateway. ¿Está corriendo en puerto 3000?');
-    }
-  };
-
   return (
     <div className="form-card">
       <img src={logo} alt="Logo Ayün Pet" className="form-logo" />
       <h2>Crea tu cuenta</h2>
       <p className="form-subtitle">Únete a Ayün Pet</p>
-
-      {/* Botón temporal de debug */}
-      <button 
-        type="button" 
-        onClick={testConnection}
-        style={{ 
-          marginBottom: '10px', 
-          padding: '5px 10px', 
-          backgroundColor: '#007bff', 
-          color: 'white', 
-          border: 'none', 
-          borderRadius: '4px',
-          fontSize: '12px'
-        }}
-      >
-        🧪 Test Conexión Gateway
-      </button>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="form-group">
@@ -175,17 +136,6 @@ const RegisterForm: React.FC = () => {
           />
           {errors.description && <p className="error-message">{errors.description.message}</p>}
         </div>
-      {/* Rol  */}
-      {/*  
-          <label htmlFor="userType">Tipo de cuenta</label>
-          <select {...register('userType')} disabled={isLoading} className="form-select">
-            <option value="">Selecciona una opción...</option>
-            <option value="usuario">Usuario</option>
-            <option value="empresa">Empresa</option>
-          </select>
-          {errors.userType && <p className="error-message">{errors.userType.message}</p>}
-        </div> 
-      */}
 
         <div className="terms-group">
           <input type="checkbox" {...register('agreedToTerms')} disabled={isLoading} />
