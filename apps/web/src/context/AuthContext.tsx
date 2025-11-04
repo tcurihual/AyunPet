@@ -13,8 +13,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: 'normal' | 'institution' | 'tester';
-  emailVerified: boolean;
+  role: "normal" | "institution" | "tester";
   rut?: string;
   address?: string;
   description?: string;
@@ -25,7 +24,6 @@ interface AuthContextType {
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
-  updateUserVerification: (verified: boolean) => void;
   isAuthLoading: boolean;
 }
 
@@ -111,76 +109,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('user'); // ← Limpiar usuario guardado
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userData");
     setUser(null);
   };
 
-  // Nueva función para actualizar el estado de verificación
-  const updateUserVerification = useCallback((verified: boolean) => {
-    if (user) {
-      const updatedUser = { ...user, emailVerified: verified };
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      console.log(`Usuario ${user.email} - emailVerified actualizado a: ${verified}`);
-    }
-  }, [user]);
-
   const checkAuthStatus = useCallback(async () => {
-    const token = localStorage.getItem('authToken');
-    const role = localStorage.getItem('userRole') as User['role'] | null;
-    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem("authToken");
+    const userData = localStorage.getItem("userData");
 
     if (token && userData) {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        let userData: User | null = null;
-
-        // Si hay usuario guardado en localStorage, usarlo
-        if (storedUser) {
-          try {
-            userData = JSON.parse(storedUser);
-            console.log('Usuario recuperado de localStorage:', userData);
-          } catch (error) {
-            console.error('Error al parsear usuario guardado:', error);
-          }
-        }
-
-        // Fallback: crear usuario basado en role (para compatibilidad con versiones antiguas)
-        if (!userData) {
-          if (role === 'institution') {
-            userData = { 
-              id: '456', 
-              name: 'Fundación Sigma', 
-              email: 'institucion@test.com', 
-              role: 'institution',
-              emailVerified: true
-            };
-          } else if (role === 'tester') {
-            userData = { 
-              id: '789', 
-              name: 'Usuario Tester', 
-              email: 'tester@test.com', 
-              role: 'tester',
-              emailVerified: true
-            };
-          } else { 
-            userData = { 
-              id: '123', 
-              name: 'Usuario de Prueba', 
-              email: 'normal@test.com', 
-              role: 'normal',
-              emailVerified: false
-            };
-          }
-          // Guardar el usuario creado
-          localStorage.setItem('user', JSON.stringify(userData));
-        }
-        
-        setUser(userData);
-      } catch (error) {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+      } catch {
         logout();
       }
     }
