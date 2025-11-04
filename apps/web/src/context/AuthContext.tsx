@@ -54,7 +54,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       console.log("🟢 Respuesta del servidor:", result);
 
       if (!response.ok) {
-        // Si la API devuelve error 401 o 404, mostramos el mensaje
         throw new Error(result.message || "Error al iniciar sesión");
       }
 
@@ -77,7 +76,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         description: user.description,
       };
 
-      // Guardamos token y usuario en localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(mappedUser));
 
@@ -89,7 +87,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(false);
     }
   };
-
 
   const register = async (data: RegisterData) => {
     setLoading(true);
@@ -113,68 +110,107 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       if (data.address && data.address.trim() !== '') {
         payload.address = data.address;
       }
-
       const response = await fetch(REGISTER_API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       const result = await response.json();
-      if (response.status === 201 && result.type === 'success') {
-        alert(result.message || 'Usuario registrado exitosamente');
-        const userData: User = {
-          id: result.data.id,
-          name: result.data.name,
-          email: result.data.email,
-          role: mapRole(result.data.role),
-          emailVerified: result.data.emailVerified || false,
-          rut: result.data.rut,
-          address: result.data.address,
-          description: result.data.description,
-        };
 
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
-      } else if (response.status === 409 || response.status === 500) {
-        const errorMessage = result.message || result.error || "Error al registrar usuario";
-        alert(errorMessage);
-        throw new Error(errorMessage);
+      // Manejo explícito de éxito/error con alertas
+      if (response.status === 201 && result.type === "success") {
+        alert(result.message || "Usuario registrado exitosamente");
+        // Si quieres guardar el usuario registrado automáticamente:
+        // const userData: User = {
+        //   id: result.data.id,
+        //   name: result.data.name,
+        //   email: result.data.email,
+        //   role: mapRole(result.data.role),
+        //   emailVerified: result.data.emailVerified ?? false,
+        //   rut: result.data.rut,
+        //   address: result.data.address,
+        //   description: result.data.description,
+        // };
+        // setUser(userData);
+        // localStorage.setItem("userData", JSON.stringify(userData));
       } else {
         const errorMessage = result.message || result.error || "Error al registrar usuario";
         alert(errorMessage);
         throw new Error(errorMessage);
       }
-    } catch (error) {
-      throw error;
+    } catch (err: any) {
+      console.error("❌ Error en registro:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
   const logout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userData');
     setUser(null);
-    localStorage.removeItem("user");
   };
 
-  const updateUserVerification = (verified: boolean) => {
+  const updateUserVerification = useCallback((verified: boolean) => {
     if (user) {
       const updatedUser = { ...user, emailVerified: verified };
       setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      localStorage.setItem('userData', JSON.stringify(updatedUser));
+      console.log(`Usuario ${user.email} - emailVerified actualizado a: ${verified}`);
     }
-  };
+  }, [user]);
 
   const checkAuthStatus = useCallback(async () => {
-    setIsAuthLoading(true);
-    try {
-      const savedUser = localStorage.getItem("user");
-      if (savedUser) {
-        const userData = JSON.parse(savedUser);
+    const token = localStorage.getItem('authToken');
+    const role = localStorage.getItem('userRole') as User['role'] | null;
+    const storedUser = localStorage.getItem('userData');
+
+    if (token && storedUser) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        let userData: User | null = null;
+        if (storedUser) {
+          try {
+            userData = JSON.parse(storedUser);
+            console.log('Usuario recuperado de localStorage:', userData);
+          } catch (error) {
+            console.error('Error al parsear usuario guardado:', error);
+          }
+        }
+        if (!userData) {
+          if (role === 'institution') {
+            userData = {
+              id: '456',
+              name: 'Fundación Sigma',
+              email: 'institucion@test.com',
+              role: 'institution',
+              emailVerified: true
+            };
+          } else if (role === 'tester') {
+            userData = {
+              id: '789',
+              name: 'Usuario Tester',
+              email: 'tester@test.com',
+              role: 'tester',
+              emailVerified: true
+            };
+          } else {
+            userData = {
+              id: '123',
+              name: 'Usuario de Prueba',
+              email: 'normal@test.com',
+              role: 'normal',
+              emailVerified: false
+            };
+          }
+          localStorage.setItem('userData', JSON.stringify(userData));
+        }
         setUser(userData);
+      } catch (error) {
+        logout();
       }
-    } catch (error) {
-      logout();
     }
     setIsAuthLoading(false);
   }, []);
@@ -182,6 +218,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
+
   const mapRole = (roleValue: number): User["role"] => {
     switch (roleValue) {
       case 10:
