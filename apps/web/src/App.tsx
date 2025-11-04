@@ -17,7 +17,8 @@ import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 import AdminReportsPage from './pages/AdminReportsPage';
 import EmailOrgPending from './pages/EmailOrgPending';
 import UserProfile from './pages/perfil.tsx';
-
+import AdoptionApplicationsPage from './pages/Publicante_revition.tsx';
+ 
 function App() {
   const maintenanceMode = false;
 
@@ -74,6 +75,7 @@ function App() {
       <Route path="/verificar" element={<VerificacionAdminPage />} />
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
       <Route path="/email-org-pending" element={<EmailOrgPending />} />
+      <Route path="/solicitudes-publicante" element={<AdoptionApplicationsPage />} />
     </Routes>
   );
 }
