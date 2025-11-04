@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import type { Publication } from '../context/PublicationsContext';
 
 interface PetAdoptionCardProps {
@@ -6,7 +8,27 @@ interface PetAdoptionCardProps {
 }
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { creator, pet } = publication;
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
+
+  const isEmailVerified = user?.emailVerified ?? false;
+  const isLoggedIn = !!user;
+
+  const handleButtonClick = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
+    if (!isEmailVerified) {
+      setShowVerificationMessage(true);
+      return;
+    }
+
+    navigate(`/pet/${publication.id}`);
+  };
 
   return (
     <div className="pet-card">
@@ -23,7 +45,49 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
             ))}
           </div>
         </div>
-        <p className="pet-card-description">{publication.description}</p>  
+        <p className="pet-card-description">{publication.description}</p>
+
+        {isLoggedIn && !isEmailVerified && showVerificationMessage && (
+          <div style={{
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffc107',
+            borderRadius: '8px',
+            padding: '12px 16px',
+            marginTop: '15px',
+            fontSize: '14px',
+            color: '#856404',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '10px'
+          }}>
+            <span style={{ fontSize: '18px', flexShrink: 0 }}>⚠️</span>
+            <div>
+              <strong style={{ display: 'block', marginBottom: '4px' }}>
+                Verificación requerida
+              </strong>
+              <p style={{ margin: 0, lineHeight: '1.5' }}>
+                Debes verificar tu correo electrónico antes de solicitar adopciones.
+                Revisa tu bandeja de entrada o spam.
+              </p>
+              <button
+                onClick={() => setShowVerificationMessage(false)}
+                style={{
+                  marginTop: '8px',
+                  padding: '4px 12px',
+                  fontSize: '12px',
+                  backgroundColor: 'transparent',
+                  border: '1px solid #856404',
+                  borderRadius: '4px',
+                  color: '#856404',
+                  cursor: 'pointer'
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="pet-card-footer">
           <div className="pet-card-tags">
             {pet.sterilized && (
@@ -50,7 +114,30 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
         <img src={pet.image} alt={pet.name} className="pet-card-pet-img" />
         <div className="card-spacer"></div>
         <div className="pet-card-actions">
-          <button className="btn btn-primary">Ver Detalles</button>
+          <button
+            className="btn btn-primary"
+            onClick={handleButtonClick}
+            disabled={isLoggedIn && !isEmailVerified}
+            style={{
+              opacity: (isLoggedIn && !isEmailVerified) ? 0.65 : 1,
+              cursor: (isLoggedIn && !isEmailVerified) ? 'not-allowed' : 'pointer',
+              transition: 'opacity 0.2s ease'
+            }}
+            title={
+              !isLoggedIn
+                ? 'Inicia sesión para ver detalles'
+                : !isEmailVerified
+                  ? 'Debes verificar tu correo primero'
+                  : 'Ver información completa'
+            }
+          >
+            {!isLoggedIn
+              ? 'Ver Detalles'
+              : !isEmailVerified
+                ? 'Verificar Email'
+                : 'Ver Detalles'
+            }
+          </button>
         </div>
       </div>
     </div>
