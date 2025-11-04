@@ -51,30 +51,46 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       const result = await response.json();
+      console.log("🟢 Respuesta del servidor:", result);
 
       if (!response.ok) {
-        throw new Error(result.error || "Error al iniciar sesión");
+        // Si la API devuelve error 401 o 404, mostramos el mensaje
+        throw new Error(result.message || "Error al iniciar sesión");
       }
 
-      const userData: User = {
-        id: result.data.id,
-        name: result.data.name,
-        email: result.data.email,
-        role: mapRole(result.data.role),
-        emailVerified: result.data.emailVerified,
-        rut: result.data.rut,
-        address: result.data.address,
-        description: result.data.description,
+      if (!result.data || !result.data.token || !result.data.user) {
+        throw new Error("Formato inesperado de respuesta del servidor.");
+      }
+
+      const { token, user } = result.data;
+
+      // Traducimos el rol numérico del backend a texto local
+      const mappedRole = mapRole(user.role);
+
+      const mappedUser: User = {
+        id: String(user.id),
+        name: user.name,
+        email: user.email,
+        rut: user.rut,
+        role: mappedRole,
+        address: user.address,
+        description: user.description,
       };
 
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
-    } catch (error) {
-      throw error;
+      // Guardamos token y usuario en localStorage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userData", JSON.stringify(mappedUser));
+
+      setUser(mappedUser);
+    } catch (err: any) {
+      console.error("❌ Error en login:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
   };
+
+
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
