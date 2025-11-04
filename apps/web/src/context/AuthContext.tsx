@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
-  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register";
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user";
 
   const login = async (data: LoginData) => {
     setLoading(true);
@@ -111,24 +111,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || "Error al registrar usuario");
+      // Manejo explícito de éxito y error con alertas
+      if (response.status === 201 && result.type === 'success') {
+        // Éxito: usuario registrado correctamente
+        alert(result.message || 'Usuario registrado exitosamente');
+
+        // Crear el objeto usuario con la respuesta de la API
+        const userData: User = {
+          id: result.data.id,
+          name: result.data.name,
+          email: result.data.email,
+          role: mapRole(result.data.role),
+          emailVerified: result.data.emailVerified || false,
+          rut: result.data.rut,
+          address: result.data.address,
+          description: result.data.description,
+        };
+
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      } else if (response.status === 409 || response.status === 500) {
+        // Error: conflicto o error del servidor
+        const errorMessage = result.message || result.error || "Error al registrar usuario";
+        alert(errorMessage);
+        throw new Error(errorMessage);
+      } else {
+        // Otros errores
+        const errorMessage = result.message || result.error || "Error al registrar usuario";
+        alert(errorMessage);
+        throw new Error(errorMessage);
       }
-
-      // Crear el objeto usuario con la respuesta de la API
-      const userData: User = {
-        id: result.data.id,
-        name: result.data.name,
-        email: result.data.email,
-        role: mapRole(result.data.role),
-        emailVerified: result.data.emailVerified || false,
-        rut: result.data.rut,
-        address: result.data.address,
-        description: result.data.description,
-      };
-
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
     } catch (error) {
       throw error;
     } finally {
