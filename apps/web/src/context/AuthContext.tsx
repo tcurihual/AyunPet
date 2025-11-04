@@ -117,22 +117,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       });
       const result = await response.json();
 
-      // Manejo explícito de éxito/error con alertas
+
       if (response.status === 201 && result.type === "success") {
         alert(result.message || "Usuario registrado exitosamente");
-        // Si quieres guardar el usuario registrado automáticamente:
-        // const userData: User = {
-        //   id: result.data.id,
-        //   name: result.data.name,
-        //   email: result.data.email,
-        //   role: mapRole(result.data.role),
-        //   emailVerified: result.data.emailVerified ?? false,
-        //   rut: result.data.rut,
-        //   address: result.data.address,
-        //   description: result.data.description,
-        // };
-        // setUser(userData);
-        // localStorage.setItem("userData", JSON.stringify(userData));
       } else {
         const errorMessage = result.message || result.error || "Error al registrar usuario";
         alert(errorMessage);
