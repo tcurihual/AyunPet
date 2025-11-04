@@ -39,6 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register";
 
   const login = async (data: LoginData) => {
     setLoading(true);
@@ -50,139 +51,114 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       const result = await response.json();
-      console.log("🟢 Respuesta del servidor:", result);
 
       if (!response.ok) {
-        // Si la API devuelve error 401 o 404, mostramos el mensaje
-        throw new Error(result.message || "Error al iniciar sesión");
+        throw new Error(result.error || "Error al iniciar sesión");
       }
 
-      if (!result.data || !result.data.token || !result.data.user) {
-        throw new Error("Formato inesperado de respuesta del servidor.");
-      }
-
-      const { token, user } = result.data;
-
-      // Traducimos el rol numérico del backend a texto local
-      const mappedRole = mapRole(user.role);
-
-      const mappedUser: User = {
-        id: String(user.id),
-        name: user.name,
-        email: user.email,
-        rut: user.rut,
-        role: mappedRole,
-        address: user.address,
-        description: user.description,
+      const userData: User = {
+        id: result.data.id,
+        name: result.data.name,
+        email: result.data.email,
+        role: mapRole(result.data.role),
+        emailVerified: result.data.emailVerified,
+        rut: result.data.rut,
+        address: result.data.address,
+        description: result.data.description,
       };
 
-      // Guardamos token y usuario en localStorage
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userData", JSON.stringify(mappedUser));
-
-      setUser(mappedUser);
-    } catch (err: any) {
-      console.error("❌ Error en login:", err);
-      throw err;
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+    } catch (error) {
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // 🧩 Registro simulado (puedes reemplazarlo con la API real)
+  // Función de registro actualizada para conectar con la API
   const register = async (data: RegisterData) => {
-    console.warn("⚠️ Función register aún no conectada a API real");
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const role = data.userType === "empresa" ? "institution" : "normal";
-      const newUser: User = {
-        id: String(Math.floor(Math.random() * 10000)),
+      // Construir el payload con campos obligatorios y opcionales
+      const payload: {
+        name: string;
+        email: string;
+        password: string;
+        rut: string;
+        description?: string;
+        address?: string;
+      } = {
         name: data.fullName,
         email: data.email,
-        role,
+        password: data.password,
+        rut: data.rut,
       };
-      localStorage.setItem("authToken", "fake_token_" + Date.now());
-      localStorage.setItem("userData", JSON.stringify(newUser));
-      setUser(newUser);
+
+      // Agregar campos opcionales solo si tienen valor
+      if (data.description && data.description.trim() !== '') {
+        payload.description = data.description;
+      }
+      if (data.address && data.address.trim() !== '') {
+        payload.address = data.address;
+      }
+
+      const response = await fetch(REGISTER_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Error al registrar usuario");
+      }
+
+      // Crear el objeto usuario con la respuesta de la API
+      const userData: User = {
+        id: result.data.id,
+        name: result.data.name,
+        email: result.data.email,
+        role: mapRole(result.data.role),
+        emailVerified: result.data.emailVerified || false,
+        rut: result.data.rut,
+        address: result.data.address,
+        description: result.data.description,
+      };
+
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+    } catch (error) {
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('user'); // ← Limpiar usuario guardado
     setUser(null);
+    localStorage.removeItem("user");
   };
 
-  // Nueva función para actualizar el estado de verificación
-  const updateUserVerification = useCallback((verified: boolean) => {
+  const updateUserVerification = (verified: boolean) => {
     if (user) {
       const updatedUser = { ...user, emailVerified: verified };
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      console.log(`Usuario ${user.email} - emailVerified actualizado a: ${verified}`);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
     }
-  }, [user]);
+  };
 
   const checkAuthStatus = useCallback(async () => {
-    const token = localStorage.getItem('authToken');
-    const role = localStorage.getItem('userRole') as User['role'] | null;
-    const storedUser = localStorage.getItem('user');
-
-    if (token && userData) {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        let userData: User | null = null;
-
-        // Si hay usuario guardado en localStorage, usarlo
-        if (storedUser) {
-          try {
-            userData = JSON.parse(storedUser);
-            console.log('Usuario recuperado de localStorage:', userData);
-          } catch (error) {
-            console.error('Error al parsear usuario guardado:', error);
-          }
-        }
-
-        // Fallback: crear usuario basado en role (para compatibilidad con versiones antiguas)
-        if (!userData) {
-          if (role === 'institution') {
-            userData = { 
-              id: '456', 
-              name: 'Fundación Sigma', 
-              email: 'institucion@test.com', 
-              role: 'institution',
-              emailVerified: true
-            };
-          } else if (role === 'tester') {
-            userData = { 
-              id: '789', 
-              name: 'Usuario Tester', 
-              email: 'tester@test.com', 
-              role: 'tester',
-              emailVerified: true
-            };
-          } else { 
-            userData = { 
-              id: '123', 
-              name: 'Usuario de Prueba', 
-              email: 'normal@test.com', 
-              role: 'normal',
-              emailVerified: false
-            };
-          }
-          // Guardar el usuario creado
-          localStorage.setItem('user', JSON.stringify(userData));
-        }
-        
+    setIsAuthLoading(true);
+    try {
+      const savedUser = localStorage.getItem("user");
+      if (savedUser) {
+        const userData = JSON.parse(savedUser);
         setUser(userData);
-      } catch (error) {
-        logout();
       }
+    } catch (error) {
+      logout();
     }
     setIsAuthLoading(false);
   }, []);
@@ -207,7 +183,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, login, register, logout, isAuthLoading }}
+      value={{ user, login, register, logout, updateUserVerification, isAuthLoading }}
     >
       {!isAuthLoading && children}
     </AuthContext.Provider>
