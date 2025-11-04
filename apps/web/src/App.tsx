@@ -6,13 +6,17 @@ import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
-import Profile from "./pages/user_profile";
-import Pruebas from './PruebasComponentes';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
+import SearchAccountsPage from './pages/search_acounts.tsx';
 import PostPage from './pages/PostPage';
-import Admin from './pages/AdminPage';
+import AdminPage from './pages/AdminPage';
+import SavedPostsPage from './pages/SavedPostsPage';
+import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
+import AdminReportsPage from './pages/AdminReportsPage';
+import EmailOrgPending from './pages/EmailOrgPending';
+import UserProfile from './pages/perfil.tsx';
 
 function App() {
   const maintenanceMode = false;
@@ -26,7 +30,7 @@ function App() {
   }
 
   return (
-    <Routes>
+    <Routes>  
       {/* Rutas públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -38,7 +42,7 @@ function App() {
       <Route 
         path="/solicitudes" 
         element={
-          <ProtectedRoute roles={['normal']}>
+          <ProtectedRoute roles={['normal','tester']}>
             <AdoptionRequestsPage />
           </ProtectedRoute>
         } 
@@ -46,7 +50,7 @@ function App() {
       <Route 
         path="/adopta" 
         element={
-          <ProtectedRoute roles={['normal']}>
+          <ProtectedRoute roles={['normal','tester']}>
             <AdoptionPage />
           </ProtectedRoute>
         } 
@@ -54,18 +58,22 @@ function App() {
       <Route 
         path="/muro-institucion" 
         element={
-          <ProtectedRoute roles={['institution']}>
+          <ProtectedRoute roles={['institution','tester']}>
             <InstitutionProfilePage />
           </ProtectedRoute>
         } 
       />
 
       {/* Otras rutas */}
-      <Route path="/perfil" element={<Profile />} />
-      <Route path="/pruebas" element={<Pruebas />} />
+      <Route path="/perfil" element={<UserProfile/>} />
+      <Route path="/favoritos" element={<SavedPostsPage />} />
       <Route path="/crear-post" element={<CreatePostPage />} />
       <Route path="/maintenance" element={<Maintenance />} />
-      <Route path="/admin" element={<Admin />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/BuscarCuentas" element={<SearchAccountsPage />} />
+      <Route path="/verificar" element={<VerificacionAdminPage />} />
+      <Route path="/admin/reportes" element={<AdminReportsPage />} />
+      <Route path="/email-org-pending" element={<EmailOrgPending />} />
     </Routes>
   );
 }
