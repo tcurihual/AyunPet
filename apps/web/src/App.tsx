@@ -20,6 +20,8 @@ import AdminReportsPage from './pages/AdminReportsPage';
 import EmailOrgPending from './pages/EmailOrgPending';
 import UserProfile from './pages/perfil.tsx';
 import VistaNoticias from './pages/VistaNoticias';
+import VerifyEmail from './components/VerifyEmail.tsx';
+
 
 function App() {
   const maintenanceMode = false;
@@ -41,6 +43,7 @@ function App() {
       <Route path="/nosotros" element={<AboutPage />} />
       <Route path="/post" element={<PostPage />} />
       <Route path="/noticias" element={<VistaNoticias />} />
+      
       
       {/* Rutas de autenticación - Recuperación de contraseña */}
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -82,6 +85,7 @@ function App() {
       <Route path="/verificar" element={<VerificacionAdminPage />} />
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
       <Route path="/email-org-pending" element={<EmailOrgPending />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
     </Routes>
   );
 }
