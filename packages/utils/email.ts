@@ -54,26 +54,3 @@ export async function sendVerificationEmail(to: string, verificationLink: string
   const info = await transporter.sendMail(mailOptions);
   console.log("Correo de verificación enviado:", info.messageId);
 }
-
-export async function sendWelcomeEmail(to: string, nombre: string) {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-  const mailOptions = {
-    from: `"Ayün Pet 🐾" <${process.env.EMAIL_USER}>`,
-    to,
-    subject: "¡Bienvenido/a a Ayün Pet!",
-    html: `
-      <h2>¡Bienvenido/a a Ayün Pet, ${nombre}!</h2>
-      <p>Gracias por registrarte. Nos alegra tenerte en nuestra comunidad 🐾.</p>
-      <p>¡Esperamos ayudarte a encontrar el mejor hogar para cada mascota!</p>
-      <p>Saludos,<br>El equipo de Ayün Pet 🐾</p>
-    `,
-  };
-  const info = await transporter.sendMail(mailOptions);
-  console.log("Correo de bienvenida enviado:", info.messageId);
-}
