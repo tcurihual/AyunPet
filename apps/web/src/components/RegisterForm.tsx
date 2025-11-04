@@ -5,10 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterData } from '../lib/schemas';
 import { useLoading } from '../context/LoadingContext';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm: React.FC = () => {
   const { isLoading, setLoading } = useLoading();
   const { register: registerUser } = useAuth();
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
@@ -18,11 +20,9 @@ const RegisterForm: React.FC = () => {
   const onSubmit = async (data: RegisterData) => {
     setLoading(true);
     try {
-      await registerUser(data);
-      alert('Registro exitoso');
+      await registerUser(data); 
+      navigate("/login");      
     } catch (error) {
-      console.error(error);
-      alert('Error en el registro');
     } finally {
       setLoading(false);
     }
