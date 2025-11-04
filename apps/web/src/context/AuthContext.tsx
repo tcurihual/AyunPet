@@ -39,6 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
+  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user";
 
   const login = async (data: LoginData) => {
     setLoading(true);
@@ -53,7 +54,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       console.log("🟢 Respuesta del servidor:", result);
 
       if (!response.ok) {
-        // Si la API devuelve error 401 o 404, mostramos el mensaje
         throw new Error(result.message || "Error al iniciar sesión");
       }
 
@@ -76,7 +76,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         description: user.description,
       };
 
-      // Guardamos token y usuario en localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("userData", JSON.stringify(mappedUser));
 
@@ -89,22 +88,46 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  // 🧩 Registro simulado (puedes reemplazarlo con la API real)
   const register = async (data: RegisterData) => {
-    console.warn("⚠️ Función register aún no conectada a API real");
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const role = data.userType === "empresa" ? "institution" : "normal";
-      const newUser: User = {
-        id: String(Math.floor(Math.random() * 10000)),
+      const payload: {
+        name: string;
+        email: string;
+        password: string;
+        rut: string;
+        description?: string;
+        address?: string;
+      } = {
         name: data.fullName,
         email: data.email,
-        role,
+        password: data.password,
+        rut: data.rut,
       };
-      localStorage.setItem("authToken", "fake_token_" + Date.now());
-      localStorage.setItem("userData", JSON.stringify(newUser));
-      setUser(newUser);
+      if (data.description && data.description.trim() !== '') {
+        payload.description = data.description;
+      }
+      if (data.address && data.address.trim() !== '') {
+        payload.address = data.address;
+      }
+      const response = await fetch(REGISTER_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+
+      if (response.status === 201 && result.type === "success") {
+        alert(result.message || "Usuario registrado exitosamente");
+      } else {
+        const errorMessage = result.message || result.error || "Error al registrar usuario";
+        alert(errorMessage);
+        throw new Error(errorMessage);
+      }
+    } catch (err: any) {
+      console.error("❌ Error en registro:", err);
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -113,16 +136,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userRole');
-    localStorage.removeItem('user'); // ← Limpiar usuario guardado
+    localStorage.removeItem('userData');
     setUser(null);
   };
 
-  // Nueva función para actualizar el estado de verificación
   const updateUserVerification = useCallback((verified: boolean) => {
     if (user) {
       const updatedUser = { ...user, emailVerified: verified };
       setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem('userData', JSON.stringify(updatedUser));
       console.log(`Usuario ${user.email} - emailVerified actualizado a: ${verified}`);
     }
   }, [user]);
@@ -130,15 +152,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const checkAuthStatus = useCallback(async () => {
     const token = localStorage.getItem('authToken');
     const role = localStorage.getItem('userRole') as User['role'] | null;
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('userData');
 
-    if (token && userData) {
+    if (token && storedUser) {
       try {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
         let userData: User | null = null;
-
-        // Si hay usuario guardado en localStorage, usarlo
         if (storedUser) {
           try {
             userData = JSON.parse(storedUser);
@@ -147,38 +166,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
             console.error('Error al parsear usuario guardado:', error);
           }
         }
-
-        // Fallback: crear usuario basado en role (para compatibilidad con versiones antiguas)
         if (!userData) {
           if (role === 'institution') {
-            userData = { 
-              id: '456', 
-              name: 'Fundación Sigma', 
-              email: 'institucion@test.com', 
+            userData = {
+              id: '456',
+              name: 'Fundación Sigma',
+              email: 'institucion@test.com',
               role: 'institution',
               emailVerified: true
             };
           } else if (role === 'tester') {
-            userData = { 
-              id: '789', 
-              name: 'Usuario Tester', 
-              email: 'tester@test.com', 
+            userData = {
+              id: '789',
+              name: 'Usuario Tester',
+              email: 'tester@test.com',
               role: 'tester',
               emailVerified: true
             };
-          } else { 
-            userData = { 
-              id: '123', 
-              name: 'Usuario de Prueba', 
-              email: 'normal@test.com', 
+          } else {
+            userData = {
+              id: '123',
+              name: 'Usuario de Prueba',
+              email: 'normal@test.com',
               role: 'normal',
               emailVerified: false
             };
           }
-          // Guardar el usuario creado
-          localStorage.setItem('user', JSON.stringify(userData));
+          localStorage.setItem('userData', JSON.stringify(userData));
         }
-        
         setUser(userData);
       } catch (error) {
         logout();
@@ -191,7 +206,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  // Traduce roles numéricos de la API al formato string local
   const mapRole = (roleValue: number): User["role"] => {
     switch (roleValue) {
       case 10:
@@ -207,7 +221,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, login, register, logout, isAuthLoading }}
+      value={{ user, login, register, logout, updateUserVerification, isAuthLoading }}
     >
       {!isAuthLoading && children}
     </AuthContext.Provider>
