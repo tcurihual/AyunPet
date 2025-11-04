@@ -75,12 +75,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       setLoading(false);
     }
   };
-
-  // Función de registro actualizada para conectar con la API
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
-      // Construir el payload con campos obligatorios y opcionales
       const payload: {
         name: string;
         email: string;
@@ -94,8 +91,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         password: data.password,
         rut: data.rut,
       };
-
-      // Agregar campos opcionales solo si tienen valor
       if (data.description && data.description.trim() !== '') {
         payload.description = data.description;
       }
@@ -110,13 +105,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       });
 
       const result = await response.json();
-
-      // Manejo explícito de éxito y error con alertas
       if (response.status === 201 && result.type === 'success') {
-        // Éxito: usuario registrado correctamente
         alert(result.message || 'Usuario registrado exitosamente');
-
-        // Crear el objeto usuario con la respuesta de la API
         const userData: User = {
           id: result.data.id,
           name: result.data.name,
@@ -131,12 +121,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
       } else if (response.status === 409 || response.status === 500) {
-        // Error: conflicto o error del servidor
         const errorMessage = result.message || result.error || "Error al registrar usuario";
         alert(errorMessage);
         throw new Error(errorMessage);
       } else {
-        // Otros errores
         const errorMessage = result.message || result.error || "Error al registrar usuario";
         alert(errorMessage);
         throw new Error(errorMessage);
@@ -178,8 +166,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     checkAuthStatus();
   }, [checkAuthStatus]);
-
-  // Traduce roles numéricos de la API al formato string local
   const mapRole = (roleValue: number): User["role"] => {
     switch (roleValue) {
       case 10:
