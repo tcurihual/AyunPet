@@ -21,6 +21,7 @@ import EmailOrgPending from './pages/EmailOrgPending';
 import UserProfile from './pages/perfil.tsx';
 import VistaNoticias from './pages/VistaNoticias';
 import VerifyEmail from './components/VerifyEmail.tsx';
+import PublicanteReview from './pages/Publicante_revition.tsx'
 
 
 function App() {
@@ -86,6 +87,7 @@ function App() {
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
       <Route path="/email-org-pending" element={<EmailOrgPending />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/solicitudes-publicante" element={<PublicanteReview />} />
     </Routes>
   );
 }

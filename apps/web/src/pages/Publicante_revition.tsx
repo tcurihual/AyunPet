@@ -4,10 +4,9 @@ import Footer from '../components/Footer';
 import AdoptionApplicationCard from '../components/AdoptionApplicationCard';
 import '../index.css';
 
-const AdoptionApplicationsPage: React.FC = () => {
+const PublicanteReview: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Datos de ejemplo
   const applications = [
     {
       id: '1',
@@ -104,4 +103,4 @@ const AdoptionApplicationsPage: React.FC = () => {
   );
 };
 
-export default AdoptionApplicationsPage;
+export default PublicanteReview;

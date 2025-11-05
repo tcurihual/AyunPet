@@ -70,12 +70,6 @@ const AdoptionApplicationCard: React.FC<AdoptionApplicationCardProps> = ({
         
         <div className="adoption-card-buttons-horizontal">
           <button 
-            className="btn-adoption-horizontal btn-form-horizontal"
-            onClick={() => alert('Ver formulario - Por implementar')}
-          >
-            Formulario
-          </button>
-          <button 
             className="btn-adoption-horizontal btn-accept-horizontal"
             onClick={() => onAccept(application.id)}
           >
