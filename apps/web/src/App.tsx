@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/router';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AdoptionRequestsPage from './pages/AdoptionRequestsPage';
 import AdoptionPage from './pages/AdoptionPage';
 import InstitutionProfilePage from './pages/InstitutionProfilePage';
@@ -17,8 +19,10 @@ import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
 import AdminReportsPage from './pages/AdminReportsPage';
 import EmailOrgPending from './pages/EmailOrgPending';
 import UserProfile from './pages/perfil.tsx';
-import AdoptionApplicationsPage from './pages/Publicante_revition.tsx';
- 
+import VistaNoticias from './pages/VistaNoticias';
+import VerifyEmail from './components/VerifyEmail.tsx';
+
+
 function App() {
   const maintenanceMode = false;
 
@@ -38,6 +42,12 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/nosotros" element={<AboutPage />} />
       <Route path="/post" element={<PostPage />} />
+      <Route path="/noticias" element={<VistaNoticias />} />
+      
+      
+      {/* Rutas de autenticación - Recuperación de contraseña */}
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Rutas protegidas */}
       <Route 
@@ -75,7 +85,7 @@ function App() {
       <Route path="/verificar" element={<VerificacionAdminPage />} />
       <Route path="/admin/reportes" element={<AdminReportsPage />} />
       <Route path="/email-org-pending" element={<EmailOrgPending />} />
-      <Route path="/solicitudes-publicante" element={<AdoptionApplicationsPage />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
     </Routes>
   );
 }

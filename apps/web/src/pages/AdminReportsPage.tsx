@@ -86,9 +86,6 @@ const AdminReportsPage: React.FC = () => {
   };
 
   return (
-    <div className="page-container">
-    
-
       <main className="main-content">
         <div className="admin-reports-container">
           <h1 className="admin-reports-title">Panel de Reportes</h1>
@@ -115,7 +112,6 @@ const AdminReportsPage: React.FC = () => {
       </main>
 
      
-    </div>
   );
 };
 
