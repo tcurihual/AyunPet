@@ -3,7 +3,6 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CommentsList from '../components/CommentsList';
 
-// Mock data temporal
 const mockPosts = [
   {
     id: 1,
@@ -41,7 +40,6 @@ const PostPage: React.FC = () => {
 
       <main className="main-content">
         <div className="post-page-wrapper">
-          {/* Selector de Posts */}
           <div className="post-selector">
             <p className="post-selector-label">Selecciona una publicación:</p>
             <div className="post-selector-buttons">
@@ -57,9 +55,7 @@ const PostPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Article Card */}
           <article className="post-article-card">
-            {/* Imagen del lado izquierdo */}
             <div className="post-image-section">
               <div className="post-image-circle-wrapper">
                 <img 
@@ -69,12 +65,10 @@ const PostPage: React.FC = () => {
                 />
               </div>
               
-              {/* Elementos decorativos */}
               <div className="decorative-circle decorative-circle-1"></div>
               <div className="decorative-circle decorative-circle-2"></div>
             </div>
 
-            {/* Contenido del lado derecho */}
             <div className="post-content-section">
               <h1 className="post-title">{currentPost.title}</h1>
 
