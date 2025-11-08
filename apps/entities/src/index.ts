@@ -23,5 +23,5 @@ app.use("/", entitiesRouter)
 
 app.use(errorHandler)
 app.listen(ENTITIES_PORT, () => {
-    console.log("🚀 Entities service running on http://localhost/api/entities")
+    console.log(`🚀 Entities service running on http://localhost:${ENTITIES_PORT}`)
 })
