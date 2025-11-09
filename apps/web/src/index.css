@@ -773,7 +773,7 @@ html.dark .theme-toggle-btn:hover {
 
 
 .adoption-page-container {
-  padding: 40px 20px;
+  padding: 0px 20px;
   width: 100%;
   max-width: 1200px; 
   margin: 0 auto;
@@ -784,7 +784,7 @@ html.dark .theme-toggle-btn:hover {
   font-size: 2.5rem;
   color: var(--color-text-accent);
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -4468,4 +4468,125 @@ html.dark {
 }
 .btn-reject:hover {
   background-color: var(--btn-reject-bg-hover);
+}
+
+.adoption-page-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+.filters-column {
+  width: 280px; 
+  flex-shrink: 0;
+}
+
+.results-column {
+  flex-grow: 1;
+  width: 100%;
+}
+
+.full-width-message {
+  width: 100%;
+  text-align: center;
+  padding: 40px 0;
+}
+
+@media (max-width: 768px) {
+  .adoption-page-layout {
+    flex-direction: column;
+  }
+
+  .filters-column {
+    width: 100%; 
+    max-width: 400px; 
+    margin: 0 auto;
+  }
+}
+
+.search-bar-container {
+  width: 100%;
+  max-width: 700px; 
+  margin: 0 auto 30px auto; 
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 22px;
+  font-size: 1rem;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 50px; 
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #6D4C41;
+  box-shadow: 0 0 5px #6D4C41;
+}
+
+html.dark .search-input {
+  background-color: var(--color-bg-content);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+
+html.dark .search-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+html.dark .search-input:focus {
+  border-color: var(--color-text-link);
+  box-shadow: 0 0 5px color-mix(in srgb, var(--color-text-link) 40%, transparent);
+}
+
+html.dark .filter-sidebar {
+  background-color: var(--color-bg-content);
+  border-color: var(--color-border);
+}
+
+html.dark .filter-sidebar h3,
+html.dark .filter-label {
+  color: var(--color-text-primary);
+}
+
+html.dark .checkbox-option label {
+  color: var(--color-text-secondary); 
+}
+
+html.dark .checkbox-option input[type="checkbox"] {
+  background-color: var(--color-bg-main); 
+  border-color: var(--color-border);
+}
+
+.checkbox-option input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  
+  width: 18px;
+  height: 18px;
+  margin: 0; 
+  margin-right: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  
+  background-color: var(--color-bg-content);
+  border: 2px solid var(--color-border);
+  transition: all 0.2s ease;
+}
+
+.checkbox-option input[type="checkbox"]:checked {
+  background-color: #6D4C41; 
+  border-color: #6D4C41;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\' fill=\'white\'%3E%3Cpath d=\'M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z\'/%3E%3C/svg%3E');
+  background-size: 14px;
+  background-position: center;
+  background-repeat: no-repeat;
 }
