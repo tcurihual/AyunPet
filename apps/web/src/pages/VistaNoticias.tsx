@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getAllNews, News } from '../lib/newsService';
+import { useAuth } from '../context/AuthContext';
 import './VistaNoticias.css';
 
 const VistaNoticias: React.FC = () => {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     loadNews();
@@ -16,17 +18,18 @@ const VistaNoticias: React.FC = () => {
   const loadNews = async () => {
     setLoading(true);
     setError(null);
-    
-    const result = await getAllNews();
-    
+    // Intenta siempre obtener token del localStorage para permitir recarga y sesiones persistentes.
+    const token = localStorage.getItem('authToken') || '';
+    const result = await getAllNews(token);
+
     if (result.ok && result.data) {
-      // Filtrar solo noticias activas
+      // Filtra solo noticias activas
       const activeNews = result.data.filter(n => n.status === 'active');
       setNews(activeNews);
     } else {
       setError(result.error || 'Error al cargar noticias');
     }
-    
+
     setLoading(false);
   };
 
@@ -36,7 +39,7 @@ const VistaNoticias: React.FC = () => {
       const now = new Date();
       const diffTime = Math.abs(now.getTime() - date.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (diffDays === 0) return 'Hoy';
       if (diffDays === 1) return 'Ayer';
       if (diffDays < 7) return `Hace ${diffDays} días`;
@@ -107,9 +110,9 @@ const VistaNoticias: React.FC = () => {
             {news.map((article) => (
               <article key={article.id} className="news-card">
                 <div className="news-card-image-wrapper">
-                  <img 
-                    src={article.images && article.images.length > 0 ? article.images[0] : getDefaultImage()} 
-                    alt={article.title} 
+                  <img
+                    src={article.images && article.images.length > 0 ? article.images[0] : getDefaultImage()}
+                    alt={article.title}
                     className="news-card-image"
                     onError={(e) => {
                       e.currentTarget.src = getDefaultImage();
@@ -122,14 +125,14 @@ const VistaNoticias: React.FC = () => {
                   </span>
                   <h3 className="news-card-title">{article.title}</h3>
                   <p className="news-card-excerpt">{article.description}</p>
-                  
+
                   {article.date && (
                     <div className="news-event-info">
                       <span className="news-event-date">
-                        📅 {new Date(article.date).toLocaleDateString('es-ES', { 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
+                        📅 {new Date(article.date).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
                         })}
                       </span>
                       {article.start_time && article.end_time && (
@@ -139,7 +142,7 @@ const VistaNoticias: React.FC = () => {
                       )}
                     </div>
                   )}
-                  
+
                   <div className="news-card-meta">
                     <span className="news-card-date">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
