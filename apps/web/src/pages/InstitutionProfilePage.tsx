@@ -26,8 +26,14 @@ const InstitutionProfilePage: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const { user } = useAuth();
   
+  // Log para debugging
+  console.log('[InstitutionProfilePage] paramId:', paramId);
+  console.log('[InstitutionProfilePage] user:', user);
+  
   // Si viene un parámetro de URL, úsalo. Si no, usa el ID del usuario logueado
   const institutionId = paramId || user?.id;
+  
+  console.log('[InstitutionProfilePage] institutionId final:', institutionId);
   
   const [institutionData, setInstitutionData] = useState<InstitutionData | null>(null);
   const [publications, setPublications] = useState<any[]>([]);
@@ -38,8 +44,12 @@ const InstitutionProfilePage: React.FC = () => {
   // Cargar datos de la institución y sus publicaciones
   useEffect(() => {
     const loadInstitutionData = async () => {
+      console.log('[loadInstitutionData] Starting with ID:', institutionId);
+      
       if (!institutionId) {
-        setError('ID de institución no proporcionado y no hay usuario logueado');
+        const errorMsg = 'ID de institución no proporcionado y no hay usuario logueado';
+        console.error('[loadInstitutionData]', errorMsg);
+        setError(errorMsg);
         setIsLoading(false);
         return;
       }
@@ -50,25 +60,37 @@ const InstitutionProfilePage: React.FC = () => {
 
         // Obtener token del usuario autenticado
         const token = localStorage.getItem('authToken');
+        console.log('[loadInstitutionData] Token available:', !!token);
         
         // Obtener perfil de la institución
+        console.log('[loadInstitutionData] Fetching profile for ID:', institutionId);
         const profileResult = await fetchInstitutionProfile(institutionId, token || undefined);
+        console.log('[loadInstitutionData] Profile result:', profileResult);
+        
         if (!profileResult.ok || !profileResult.data) {
-          setError(profileResult.error || 'Error al cargar el perfil');
+          const errMsg = profileResult.error || 'Error al cargar el perfil';
+          console.error('[loadInstitutionData] Profile error:', errMsg);
+          setError(errMsg);
           setIsLoading(false);
           return;
         }
         setInstitutionData(profileResult.data as InstitutionData);
+        console.log('[loadInstitutionData] Profile loaded successfully');
 
         // Obtener publicaciones de la institución
+        console.log('[loadInstitutionData] Fetching publications for ID:', institutionId);
         const publicationsResult = await fetchInstitutionPublications(institutionId, token || undefined);
+        console.log('[loadInstitutionData] Publications result:', publicationsResult);
+        
         if (publicationsResult.ok && publicationsResult.data) {
           setPublications(publicationsResult.data);
+          console.log('[loadInstitutionData] Publications loaded:', publicationsResult.data.length, 'items');
         } else {
-          console.warn('Error al cargar publicaciones:', publicationsResult.error);
+          console.warn('[loadInstitutionData] Publications error:', publicationsResult.error);
           setPublications([]);
         }
       } catch (err: any) {
+        console.error('[loadInstitutionData] Exception:', err);
         setError(err?.message || 'Error desconocido al cargar datos');
       } finally {
         setIsLoading(false);
@@ -151,7 +173,7 @@ const InstitutionProfilePage: React.FC = () => {
               {/* Tab: Publicaciones */}
               {activeTab === 'Publicaciones' && (
                 <div className="pets-grid">
-                  {publications.length > 0 ? (
+                  {publications && publications.length > 0 ? (
                     publications.map(pub => (
                       <PetAdoptionCard key={pub.id} publication={pub} />
                     ))
@@ -182,7 +204,7 @@ const InstitutionProfilePage: React.FC = () => {
                     <h3 style={{ textAlign: 'center', marginTop: '40px' }}>
                       Distribución de Especies
                     </h3>
-                    {datosPorEspecie.length > 0 ? (
+                    {datosPorEspecie && datosPorEspecie.length > 0 ? (
                       <GraficoTorta data={datosPorEspecie} colors={coloresEspecie} />
                     ) : (
                       <p style={{ textAlign: 'center', marginTop: '20px' }}>
