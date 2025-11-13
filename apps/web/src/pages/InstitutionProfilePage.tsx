@@ -192,25 +192,6 @@ const InstitutionProfilePage: React.FC = () => {
                     <p><strong>Descripción:</strong></p>
                     <p>{institutionData.description || 'Sin descripción disponible'}</p>
                     
-                    {institutionData.address && (
-                      <>
-                        <p style={{ marginTop: '15px' }}><strong>Ubicación:</strong> {institutionData.address}</p>
-                      </>
-                    )}
-                    
-                    <p style={{ marginTop: '15px' }}><strong>Correo de contacto:</strong> {institutionData.email}</p>
-                    
-                    {institutionData.rut && (
-                      <p style={{ marginTop: '10px' }}><strong>RUT:</strong> {institutionData.rut}</p>
-                    )}
-                    
-                    <div style={{ marginTop: '20px', backgroundColor: '#f5f5f5', padding: '15px', borderRadius: '8px' }}>
-                      <h4>Estadísticas:</h4>
-                      <p>Total de publicaciones: <strong>{publications.length}</strong></p>
-                      <p>En adopción: <strong>{stats.activas}</strong></p>
-                      <p>Adoptadas: <strong>{stats.adoptadas}</strong></p>
-                      <p>Éxito de adopción: <strong>{stats.exitoPercentage}%</strong></p>
-                    </div>
                   </div>
                 </div>
               )}
