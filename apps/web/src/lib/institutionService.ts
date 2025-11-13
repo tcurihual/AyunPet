@@ -17,6 +17,7 @@ export interface InstitutionProfile {
   profilePicture?: string;
   avatar?: string;
   updatedAt?: string;
+    images?: string[];
   [key: string]: any; // Para capturar cualquier otro campo que devuelva la API
 }
 
@@ -44,6 +45,7 @@ export interface Publication {
   };
   createdAt: string;
   updatedAt?: string;
+    images?: string[];
   [key: string]: any;
 }
 
@@ -99,7 +101,7 @@ export async function fetchInstitutionProfile(
 
 /**
  * Obtiene las publicaciones (mascotas) de una institución
- * Endpoint: GET /v1/adoptions/publications?creatorId={institutionId}
+ * Endpoint: GET /v1/adoptions/publications?ownerId={institutionId}
  * 
  * @param institutionId ID de la institución
  * @param token Token de autenticación (opcional)
@@ -116,7 +118,7 @@ export async function fetchInstitutionPublications(
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const res = await fetch(
-      `${API_BASE_URL}/adoptions/publications?creatorId=${institutionId}`,
+      `${API_BASE_URL}/adoptions/publications?ownerId=${institutionId}`,
       {
         method: 'GET',
         headers,
