@@ -23,8 +23,11 @@ interface InstitutionData {
 }
 
 const InstitutionProfilePage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id: paramId } = useParams<{ id: string }>();
   const { user } = useAuth();
+  
+  // Si viene un parámetro de URL, úsalo. Si no, usa el ID del usuario logueado
+  const institutionId = paramId || user?.id;
   
   const [institutionData, setInstitutionData] = useState<InstitutionData | null>(null);
   const [publications, setPublications] = useState<any[]>([]);
@@ -35,8 +38,8 @@ const InstitutionProfilePage: React.FC = () => {
   // Cargar datos de la institución y sus publicaciones
   useEffect(() => {
     const loadInstitutionData = async () => {
-      if (!id) {
-        setError('ID de institución no proporcionado');
+      if (!institutionId) {
+        setError('ID de institución no proporcionado y no hay usuario logueado');
         setIsLoading(false);
         return;
       }
@@ -49,7 +52,7 @@ const InstitutionProfilePage: React.FC = () => {
         const token = localStorage.getItem('authToken');
         
         // Obtener perfil de la institución
-        const profileResult = await fetchInstitutionProfile(id, token || undefined);
+        const profileResult = await fetchInstitutionProfile(institutionId, token || undefined);
         if (!profileResult.ok || !profileResult.data) {
           setError(profileResult.error || 'Error al cargar el perfil');
           setIsLoading(false);
@@ -58,7 +61,7 @@ const InstitutionProfilePage: React.FC = () => {
         setInstitutionData(profileResult.data as InstitutionData);
 
         // Obtener publicaciones de la institución
-        const publicationsResult = await fetchInstitutionPublications(id, token || undefined);
+        const publicationsResult = await fetchInstitutionPublications(institutionId, token || undefined);
         if (publicationsResult.ok && publicationsResult.data) {
           setPublications(publicationsResult.data);
         } else {
@@ -73,7 +76,7 @@ const InstitutionProfilePage: React.FC = () => {
     };
 
     loadInstitutionData();
-  }, [id]);
+  }, [institutionId]);
 
   // Contar mascotas por especie
   const datosPorEspecie = useMemo(() => {
