@@ -51,8 +51,9 @@ export async function getAllNews(token?: string): Promise<ApiResult<News[]>> {
       return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
     }
 
-    const data = await res.json();
-    return { ok: true, data };
+    const payload = await res.json();
+    // Desempaqueta el array de noticias
+    return { ok: true, data: payload.data || [] };
   } catch (e: any) {
     return { ok: false, error: e?.message || 'Error de red' };
   }
