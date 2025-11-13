@@ -74,16 +74,16 @@ function App() {
             <InstitutionProfilePage />
           </ProtectedRoute>
         } 
-         <Route 
-   path="/institucion/:id" 
-   element={
-     <ProtectedRoute roles={['normal', 'tester', 'institution']}>
-       <InstitutionProfilePage />
-     </ProtectedRoute>
-   } 
- />
-      
-      />
+        />
+      <Route 
+        path="/institucion/:id" 
+        element={
+          <ProtectedRoute roles={['normal', 'tester', 'institution']}>
+            <InstitutionProfilePage />
+          </ProtectedRoute>
+        } 
+        />
+
 
       {/* Otras rutas */}
       <Route path="/perfil" element={<UserProfile/>} />
