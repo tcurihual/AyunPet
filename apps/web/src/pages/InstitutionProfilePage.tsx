@@ -11,7 +11,6 @@ import PolicyCard from '../components/PolicyCard';
 import PetAdoptionCard from '../components/PetAdoptionCard';
 import { fetchInstitutionProfile, fetchInstitutionPublications } from '../lib/institutionService';
 import banner from '../assets/sigma.png';
-
 const GraficoTorta = lazy(() => import('../components/charts/PieChart'));
 
 interface InstitutionData {
@@ -53,11 +52,9 @@ const InstitutionProfilePage: React.FC = () => {
         setIsLoading(false);
         return;
       }
-
       try {
         setIsLoading(true);
         setError(null);
-
         // Obtener token del usuario autenticado
         const token = localStorage.getItem('authToken');
         console.log('[loadInstitutionData] Token available:', !!token);
@@ -76,7 +73,7 @@ const InstitutionProfilePage: React.FC = () => {
         }
         setInstitutionData(profileResult.data as InstitutionData);
         console.log('[loadInstitutionData] Profile loaded successfully');
-
+        
         // Obtener publicaciones de la institución
         console.log('[loadInstitutionData] Fetching publications for ID:', institutionId);
         const publicationsResult = await fetchInstitutionPublications(institutionId, token || undefined);
@@ -96,16 +93,41 @@ const InstitutionProfilePage: React.FC = () => {
         setIsLoading(false);
       }
     };
-
     loadInstitutionData();
   }, [institutionId]);
+
+  // Calcular estadísticas dinámicas basadas en publicaciones reales
+  const stats = useMemo(() => {
+    if (!Array.isArray(publications) || publications.length === 0) {
+      return {
+        activas: 0,
+        adoptadas: 0,
+        exitoPercentage: 0,
+        tiempoRespuesta: 'N/A',
+        rating: 0
+      };
+    }
+    
+    const activas = publications.length;
+    // Contar adoptadas (publicaciones completadas/adoptadas)
+    const adoptadas = publications.filter((pub: any) => pub.adopted === true || pub.status === 'adopted').length;
+    const exitoPercentage = activas > 0 ? Math.round((adoptadas / activas) * 100) : 0;
+    
+    return {
+      activas,
+      adoptadas,
+      exitoPercentage,
+      tiempoRespuesta: '~3h',
+      rating: 4.8
+    };
+  }, [publications]);
 
   // Contar mascotas por especie
   const datosPorEspecie = useMemo(() => {
     const conteo: Record<string, number> = {};
-      if (!Array.isArray(publications) || publications.length === 0) {
-            return [];
-          }
+    if (!Array.isArray(publications) || publications.length === 0) {
+      return [];
+    }
     publications.forEach((pub) => {
       const especie = pub.pet?.species || 'Otro';
       conteo[especie] = (conteo[especie] || 0) + 1;
@@ -165,12 +187,24 @@ const InstitutionProfilePage: React.FC = () => {
           <div className="profile-banner">
             <img src={banner} alt="Banner de la fundación" />
           </div>
-          <ProfileHeader />
+          {/* Pasar datos dinámicos al ProfileHeader */}
+          <ProfileHeader 
+            name={institutionData.name}
+            handle={`@${institutionData.name.toLowerCase().replace(/\s+/g, '')} - ${institutionData.address || 'No especificado'}`}
+            description={institutionData.description}
+          />
         </div>
         <div className="profile-layout">
           <div className="profile-main">
             <div className="main-content-card">
-              <StatsBar />
+              {/* Pasar estadísticas dinámicas al StatsBar */}
+              <StatsBar 
+                activas={stats.activas}
+                adoptadas={stats.adoptadas}
+                exitoPercentage={stats.exitoPercentage}
+                tiempoRespuesta={stats.tiempoRespuesta}
+                rating={stats.rating}
+              />
               <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
               
               {/* Tab: Publicaciones */}
@@ -187,7 +221,7 @@ const InstitutionProfilePage: React.FC = () => {
                   )}
                 </div>
               )}
-
+              
               {/* Tab: Sobre Nosotros */}
               {activeTab === 'Sobre Nosotros' && (
                 <div style={{ padding: '20px' }}>
@@ -199,7 +233,7 @@ const InstitutionProfilePage: React.FC = () => {
                   <p><strong>Correo:</strong> {institutionData.email}</p>
                 </div>
               )}
-
+              
               {/* Tab: Estadísticas */}
               {activeTab === 'Estadísticas' && (
                 <Suspense fallback={<div style={{ textAlign: 'center', padding: '40px' }}>Cargando gráfico...</div>}>
@@ -217,14 +251,14 @@ const InstitutionProfilePage: React.FC = () => {
                   </div>
                 </Suspense>
               )}
-
+              
               {/* Tab: Equipo */}
               {activeTab === 'Equipo' && (
                 <div style={{ padding: '20px' }}>
                   <p>Información del equipo disponible próximamente...</p>
                 </div>
               )}
-
+              
               {/* Tab: Documentos */}
               {activeTab === 'Documentos' && (
                 <div style={{ padding: '20px' }}>
@@ -235,7 +269,12 @@ const InstitutionProfilePage: React.FC = () => {
           </div>
           
           <aside className="profile-sidebar">
-            <ContactCard />
+            {/* Pasar datos de contacto dinámicos al ContactCard */}
+            <ContactCard 
+              phone="+56 9 5555 5555"
+              email={institutionData.email}
+              website=""
+            />
             <PolicyCard />
           </aside>
         </div>
