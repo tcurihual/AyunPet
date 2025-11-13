@@ -15,6 +15,8 @@
   --color-border-light: #f2e8d5;
   --color-border-accent: #E5D5BE;
   --color-shadow: rgba(0, 0, 0, 0.05);
+  --color-event-bg: #fffbe3;
+  --color-event-text: #333333;
 }
 
 .news-page-container {
@@ -55,6 +57,9 @@
   box-shadow: 0 6px 20px var(--color-shadow);
   transition: all 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .news-card:hover {
@@ -82,6 +87,9 @@
 
 .news-card-content {
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .news-card-category {
@@ -117,17 +125,27 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 16px;
-  padding: 12px;
-  background-color: #fef7ed;
+  padding: 14px 16px 14px 20px;
+  background-color: var(--color-event-bg);
   border-left: 4px solid #f59e0b;
   border-radius: 8px;
 }
 
-.news-event-date,
-.news-event-time {
-  font-size: 0.9rem;
-  color: var(--color-text-accent);
-  font-weight: 500;
+.news-event-date .event-date-text,
+.news-event-time .event-time-text {
+  color: var(--color-event-text);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.news-event-date, .news-event-time {
+  font-size: 0.96rem;
+  color: var(--color-event-text);
+}
+
+.highlight-event {
+  background: var(--color-event-bg);
+  color: var(--color-event-text) !important;
 }
 
 .news-card-meta {
@@ -152,7 +170,25 @@
   font-weight: 600;
 }
 
-/* Estados de loading y error */
+.btn.btn-submit {
+  background-color: var(--color-btn-primary-bg);
+  color: white;
+  padding: 13px 38px;
+  border-radius: 8px;
+  font-size: 1.07rem;
+  font-weight: 600;
+  border: none;
+  transition: background .2s, transform .2s;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: 0 1px 5px 0 #ddd4;
+}
+
+.btn.btn-submit:hover {
+  background-color: var(--color-btn-primary-hover);
+  transform: translateY(-2px);
+}
+
 .loading-container {
   display: flex;
   flex-direction: column;
