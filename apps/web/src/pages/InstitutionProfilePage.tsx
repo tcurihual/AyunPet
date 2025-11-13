@@ -19,20 +19,16 @@ interface InstitutionData {
   email: string;
   description?: string;
   address?: string;
+  rut?: string;
+  phone?: string;
+  website?: string;
 }
 
 const InstitutionProfilePage: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const { user } = useAuth();
   
-  // Log para debugging
-  console.log('[InstitutionProfilePage] paramId:', paramId);
-  console.log('[InstitutionProfilePage] user:', user);
-  
-  // Si viene un parámetro de URL, úsalo. Si no, usa el ID del usuario logueado
   const institutionId = paramId || user?.id;
-  
-  console.log('[InstitutionProfilePage] institutionId final:', institutionId);
   
   const [institutionData, setInstitutionData] = useState<InstitutionData | null>(null);
   const [publications, setPublications] = useState<any[]>([]);
@@ -40,55 +36,35 @@ const InstitutionProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('Publicaciones');
 
-  // Cargar datos de la institución y sus publicaciones
   useEffect(() => {
     const loadInstitutionData = async () => {
-      console.log('[loadInstitutionData] Starting with ID:', institutionId);
-      
       if (!institutionId) {
-        const errorMsg = 'ID de institución no proporcionado y no hay usuario logueado';
-        console.error('[loadInstitutionData]', errorMsg);
-        setError(errorMsg);
+        setError('ID de institución no proporcionado');
         setIsLoading(false);
         return;
       }
       try {
         setIsLoading(true);
         setError(null);
-        // Obtener token del usuario autenticado
         const token = localStorage.getItem('authToken');
-        console.log('[loadInstitutionData] Token available:', !!token);
         
-        // Obtener perfil de la institución
-        console.log('[loadInstitutionData] Fetching profile for ID:', institutionId);
         const profileResult = await fetchInstitutionProfile(institutionId, token || undefined);
-        console.log('[loadInstitutionData] Profile result:', profileResult);
         
         if (!profileResult.ok || !profileResult.data) {
-          const errMsg = profileResult.error || 'Error al cargar el perfil';
-          console.error('[loadInstitutionData] Profile error:', errMsg);
-          setError(errMsg);
+          setError(profileResult.error || 'Error al cargar el perfil');
           setIsLoading(false);
           return;
         }
-        setInstitutionData(profileResult.data as InstitutionData);
-        console.log('[loadInstitutionData] Profile loaded successfully');
+        setInstitutionData(profileResult.data);
         
-        // Obtener publicaciones de la institución
-        console.log('[loadInstitutionData] Fetching publications for ID:', institutionId);
         const publicationsResult = await fetchInstitutionPublications(institutionId, token || undefined);
-        console.log('[loadInstitutionData] Publications result:', publicationsResult);
-        
         if (publicationsResult.ok && publicationsResult.data) {
           setPublications(publicationsResult.data);
-          console.log('[loadInstitutionData] Publications loaded:', publicationsResult.data.length, 'items');
         } else {
-          console.warn('[loadInstitutionData] Publications error:', publicationsResult.error);
           setPublications([]);
         }
       } catch (err: any) {
-        console.error('[loadInstitutionData] Exception:', err);
-        setError(err?.message || 'Error desconocido al cargar datos');
+        setError(err?.message || 'Error desconocido');
       } finally {
         setIsLoading(false);
       }
@@ -96,22 +72,16 @@ const InstitutionProfilePage: React.FC = () => {
     loadInstitutionData();
   }, [institutionId]);
 
-  // Calcular estadísticas dinámicas basadas en publicaciones reales
+  // Cálculo mejorado de estadísticas basado en datos reales
   const stats = useMemo(() => {
     if (!Array.isArray(publications) || publications.length === 0) {
-      return {
-        activas: 0,
-        adoptadas: 0,
-        exitoPercentage: 0,
-        tiempoRespuesta: 'N/A',
-        rating: 0
-      };
+      return { activas: 0, adoptadas: 0, exitoPercentage: 0, tiempoRespuesta: 'N/A', rating: 0 };
     }
     
-    const activas = publications.length;
-    // Contar adoptadas (publicaciones completadas/adoptadas)
-    const adoptadas = publications.filter((pub: any) => pub.adopted === true || pub.status === 'adopted').length;
-    const exitoPercentage = activas > 0 ? Math.round((adoptadas / activas) * 100) : 0;
+    const activas = publications.filter((pub: any) => pub.status !== 'adopted' && pub.adopted !== true).length;
+    const adoptadas = publications.filter((pub: any) => pub.status === 'adopted' || pub.adopted === true).length;
+    const totalPublicaciones = publications.length;
+    const exitoPercentage = totalPublicaciones > 0 ? Math.round((adoptadas / totalPublicaciones) * 100) : 0;
     
     return {
       activas,
@@ -122,12 +92,11 @@ const InstitutionProfilePage: React.FC = () => {
     };
   }, [publications]);
 
-  // Contar mascotas por especie
+  // Datos por especie
   const datosPorEspecie = useMemo(() => {
     const conteo: Record<string, number> = {};
-    if (!Array.isArray(publications) || publications.length === 0) {
-      return [];
-    }
+    if (!Array.isArray(publications) || publications.length === 0) return [];
+    
     publications.forEach((pub) => {
       const especie = pub.pet?.species || 'Otro';
       conteo[especie] = (conteo[especie] || 0) + 1;
@@ -137,7 +106,6 @@ const InstitutionProfilePage: React.FC = () => {
 
   const coloresEspecie = ['#FFBB28', '#00C49F', '#AF19FF'];
 
-  // Estado de carga inicial
   if (isLoading) {
     return (
       <div className="page-container">
@@ -150,7 +118,6 @@ const InstitutionProfilePage: React.FC = () => {
     );
   }
 
-  // Mostrar error si existe
   if (error) {
     return (
       <div className="page-container">
@@ -166,7 +133,6 @@ const InstitutionProfilePage: React.FC = () => {
     );
   }
 
-  // Si no hay datos
   if (!institutionData) {
     return (
       <div className="page-container">
@@ -185,9 +151,8 @@ const InstitutionProfilePage: React.FC = () => {
       <div className="profile-page-container">
         <div className="profile-banner-container">
           <div className="profile-banner">
-            <img src={banner} alt="Banner de la fundación" />
+            <img src={banner} alt="Banner" />
           </div>
-          {/* Pasar datos dinámicos al ProfileHeader */}
           <ProfileHeader 
             name={institutionData.name}
             handle={`@${institutionData.name.toLowerCase().replace(/\s+/g, '')} - ${institutionData.address || 'No especificado'}`}
@@ -197,7 +162,6 @@ const InstitutionProfilePage: React.FC = () => {
         <div className="profile-layout">
           <div className="profile-main">
             <div className="main-content-card">
-              {/* Pasar estadísticas dinámicas al StatsBar */}
               <StatsBar 
                 activas={stats.activas}
                 adoptadas={stats.adoptadas}
@@ -207,7 +171,6 @@ const InstitutionProfilePage: React.FC = () => {
               />
               <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
               
-              {/* Tab: Publicaciones */}
               {activeTab === 'Publicaciones' && (
                 <div className="pets-grid">
                   {publications && publications.length > 0 ? (
@@ -222,44 +185,55 @@ const InstitutionProfilePage: React.FC = () => {
                 </div>
               )}
               
-              {/* Tab: Sobre Nosotros */}
               {activeTab === 'Sobre Nosotros' && (
                 <div style={{ padding: '20px' }}>
                   <h3>{institutionData.name}</h3>
-                  <p>{institutionData.description || 'Sin descripción disponible'}</p>
-                  {institutionData.address && (
-                    <p><strong>Dirección:</strong> {institutionData.address}</p>
-                  )}
-                  <p><strong>Correo:</strong> {institutionData.email}</p>
+                  <div style={{ marginTop: '15px', lineHeight: '1.6' }}>
+                    <p><strong>Descripción:</strong></p>
+                    <p>{institutionData.description || 'Sin descripción disponible'}</p>
+                    
+                    {institutionData.address && (
+                      <>
+                        <p style={{ marginTop: '15px' }}><strong>Ubicación:</strong> {institutionData.address}</p>
+                      </>
+                    )}
+                    
+                    <p style={{ marginTop: '15px' }}><strong>Correo de contacto:</strong> {institutionData.email}</p>
+                    
+                    {institutionData.rut && (
+                      <p style={{ marginTop: '10px' }}><strong>RUT:</strong> {institutionData.rut}</p>
+                    )}
+                    
+                    <div style={{ marginTop: '20px', backgroundColor: '#f5f5f5', padding: '15px', borderRadius: '8px' }}>
+                      <h4>Estadísticas:</h4>
+                      <p>Total de publicaciones: <strong>{publications.length}</strong></p>
+                      <p>En adopción: <strong>{stats.activas}</strong></p>
+                      <p>Adoptadas: <strong>{stats.adoptadas}</strong></p>
+                      <p>Éxito de adopción: <strong>{stats.exitoPercentage}%</strong></p>
+                    </div>
+                  </div>
                 </div>
               )}
               
-              {/* Tab: Estadísticas */}
               {activeTab === 'Estadísticas' && (
                 <Suspense fallback={<div style={{ textAlign: 'center', padding: '40px' }}>Cargando gráfico...</div>}>
                   <div>
-                    <h3 style={{ textAlign: 'center', marginTop: '40px' }}>
-                      Distribución de Especies
-                    </h3>
+                    <h3 style={{ textAlign: 'center', marginTop: '40px' }}>Distribución de Especies</h3>
                     {datosPorEspecie && datosPorEspecie.length > 0 ? (
                       <GraficoTorta data={datosPorEspecie} colors={coloresEspecie} />
                     ) : (
-                      <p style={{ textAlign: 'center', marginTop: '20px' }}>
-                        No hay datos suficientes para mostrar estadísticas.
-                      </p>
+                      <p style={{ textAlign: 'center', marginTop: '20px' }}>No hay datos disponibles.</p>
                     )}
                   </div>
                 </Suspense>
               )}
               
-              {/* Tab: Equipo */}
               {activeTab === 'Equipo' && (
                 <div style={{ padding: '20px' }}>
                   <p>Información del equipo disponible próximamente...</p>
                 </div>
               )}
               
-              {/* Tab: Documentos */}
               {activeTab === 'Documentos' && (
                 <div style={{ padding: '20px' }}>
                   <p>Documentos disponibles próximamente...</p>
@@ -269,11 +243,10 @@ const InstitutionProfilePage: React.FC = () => {
           </div>
           
           <aside className="profile-sidebar">
-            {/* Pasar datos de contacto dinámicos al ContactCard */}
             <ContactCard 
-              phone="+56 9 5555 5555"
+              phone={institutionData.phone}
               email={institutionData.email}
-              website=""
+              website={institutionData.website}
             />
             <PolicyCard />
           </aside>
