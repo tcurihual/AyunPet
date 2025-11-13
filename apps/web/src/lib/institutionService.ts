@@ -11,6 +11,13 @@ export interface InstitutionProfile {
   role: string;
   emailVerified: boolean;
   createdAt?: string;
+  // Campos adicionales que podrían venir del API
+  phone?: string;
+  website?: string;
+  profilePicture?: string;
+  avatar?: string;
+  updatedAt?: string;
+  [key: string]: any; // Para capturar cualquier otro campo que devuelva la API
 }
 
 export interface Publication {
@@ -18,6 +25,7 @@ export interface Publication {
   title: string;
   description: string;
   status: string;
+  adopted?: boolean;
   creator: {
     id: string;
     name: string;
@@ -32,8 +40,11 @@ export interface Publication {
     gender: string;
     size: string;
     sterilized: boolean;
+    [key: string]: any;
   };
   createdAt: string;
+  updatedAt?: string;
+  [key: string]: any;
 }
 
 export interface ApiResult<T = any> {
@@ -46,8 +57,15 @@ export interface ApiResult<T = any> {
 /**
  * Obtiene el perfil de una institución por su ID
  * Endpoint: GET /v1/entities/users/{id}
+ * 
+ * @param institutionId ID de la institución
+ * @param token Token de autenticación (opcional)
+ * @returns Perfil de la institución o error
  */
-export async function fetchInstitutionProfile(institutionId: string, token?: string): Promise<ApiResult<InstitutionProfile>> {
+export async function fetchInstitutionProfile(
+  institutionId: string,
+  token?: string
+): Promise<ApiResult<InstitutionProfile>> {
   try {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
@@ -60,9 +78,21 @@ export async function fetchInstitutionProfile(institutionId: string, token?: str
     });
 
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
-    return { ok: true, data: payload.data || payload };
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: payload?.message || payload?.error || `Error ${res.status}`,
+      };
+    }
+
+    // La API puede devolver data envuelta o directo
+    const profileData = payload.data || payload;
+    console.log('[fetchInstitutionProfile] Datos recibidos de API:', profileData);
+
+    return { ok: true, data: profileData as InstitutionProfile };
   } catch (e: any) {
+    console.error('[fetchInstitutionProfile] Error:', e);
     return { ok: false, error: e?.message || 'Error de red' };
   }
 }
@@ -70,26 +100,47 @@ export async function fetchInstitutionProfile(institutionId: string, token?: str
 /**
  * Obtiene las publicaciones (mascotas) de una institución
  * Endpoint: GET /v1/adoptions/publications?creatorId={institutionId}
+ * 
+ * @param institutionId ID de la institución
+ * @param token Token de autenticación (opcional)
+ * @returns Lista de publicaciones o error
  */
-export async function fetchInstitutionPublications(institutionId: string, token?: string): Promise<ApiResult<Publication[]>> {
+export async function fetchInstitutionPublications(
+  institutionId: string,
+  token?: string
+): Promise<ApiResult<Publication[]>> {
   try {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE_URL}/adoptions/publications?creatorId=${institutionId}`, {
-      method: 'GET',
-      headers,
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/adoptions/publications?creatorId=${institutionId}`,
+      {
+        method: 'GET',
+        headers,
+      }
+    );
 
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
-    
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: payload?.message || payload?.error || `Error ${res.status}`,
+      };
+    }
+
     // La API retorna un array o envuelto en 'data'
-    const publications = Array.isArray(payload) ? payload : payload.data || [];
-    return { ok: true, data: publications };
+    const publications = Array.isArray(payload)
+      ? payload
+      : payload.data || [];
+    console.log('[fetchInstitutionPublications] Publicaciones recibidas:', publications.length);
+
+    return { ok: true, data: publications as Publication[] };
   } catch (e: any) {
+    console.error('[fetchInstitutionPublications] Error:', e);
     return { ok: false, error: e?.message || 'Error de red' };
   }
 }
@@ -97,25 +148,44 @@ export async function fetchInstitutionPublications(institutionId: string, token?
 /**
  * Obtiene las solicitudes de adopción recibidas por una institución
  * Endpoint: GET /v1/adoptions/adoption-requests?institutionId={institutionId}
+ * 
+ * @param institutionId ID de la institución
+ * @param token Token de autenticación (opcional)
+ * @returns Lista de solicitudes de adopción o error
  */
-export async function fetchInstitutionAdoptionRequests(institutionId: string, token?: string): Promise<ApiResult<any[]>> {
+export async function fetchInstitutionAdoptionRequests(
+  institutionId: string,
+  token?: string
+): Promise<ApiResult<any[]>> {
   try {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE_URL}/adoptions/adoption-requests?institutionId=${institutionId}`, {
-      method: 'GET',
-      headers,
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/adoptions/adoption-requests?institutionId=${institutionId}`,
+      {
+        method: 'GET',
+        headers,
+      }
+    );
 
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
-    
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: payload?.message || payload?.error || `Error ${res.status}`,
+      };
+    }
+
     const requests = Array.isArray(payload) ? payload : payload.data || [];
+    console.log('[fetchInstitutionAdoptionRequests] Solicitudes recibidas:', requests.length);
+
     return { ok: true, data: requests };
   } catch (e: any) {
+    console.error('[fetchInstitutionAdoptionRequests] Error:', e);
     return { ok: false, error: e?.message || 'Error de red' };
   }
 }
