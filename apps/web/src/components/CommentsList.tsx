@@ -10,7 +10,6 @@ import {
 interface CommentsListProps {
   postId: number;
 }
-
 const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -18,8 +17,6 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Cargar comentarios cuando el componente se monta
   useEffect(() => {
     loadComments();
   }, [postId]);
@@ -35,26 +32,8 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
       if (result.ok && result.data) {
         setComments(result.data);
       } else {
-        // Si la API no está disponible, mostrar comentarios mock
-        console.warn('API de comentarios no disponible, usando datos de prueba');
-        setComments([
-          {
-            id: 1,
-            post_id: postId,
-            user_id: 1,
-            author: 'María López',
-            content: '¡Qué tierno! Espero que encuentre una familia pronto ❤️',
-            created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-          },
-          {
-            id: 2,
-            post_id: postId,
-            user_id: 2,
-            author: 'Juan Pérez',
-            content: 'Me interesa adoptar, ¿dónde puedo contactarlos?',
-            created_at: new Date(Date.now() - 86400000).toISOString(),
-          },
-        ]);
+        console.warn('No se pudieron cargar comentarios desde la API');
+        setComments([]);
       }
     } catch (err: any) {
       console.error('Error al cargar comentarios:', err);
@@ -66,8 +45,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
+    if (!user || !user.id) { 
       alert('Debes iniciar sesión para comentar');
       return;
     }
@@ -81,28 +59,20 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
 
     try {
       const token = localStorage.getItem('authToken') || '';
-      const result = await createComment(token, {
-        post_id: postId,
-        content: newComment.trim()
-      });
+      const userId = Number(user.id); 
+      
+      const result = await createComment(
+        postId, 
+        token, 
+        userId, 
+        { content: newComment.trim() }
+      );
 
       if (result.ok && result.data) {
-        // Agregar el nuevo comentario a la lista
         setComments([result.data, ...comments]);
         setNewComment('');
       } else {
-        // Si la API no está disponible, simular la creación
-        console.warn('API de comentarios no disponible, simulando creación');
-        const mockComment: Comment = {
-          id: Date.now(),
-          post_id: postId,
-          user_id: parseInt(user.id),
-          author: user.name || 'Usuario actual',
-          content: newComment.trim(),
-          created_at: new Date().toISOString(),
-        };
-        setComments([mockComment, ...comments]);
-        setNewComment('');
+        setError(result.error || 'No se pudo publicar el comentario');
       }
     } catch (err: any) {
       console.error('Error al crear comentario:', err);
@@ -124,8 +94,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
       if (result.ok) {
         setComments(comments.filter(c => c.id !== commentId));
       } else {
-        console.warn('API de comentarios no disponible, eliminando localmente');
-        setComments(comments.filter(c => c.id !== commentId));
+        alert(result.error || 'No se pudo eliminar el comentario');
       }
     } catch (err: any) {
       console.error('Error al eliminar comentario:', err);
@@ -212,7 +181,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
                 <div style={{ flex: 1 }}>
                   <p className="comment-content">{comment.content}</p>
                   <small className="comment-meta">
-                    <strong>{comment.author}</strong> · {formatDate(comment.created_at)}
+                    <strong>{comment.user?.name || 'Usuario'}</strong> · {formatDate(comment.created_at)}
                   </small>
                 </div>
                 {user && user.id === String(comment.user_id) && (

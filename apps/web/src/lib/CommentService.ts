@@ -1,17 +1,22 @@
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://ayunpet-api.eastus2.cloudapp.azure.com/v1').replace(/\/$/, '');
+// Base URL de la API - se ajusta dinámicamente según ambiente
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://ayunpet-api.eastus2.cloudapp.azure.com').replace(/\/$/, '');
 
+// Interfaces basadas en el contrato de la API
 export interface Comment {
   id: number;
-  post_id: number;
+  publication_id: number; // Coincide con la API
   user_id: number;
-  author: string; 
   content: string;
   created_at: string;
   updated_at?: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 export interface CreateCommentInput {
-  post_id: number;
   content: string;
 }
 
@@ -19,119 +24,149 @@ export interface ApiResult<T = any> {
   ok: boolean;
   data?: T;
   error?: string;
+  message?: string;
 }
 
-export async function getCommentsByPost(postId: number, token?: string): Promise<ApiResult<Comment[]>> {
+/**
+ * Obtiene todos los comentarios de una publicación
+ * GET /v1/adoptions/messages/post/{post_id}
+ */
+export async function getCommentsByPost(publicationId: number, token?: string): Promise<ApiResult<Comment[]>> {
   try {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE_URL}/adoptions/messages`, {
+    console.log(`[CommentService] Fetching comments for publication ${publicationId}`);
+    
+    // RUTA CORRECTA
+    const res = await fetch(`${API_BASE_URL}/v1/adoptions/messages/post/${publicationId}`, {
       method: 'GET',
       headers,
     });
 
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
     
-    let messages = payload.data || payload;
-    if (Array.isArray(messages)) {
-      messages = messages.filter((msg: any) => msg.postid === postId || msg.post_id === postId);
-      messages = messages.map((msg: any) => ({
-        id: msg.id,
-        post_id: msg.postid || msg.post_id,
-        user_id: msg.creatorid || msg.user_id,
-        author: msg.creator_name || 'Usuario',
-        content: msg.description,
-        created_at: msg.createdat || msg.created_at || new Date().toISOString(),
-      }));
+    if (!res.ok) {
+      console.error('[CommentService] Error fetching comments:', payload);
+      return { 
+        ok: false, 
+        error: payload?.message || payload?.error || `Error ${res.status}: ${res.statusText}` 
+      };
     }
     
-    return { ok: true, data: messages };
+    console.log('[CommentService] Comments fetched successfully:', payload);
+    return { ok: true, data: payload.data || payload };
   } catch (e: any) {
+    console.error('[CommentService] Network error:', e);
     return { ok: false, error: e?.message || 'Error de red al obtener comentarios' };
   }
 }
 
-export async function createComment(token: string, input: CreateCommentInput): Promise<ApiResult<Comment>> {
+/**
+ * Crea un nuevo comentario en una publicación
+ * POST /v1/adoptions/messages
+ */
+export async function createComment(
+  publicationId: number, 
+  token: string, 
+  userId: number, // <-- AÑADIDO: Para enviar 'creatorId'
+  input: CreateCommentInput
+): Promise<ApiResult<Comment>> {
   try {
+    if (!input.content || input.content.trim().length === 0) {
+      return { ok: false, error: 'El contenido del comentario no puede estar vacío' };
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE_URL}/adoptions/messages`, {
+    console.log(`[CommentService] Creating comment for publication ${publicationId}`);
+    
+    const res = await fetch(`${API_BASE_URL}/v1/adoptions/messages`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
-        postid: input.post_id,
-        description: input.content.trim(),
-        status: 'active' 
+        // CORRECCIÓN: Usar los nombres de campo esperados por el servidor
+        creatorId: userId, // ID del usuario logeado
+        postId: publicationId, // ID de la publicación
+        description: input.content.trim() // Contenido del comentario
       }),
     });
 
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
     
-    const message = payload.data || payload;
-    const comment: Comment = {
-      id: message.id,
-      post_id: message.postid || message.post_id,
-      user_id: message.creatorid || message.user_id,
-      author: message.creator_name || 'Tú',
-      content: message.description,
-      created_at: message.createdat || message.created_at || new Date().toISOString(),
-    };
+    if (!res.ok) {
+      console.error('[CommentService] Error creating comment:', payload);
+      return { 
+        ok: false, 
+        error: payload?.message || payload?.error || `Error ${res.status}: ${res.statusText}` 
+      };
+    }
     
-    return { ok: true, data: comment };
+    console.log('[CommentService] Comment created successfully:', payload);
+    return { ok: true, data: payload.data || payload };
   } catch (e: any) {
+    console.error('[CommentService] Network error:', e);
     return { ok: false, error: e?.message || 'Error de red al crear comentario' };
   }
 }
 
 /**
  * Actualiza un comentario existente
- * TEMPORAL: Usando endpoint PUT /adoptions/messages/{id}
- * FUTURO: PUT /adoptions/comments/:commentId
+ * PUT /v1/adoptions/messages/:commentId
  */
-export async function updateComment(token: string, commentId: number, content: string): Promise<ApiResult<Comment>> {
+export async function updateComment(
+  commentId: number,
+  token: string,
+  content: string
+): Promise<ApiResult<Comment>> {
   try {
+    if (!content || content.trim().length === 0) {
+      return { ok: false, error: 'El contenido del comentario no puede estar vacío' };
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    // TEMPORAL: Usando /messages/{id}
-    const res = await fetch(`${API_BASE_URL}/adoptions/messages/${commentId}`, {
+    console.log(`[CommentService] Updating comment ${commentId}`);
+    
+    // RUTA CORRECTA
+    const res = await fetch(`${API_BASE_URL}/v1/adoptions/messages/${commentId}`, {
       method: 'PUT',
       headers,
-      body: JSON.stringify({ description: content.trim() }),
+      body: JSON.stringify({ content: content.trim() }),
     });
 
     const payload = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
     
-    // Mapear respuesta
-    const message = payload.data || payload;
-    const comment: Comment = {
-      id: message.id,
-      post_id: message.postid || message.post_id,
-      user_id: message.creatorid || message.user_id,
-      author: message.creator_name || 'Tú',
-      content: message.description,
-      created_at: message.createdat || message.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+    if (!res.ok) {
+      console.error('[CommentService] Error updating comment:', payload);
+      return { 
+        ok: false, 
+        error: payload?.message || payload?.error || `Error ${res.status}: ${res.statusText}` 
+      };
+    }
     
-    return { ok: true, data: comment };
+    console.log('[CommentService] Comment updated successfully:', payload);
+    return { ok: true, data: payload.data || payload };
   } catch (e: any) {
+    console.error('[CommentService] Network error:', e);
     return { ok: false, error: e?.message || 'Error de red al actualizar comentario' };
   }
 }
+
+/**
+ * Elimina un comentario
+ * DELETE /v1/adoptions/messages/:commentId
+ */
 export async function deleteComment(token: string, commentId: number): Promise<ApiResult<void>> {
   try {
     const headers: Record<string, string> = {
@@ -139,18 +174,27 @@ export async function deleteComment(token: string, commentId: number): Promise<A
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    const res = await fetch(`${API_BASE_URL}/adoptions/messages/${commentId}`, {
+    console.log(`[CommentService] Deleting comment ${commentId}`);
+    
+    // RUTA CORRECTA
+    const res = await fetch(`${API_BASE_URL}/v1/adoptions/messages/${commentId}`, {
       method: 'DELETE',
       headers,
     });
 
     if (!res.ok) {
       const payload = await res.json().catch(() => ({}));
-      return { ok: false, error: payload?.message || payload?.error || `Error ${res.status}` };
+      console.error('[CommentService] Error deleting comment:', payload);
+      return { 
+        ok: false, 
+        error: payload?.message || payload?.error || `Error ${res.status}: ${res.statusText}` 
+      };
     }
     
+    console.log('[CommentService] Comment deleted successfully');
     return { ok: true };
   } catch (e: any) {
+    console.error('[CommentService] Network error:', e);
     return { ok: false, error: e?.message || 'Error de red al eliminar comentario' };
   }
 }
