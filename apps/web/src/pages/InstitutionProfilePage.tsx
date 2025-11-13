@@ -103,6 +103,9 @@ const InstitutionProfilePage: React.FC = () => {
   // Contar mascotas por especie
   const datosPorEspecie = useMemo(() => {
     const conteo: Record<string, number> = {};
+      if (!Array.isArray(publications) || publications.length === 0) {
+            return [];
+          }
     publications.forEach((pub) => {
       const especie = pub.pet?.species || 'Otro';
       conteo[especie] = (conteo[especie] || 0) + 1;
