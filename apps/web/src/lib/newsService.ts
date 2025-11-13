@@ -33,14 +33,17 @@ export interface ApiResult<T = any> {
   error?: string;
 }
 
-// GET /v1/entities/news - Listar todas las noticias
-export async function getAllNews(): Promise<ApiResult<News[]>> {
+// GET /v1/entities/news - Listar todas las noticias (ahora admite token)
+export async function getAllNews(token?: string): Promise<ApiResult<News[]>> {
   try {
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+    };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const res = await fetch(`${API_BASE_URL}/entities/news`, {
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
+      headers,
     });
 
     if (!res.ok) {
@@ -63,17 +66,13 @@ export async function createNews(token: string, input: CreateNewsInput): Promise
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
-    // Crear FormData para multipart/form-data (requerido para archivos)
     const formData = new FormData();
-    
     formData.append('title', input.title);
     formData.append('description', input.description);
     if (input.date) formData.append('date', input.date);
     if (input.start_time) formData.append('start_time', input.start_time);
     if (input.end_time) formData.append('end_time', input.end_time);
     if (input.status) formData.append('status', input.status);
-    
-    // Archivos de imagen
     if (input.files && input.files.length > 0) {
       input.files.forEach((file) => {
         formData.append('files', file);
@@ -103,14 +102,12 @@ export async function updateNews(token: string, id: number, input: UpdateNewsInp
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const formData = new FormData();
-    
     if (input.title) formData.append('title', input.title);
     if (input.description) formData.append('description', input.description);
     if (input.date) formData.append('date', input.date);
     if (input.start_time) formData.append('start_time', input.start_time);
     if (input.end_time) formData.append('end_time', input.end_time);
     if (input.status) formData.append('status', input.status);
-    
     if (input.files && input.files.length > 0) {
       input.files.forEach((file) => {
         formData.append('files', file);
