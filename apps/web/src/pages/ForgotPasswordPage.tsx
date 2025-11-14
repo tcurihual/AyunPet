@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { forgotPasswordService } from '../lib/authService';
+import './css/ForgotPasswordPage.css';
 
 interface ForgotPasswordPageProps {
   // Props opcionales para testing
