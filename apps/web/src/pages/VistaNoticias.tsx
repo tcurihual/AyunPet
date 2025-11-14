@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { getAllNews, News } from '../lib/newsService';
 import { useAuth } from '../context/AuthContext';
-import './VistaNoticias.css';
+import './css/VistaNoticias.css';
 
 const NEWS_PER_PAGE = 6;
 

@@ -7,6 +7,8 @@ import { z } from 'zod';
 import { useLoading } from '../context/LoadingContext';
 import { useAuth } from '../context/AuthContext';
 import { createPost } from '../lib/postsService';
+import './css/CreatePostPage.css';
+
 
 const createPostSchema = z.object({
   title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { resetPasswordService, isValidPassword } from '../lib/authService';
+import './css/ResetPasswordPage.css';
 
 interface ResetPasswordPageProps {
   // Props opcionales para testing
