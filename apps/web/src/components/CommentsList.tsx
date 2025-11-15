@@ -1,212 +1,220 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { 
-  getCommentsByPost, 
-  createComment, 
-  deleteComment, 
-  type Comment 
-} from '../lib/CommentService'
+
+interface Comment {
+  id: number;
+  creator_id: number;
+  post_id: number;
+  description: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  creator: {
+    id: number;
+    name: string;
+    profilePhoto: string | null;
+  };
+}
 
 interface CommentsListProps {
   postId: number;
+  AvatarComponent: React.FC<{ name: string; size?: number }>;
 }
-const CommentsList: React.FC<CommentsListProps> = ({ postId }) => {
+
+const API_BASE_URL = 'http://ayunpet-api.eastus2.cloudapp.azure.com/v1';
+
+const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
     loadComments();
   }, [postId]);
 
   const loadComments = async () => {
-    setIsLoading(true);
-    setError(null);
-
+    setLoading(true);
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
+    
     try {
-      const token = localStorage.getItem('authToken') || '';
-      const result = await getCommentsByPost(postId, token);
-
-      if (result.ok && result.data) {
-        setComments(result.data);
-      } else {
-        console.warn('No se pudieron cargar comentarios desde la API');
-        setComments([]);
-      }
-    } catch (err: any) {
-      console.error('Error al cargar comentarios:', err);
-      setError('No se pudieron cargar los comentarios');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user || !user.id) { 
-      alert('Debes iniciar sesión para comentar');
-      return;
-    }
-
-    if (!newComment.trim()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const token = localStorage.getItem('authToken') || '';
-      const userId = Number(user.id); 
-      
-      const result = await createComment(
-        postId, 
-        token, 
-        userId, 
-        { content: newComment.trim() }
+      const response = await fetch(
+        `${API_BASE_URL}/adoptions/messages/post/${postId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
 
-      if (result.ok && result.data) {
-        setComments([result.data, ...comments]);
-        setNewComment('');
-      } else {
-        setError(result.error || 'No se pudo publicar el comentario');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.data && Array.isArray(result.data)) {
+          setComments(result.data);
+        }
       }
-    } catch (err: any) {
-      console.error('Error al crear comentario:', err);
-      setError('No se pudo publicar el comentario. Intenta nuevamente.');
+    } catch (error) {
+      console.error('Error al cargar comentarios:', error);
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  const handleDeleteComment = async (commentId: number) => {
-    if (!window.confirm('¿Estás seguro de eliminar este comentario?')) {
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim() || !user) return;
+
+    setSubmitting(true);
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
 
     try {
-      const token = localStorage.getItem('authToken') || '';
-      const result = await deleteComment(token, commentId);
+      const response = await fetch(
+        `${API_BASE_URL}/adoptions/messages`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            post_id: postId,
+            description: newComment 
+          })
+        }
+      );
 
-      if (result.ok) {
-        setComments(comments.filter(c => c.id !== commentId));
-      } else {
-        alert(result.error || 'No se pudo eliminar el comentario');
+      if (response.ok) {
+        setNewComment('');
+        await loadComments();
       }
-    } catch (err: any) {
-      console.error('Error al eliminar comentario:', err);
-      alert('No se pudo eliminar el comentario');
+    } catch (error) {
+      console.error('Error al enviar comentario:', error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return 'Hoy';
-    if (diffDays === 1) return 'Ayer';
-    if (diffDays < 7) return `Hace ${diffDays} días`;
-    
-    return date.toLocaleDateString('es-ES', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
+    try {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - date.getTime());
+      const diffMinutes = Math.floor(diffTime / (1000 * 60));
+      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffMinutes < 1) return 'Justo ahora';
+      if (diffMinutes < 60) return `Hace ${diffMinutes} min`;
+      if (diffHours < 24) return `Hace ${diffHours}h`;
+      if (diffDays === 1) return 'Ayer';
+      if (diffDays < 7) return `Hace ${diffDays} días`;
+      return date.toLocaleDateString('es-ES');
+    } catch {
+      return dateString;
+    }
   };
 
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '2rem', color: '#7f8c8d' }}>
+        Cargando comentarios...
+      </div>
+    );
+  }
+
   return (
-    <section className="comments-section">
-      <h2>Comentarios ({comments.length})</h2>
-
-      {error && (
-        <div style={{ 
-          backgroundColor: '#fee2e2', 
-          color: '#991b1b', 
-          padding: '12px', 
-          borderRadius: '8px',
-          marginBottom: '20px' 
-        }}>
-          {error}
-        </div>
-      )}
-
-      {user ? (
-        <form onSubmit={handleAddComment} className="comment-form">
-          <textarea
-            rows={3}
-            placeholder="Escribe un comentario..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="comment-textarea"
-            disabled={isSubmitting}
-          />
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-comment"
-            disabled={isSubmitting || !newComment.trim()}
-          >
-            {isSubmitting ? '⏳ Publicando...' : 'Comentar'}
-          </button>
+    <div style={{ width: '100%' }}>
+      {user && (
+        <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+            <AvatarComponent name={user.name || user.email} size={44} />
+            <div style={{ flex: 1 }}>
+              <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Escribe un comentario..."
+                disabled={submitting}
+                style={{
+                  width: '100%',
+                  minHeight: '80px',
+                  padding: '0.75rem 1rem',
+                  fontSize: '0.95rem',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '12px',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  outline: 'none',
+                  backgroundColor: submitting ? '#f5f5f5' : 'white'
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#FF6B35'}
+                onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+              />
+              <button
+                type="submit"
+                disabled={!newComment.trim() || submitting}
+                style={{
+                  marginTop: '0.75rem',
+                  padding: '0.65rem 1.5rem',
+                  backgroundColor: !newComment.trim() || submitting ? '#ccc' : '#FF6B35',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '0.95rem',
+                  fontWeight: '600',
+                  cursor: !newComment.trim() || submitting ? 'not-allowed' : 'pointer',
+                  boxShadow: !newComment.trim() || submitting ? 'none' : '0 2px 8px rgba(255, 107, 53, 0.3)'
+                }}
+              >
+                {submitting ? 'Enviando...' : 'Comentar'}
+              </button>
+            </div>
+          </div>
         </form>
-      ) : (
-        <div style={{ 
-          textAlign: 'center', 
-          padding: '20px', 
-          backgroundColor: '#f3f4f6',
-          borderRadius: '8px',
-          marginBottom: '20px'
-        }}>
-          <p>Debes <a href="/login" style={{ color: '#8c6e4a', fontWeight: 600 }}>iniciar sesión</a> para comentar</p>
-        </div>
       )}
 
-      {isLoading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
-          <p>Cargando comentarios...</p>
+      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', color: '#2c3e50', marginBottom: '1.5rem' }}>
+        {comments.length > 0 ? `Comentarios (${comments.length})` : 'Comentarios'}
+      </h3>
+
+      {comments.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '3rem 1rem', backgroundColor: '#f8f9fa', borderRadius: '12px' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>💬</div>
+          <p style={{ color: '#7f8c8d', margin: 0, fontSize: '1rem' }}>Sé el primero en comentar</p>
         </div>
-      ) : comments.length === 0 ? (
-        <p className="no-comments-message">
-          Aún no hay comentarios. Sé el primero en opinar.
-        </p>
       ) : (
-        <ul className="comments-list">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {comments.map((comment) => (
-            <li key={comment.id} className="comment-item">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ flex: 1 }}>
-                  <p className="comment-content">{comment.content}</p>
-                  <small className="comment-meta">
-                    <strong>{comment.user?.name || 'Usuario'}</strong> · {formatDate(comment.created_at)}
-                  </small>
+            <div
+              key={comment.id}
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                padding: '1.25rem',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '12px'
+              }}
+            >
+              <AvatarComponent name={comment.creator.name} size={40} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                  <span style={{ fontWeight: '600', fontSize: '0.95rem', color: '#2c3e50' }}>
+                    {comment.creator.name}
+                  </span>
+                  <span style={{ fontSize: '0.85rem', color: '#7f8c8d' }}>
+                    {formatDate(comment.created_at)}
+                  </span>
                 </div>
-                {user && user.id === String(comment.user_id) && (
-                  <button
-                    onClick={() => handleDeleteComment(comment.id)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#ef4444',
-                      cursor: 'pointer',
-                      fontSize: '20px',
-                      padding: '4px 8px',
-                      marginLeft: '12px'
-                    }}
-                    title="Eliminar comentario"
-                  >
-                    🗑️
-                  </button>
-                )}
+                <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5', color: '#495057' }}>
+                  {comment.description}
+                </p>
               </div>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
-    </section>
+    </div>
   );
 };
 
