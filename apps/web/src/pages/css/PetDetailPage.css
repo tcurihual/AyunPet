@@ -1,0 +1,246 @@
+/* Asumiendo que este archivo está en: src/pages/css/PetDetailPage.css */
+
+/* --- Contenedor Principal --- */
+.pet-detail-page {
+  display: flex;
+  flex-direction: column; /* Apilado en móvil */
+  gap: 24px;
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 20px;
+  color: var(--color-text-primary);
+}
+
+.pet-detail-main {
+  flex: 2; /* Ocupa 2/3 del espacio */
+  min-width: 0; /* Evita que se desborde */
+}
+
+.pet-detail-sidebar {
+  flex: 1; /* Ocupa 1/3 del espacio */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- Galería de Imágenes --- */
+.gallery-container {
+  margin-bottom: 24px;
+}
+
+.main-image {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 15px var(--color-shadow);
+}
+
+.thumbnail-list {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid var(--color-border-light);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+}
+
+.thumbnail:hover {
+  opacity: 1;
+  border-color: var(--color-text-link);
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border-color: var(--color-text-link);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-text-link) 30%, transparent);
+}
+
+/* --- Secciones de Información --- */
+.pet-info-section {
+  background: var(--color-bg-content);
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px var(--color-shadow);
+}
+
+.info-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.info-icon {
+  font-size: 1.5rem;
+}
+
+.info-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-accent);
+  margin: 0;
+}
+
+.info-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin-top: -10px;
+  margin-bottom: 16px;
+}
+
+.info-subtitle strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* --- Tags de Información (ACTUALIZADO) --- */
+.tag-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pet-tag {
+  display: inline-flex; /* AÑADIDO: para alinear ícono y texto */
+  align-items: center; /* AÑADIDO: para alinear ícono y texto */
+  gap: 6px; /* AÑADIDO: espacio entre ícono y texto */
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  /* El fondo/color base se mueven a las subclases */
+}
+
+/* REGLA ACTUALIZADA: para los tags por defecto (como en tu imagen) */
+.pet-tag.tag-default {
+  background-color: var(--color-bg-content); /* Fondo blanco en modo claro */
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.pet-tag.tag-health,
+.pet-tag.tag-sterilized {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: transparent;
+}
+
+/* --- Descripción --- */
+.pet-description {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.pet-description p {
+  margin-bottom: 1em;
+}
+
+.pet-description strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* --- Barra Lateral --- */
+.sidebar-widget {
+  background: var(--color-bg-content);
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 15px var(--color-shadow);
+}
+
+.sidebar-widget h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text-accent);
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.widget-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.contact-button,
+.creator-button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.contact-button {
+  background-color: var(--color-text-link);
+  color: white; /* Asumiendo que el link es oscuro */
+}
+.contact-button:hover {
+  background-color: #a1805a; /* Un hover para el color link */
+  transform: translateY(-2px);
+}
+
+.creator-button {
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-text-light);
+}
+.creator-button:hover {
+  background-color: var(--color-btn-primary-hover);
+  transform: translateY(-2px);
+}
+
+.creator-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  object-fit: cover;
+  max-height: 200px;
+}
+
+/* --- Página de Carga / Error --- */
+.pet-detail-loading {
+  text-align: center;
+  padding: 80px 20px;
+  flex-grow: 1;
+  color: var(--color-text-secondary);
+}
+.pet-detail-loading h2 {
+  color: var(--color-text-accent);
+}
+
+/* --- Layout para Desktop --- */
+@media (min-width: 900px) {
+  .pet-detail-page {
+    flex-direction: row; /* Lado a lado en desktop */
+  }
+
+  .pet-detail-sidebar {
+    position: sticky; /* Barra lateral pegajosa */
+    top: 24px;
+    height: fit-content; /* Para que el sticky funcione */
+  }
+}

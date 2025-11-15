@@ -21,8 +21,8 @@ import EmailOrgPending from './pages/EmailOrgPending';
 import UserProfile from './pages/perfil.tsx';
 import VistaNoticias from './pages/VistaNoticias';
 import VerifyEmail from './components/VerifyEmail.tsx';
-import PublicanteReview from './pages/Publicante_revition.tsx'
-
+import PublicanteReview from './pages/Publicante_revition.tsx';
+import PetDetailPage from './pages/PetDetailPage'; // <-- 1. Ruta importada
 
 function App() {
   const maintenanceMode = false;
@@ -67,6 +67,17 @@ function App() {
           </ProtectedRoute>
         } 
       />
+
+      {/* 2. RUTA AÑADIDA PARA VER DETALLE DE PUBLICACIÓN */}
+      <Route 
+        path="/publicacion/:id" 
+        element={
+          <ProtectedRoute roles={['normal','tester', "institution"]}>
+            <PetDetailPage />
+          </ProtectedRoute>
+        } 
+      />
+      
       <Route 
         path="/muro-institucion" 
         element={
