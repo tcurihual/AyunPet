@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Modal from './Modal';
-import './Modal.css';
+import './ImageUploadModal.css';
 
 interface ImageUploadModalProps {
   isOpen: boolean;
