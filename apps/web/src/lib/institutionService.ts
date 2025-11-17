@@ -191,6 +191,7 @@ export async function fetchInstitutionAdoptionRequests(
   } catch (e: any) {
     console.error('[fetchInstitutionAdoptionRequests] Error:', e);
     return { ok: false, error: e?.message || 'Error de red' };
+      }
   }
 
   /**
@@ -283,5 +284,4 @@ export async function uploadImage(
     console.error('[uploadImage] Error:', e);
     return { ok: false, error: e?.message || 'Error de red' };
   }
-}
 }
