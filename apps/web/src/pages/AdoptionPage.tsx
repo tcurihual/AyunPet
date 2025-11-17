@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../context/AuthContext'; // Importar useAuth
 import { usePublications } from '../context/PublicationsContext';
 import PetAdoptionCard from '../components/PetAdoptionCard';
 import PetFilters, { FilterState } from '../components/PetFilters';
@@ -15,57 +16,81 @@ const initialFilterState: FilterState = {
 
 const AdoptionPage: React.FC = () => {
   const { publications, fetchPublications } = usePublications();
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const { token, isAuthLoading } = useAuth(); // Obtener el token y el estado de carga
   const [filters, setFilters] = useState<FilterState>(initialFilterState);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchPublications().finally(() => {
-      setIsInitialLoad(false);
-    });
-  }, [fetchPublications]);
+    // Si la autenticación ha terminado y hay un token, buscar publicaciones
+    if (!isAuthLoading && token) {
+      fetchPublications();
+    }
+    // Se ejecuta cuando cambia el estado de carga de la autenticación o el token
+  }, [isAuthLoading, token, fetchPublications]);
 
   const filteredPublications = useMemo(() => {
-    const lowerSearchTerm = searchTerm.toLowerCase();
-
     return publications.filter(pub => {
       const pet = pub.pet;
+      const lowerSearchTerm = searchTerm.toLowerCase();
 
-      if (lowerSearchTerm) {
-        const petNameMatch = pet.name.toLowerCase().includes(lowerSearchTerm);
-        const creatorNameMatch = pub.creator.name.toLowerCase().includes(lowerSearchTerm);
-        if (!petNameMatch && !creatorNameMatch) {
-          return false;
-        }
+      // Filtrado por término de búsqueda
+      if (
+        lowerSearchTerm &&
+        !pet.name.toLowerCase().includes(lowerSearchTerm) &&
+        !pub.creator.name.toLowerCase().includes(lowerSearchTerm)
+      ) {
+        return false;
       }
 
-      const petAgeMatches = (petAgeInMonths: number, ageFilters: FilterState['age']) => {
-        if (!ageFilters.cachorro && !ageFilters.joven && !ageFilters.adulto && !ageFilters.senior) return true;
-        if (ageFilters.cachorro && petAgeInMonths <= 12) return true;
-        if (ageFilters.joven && petAgeInMonths > 12 && petAgeInMonths <= 36) return true;
-        if (ageFilters.adulto && petAgeInMonths > 36 && petAgeInMonths <= 96) return true;
-        if (ageFilters.senior && petAgeInMonths > 96) return true;
+      // Filtrado por especie
+      if (filters.species !== 'todos' && pet.species !== filters.species) {
         return false;
-      };
+      }
 
-      const petMatchesFilter = (petFilters: FilterState['gender'] | FilterState['size'], petValue: string) => {
-        const filtersAsArray = Object.entries(petFilters);
-        const activeFilters = filtersAsArray.filter(([key, value]) => value);
-        if (activeFilters.length === 0) return true;
-        return activeFilters.some(([key, value]) => petValue.toLowerCase().startsWith(key));
-      };
+      // Filtrado por género
+      const activeGenderFilters = Object.entries(filters.gender)
+        .filter(([, value]) => value)
+        .map(([key]) => key);
 
-      if (filters.species !== 'todos' && pet.species !== filters.species) return false;
-      if (!petMatchesFilter(filters.gender, pet.gender)) return false;
-      if (!petMatchesFilter(filters.size, pet.size)) return false;
-      if (!petAgeMatches(pet.age, filters.age)) return false;
-      if (filters.health.esterilizado && !pet.sterilized) return false;
+      if (activeGenderFilters.length > 0 && !activeGenderFilters.includes(pet.gender.toLowerCase())) {
+        return false;
+      }
 
-      return true; 
+      // Filtrado por tamaño
+      const activeSizeFilters = Object.entries(filters.size)
+        .filter(([, value]) => value)
+        .map(([key]) => key);
+
+      if (activeSizeFilters.length > 0 && !activeSizeFilters.includes(pet.size.toLowerCase())) {
+        return false;
+      }
+
+      // Filtrado por edad
+      const petAgeInYears = pet.age / 12;
+      const activeAgeFilters = Object.entries(filters.age).filter(([, value]) => value);
+
+      if (activeAgeFilters.length > 0) {
+        const matchesAge = activeAgeFilters.some(([key]) => {
+          if (key === 'cachorro' && petAgeInYears <= 1) return true;
+          if (key === 'joven' && petAgeInYears > 1 && petAgeInYears <= 3) return true;
+          if (key === 'adulto' && petAgeInYears > 3 && petAgeInYears <= 8) return true;
+          if (key === 'senior' && petAgeInYears > 8) return true;
+          return false;
+        });
+        if (!matchesAge) return false;
+      }
+
+      // Filtrado por salud
+      if (filters.health.esterilizado && !pet.sterilized) {
+        return false;
+      }
+
+      return true;
     });
   }, [publications, filters, searchTerm]);
 
-  if (isInitialLoad) {
+  // Mostrar "Cargando..." mientras se verifica la autenticación
+  if (isAuthLoading) {
     return (
       <div className="page-container">
         <Header />
