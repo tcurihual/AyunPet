@@ -29,6 +29,7 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadComments();
@@ -36,12 +37,16 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
 
   const loadComments = async () => {
     setLoading(true);
+    setError(null);
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
     
     try {
+      console.log(`[CommentsList] Cargando comentarios para post: ${postId}`);
+      
       const response = await fetch(
         `${API_BASE_URL}/adoptions/messages/post/${postId}`,
         {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -51,12 +56,18 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
 
       if (response.ok) {
         const result = await response.json();
+        console.log('[CommentsList] Respuesta de comentarios:', result);
+        
         if (result.data && Array.isArray(result.data)) {
           setComments(result.data);
+        } else if (Array.isArray(result)) {
+          setComments(result);
         }
+      } else {
+        console.error('[CommentsList] Error en respuesta:', response.status);
       }
     } catch (error) {
-      console.error('Error al cargar comentarios:', error);
+      console.error('[CommentsList] Error al cargar comentarios:', error);
     } finally {
       setLoading(false);
     }
@@ -64,12 +75,30 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !user) return;
+    if (!newComment.trim() || !user) {
+      console.warn('[CommentsList] No hay comentario o usuario');
+      return;
+    }
 
     setSubmitting(true);
+    setError(null);
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
 
     try {
+      console.log('[CommentsList] Enviando comentario:', {
+        postId,
+        creatorId: user.id,
+        description: newComment
+      });
+
+      const body = {
+        postId: postId,
+        creatorId: user.id,
+        description: newComment
+      };
+
+      console.log('[CommentsList] Body del POST:', JSON.stringify(body));
+
       const response = await fetch(
         `${API_BASE_URL}/adoptions/messages`,
         {
@@ -78,19 +107,23 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ 
-            post_id: postId,
-            description: newComment 
-          })
+          body: JSON.stringify(body)
         }
       );
+
+      const responseData = await response.json();
+      console.log('[CommentsList] Respuesta del servidor:', responseData);
 
       if (response.ok) {
         setNewComment('');
         await loadComments();
+      } else {
+        setError(responseData?.message || 'Error al enviar comentario');
+        console.error('[CommentsList] Error al enviar:', responseData);
       }
     } catch (error) {
-      console.error('Error al enviar comentario:', error);
+      console.error('[CommentsList] Error al enviar comentario:', error);
+      setError('Error de conexión al enviar comentario');
     } finally {
       setSubmitting(false);
     }
@@ -151,6 +184,16 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
                 onFocus={(e) => e.target.style.borderColor = '#FF6B35'}
                 onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
               />
+              {error && (
+                <div style={{ 
+                  color: '#d32f2f', 
+                  fontSize: '0.85rem', 
+                  marginTop: '0.5rem',
+                  padding: '0.5rem'
+                }}>
+                  ⚠️ {error}
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={!newComment.trim() || submitting}

@@ -4,6 +4,7 @@ import { usePublications } from '../context/PublicationsContext';
 import { Publication } from '../context/PublicationsContext'; 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import CommentsList from '../components/CommentsList';
 import './css/PetDetailPage.css';
 
 // --- Iconos de Título ---
@@ -15,12 +16,12 @@ const InfoIcon = () => <span className="info-icon">ⓘ</span>;
 const HealthCheckIcon: React.FC = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="14"  /* Ajustado para el tamaño del tag */
-    height="14" /* Ajustado para el tamaño del tag */
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
-    stroke="currentColor" /* Hereda el color del texto (verde) */
-    strokeWidth="2.5" /* Un poco más grueso para verse bien */
+    stroke="currentColor"
+    strokeWidth="2.5"
     strokeLinecap="round"
     strokeLinejoin="round"
   >
@@ -29,31 +30,64 @@ const HealthCheckIcon: React.FC = () => (
   </svg>
 );
 
-// --- Componente PetTag MODIFICADO ---
+// --- Componente PetTag ---
 interface PetTagProps {
   label: string;
   type?: 'default' | 'health' | 'sterilized';
 }
 const PetTag: React.FC<PetTagProps> = ({ label, type = 'default' }) => (
   <span className={`pet-tag tag-${type}`}>
-    {/* Mostrar ícono SOLO si es de tipo salud o esterilizado */}
     {(type === 'health' || type === 'sterilized') && <HealthCheckIcon />}
     {label}
   </span>
 );
 
+// --- Componente Avatar con iniciales ---
+const getColorFromName = (name: string): string => {
+  const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E76F51', '#264653'
+  ];
+  
+  const charCodeSum = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return colors[charCodeSum % colors.length];
+};
+
+const Avatar: React.FC<{ name: string; size?: number }> = ({ name, size = 40 }) => {
+  const initial = (name || 'U')[0].toUpperCase();
+  const backgroundColor = getColorFromName(name);
+  
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        backgroundColor,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: size * 0.4,
+        flexShrink: 0,
+      }}
+    >
+      {initial}
+    </div>
+  );
+};
 
 const PetDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { publications, fetchPublications } = usePublications();
   const [publication, setPublication] = useState<Publication | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [activeImage, setActiveImage] = useState('');
 
   // 1. Cargar todas las publicaciones
   useEffect(() => {
-    // Si las publicaciones están vacías (ej. recarga de página), búscalas
     if (publications.length === 0) {
       fetchPublications();
     }
@@ -65,11 +99,10 @@ const PetDetailPage: React.FC = () => {
       const foundPub = publications.find(p => p.id === id);
       if (foundPub) {
         setPublication(foundPub);
-        setActiveImage(foundPub.pet.image); // Imagen principal
+        setActiveImage(foundPub.pet.image);
       }
       setLoading(false);
     } else if (publications.length === 0 && id) {
-      // Si aún no hay publicaciones, sigue cargando
       setLoading(true);
     }
   }, [publications, id]);
@@ -115,7 +148,7 @@ const PetDetailPage: React.FC = () => {
 
   // Creamos las listas de tags basadas en los datos
   const detailTags = [
-    pet.species, // <-- AÑADIDO
+    pet.species,
     pet.breed,
     pet.gender,
     pet.size,
@@ -204,6 +237,18 @@ const PetDetailPage: React.FC = () => {
                 Necesita espacio para jugar, paseos diarios y mucha atención.
               </p>
             </div>
+          </section>
+
+          {/* Sección de comentarios */}
+          <section className="pet-info-section" style={{ borderTop: '2px solid #f0f0f0', paddingTop: '2rem' }}>
+            <div className="info-header">
+              <span style={{ fontSize: '1.3rem' }}>💬</span>
+              <h2 className="info-title">Comentarios</h2>
+            </div>
+            <CommentsList 
+              postId={publication.id}
+              AvatarComponent={Avatar}
+            />
           </section>
         </main>
 
