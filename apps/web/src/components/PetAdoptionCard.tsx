@@ -6,7 +6,7 @@ interface PetAdoptionCardProps {
 }
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
-  const { creator, pet } = publication;
+  const { creator, pet, post } = publication;
 
   return (
     <div className="pet-card">
@@ -15,8 +15,8 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
           <h3>{pet.name}</h3>
           <div className="pet-details-container">
             <span className="pet-detail-item">{pet.species}</span>
-            <span className="pet-detail-item">{pet.breed || 'Mestizo'}</span>
-            <span className="pet-detail-item">{`${pet.age} meses`}</span>
+            <span className="pet-detail-item">{pet.breed}</span>
+            <span className="pet-detail-item">{`${Math.floor(pet.age / 12)} años, ${pet.age % 12} meses`}</span>
             <span className="pet-detail-item">{pet.size}</span>
             {pet.tags?.map(tag => (
               <span key={tag} className="pet-detail-item">{tag}</span>
@@ -45,7 +45,14 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
         </div>
       </div>
       <div className="pet-card-aside">
-        <img src={pet.image} alt={pet.name} className="pet-card-pet-img" />
+        <img 
+          src={post.images?.[0] || pet.images?.[0] || '/images/pets/default.jpg'} 
+          alt={pet.name} 
+          className="pet-card-pet-img"
+          onError={(e) => {
+            e.currentTarget.src = '/images/pets/default.jpg';
+          }}
+        />
         <div className="card-spacer"></div>
         <div className="pet-card-actions">
           <button className="btn btn-primary">Ver Detalles</button>
