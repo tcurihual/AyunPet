@@ -115,5 +115,5 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       </div>
     </Modal>
   );
-
+};
 export default ImageUploadModal;
