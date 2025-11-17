@@ -47,9 +47,12 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         alert(
           `${
             type === 'profile' ? 'Foto de perfil' : 'Mural'
-          } actualizado exitosamente`
+          } actualizado exitosamente! Recargando página...`
         );
-        onImageUpdated?.();
+        // Recargar la página después de 1 segundo para ver los cambios
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         // Manejo de errores específicos
         const errorMsg = response.error || 'Error desconocido';
