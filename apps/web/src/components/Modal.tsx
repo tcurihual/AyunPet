@@ -2,35 +2,23 @@ import React from "react";
 import { useModal } from "../context/ModalContext";
 import "./Modal.css"; // archivo de estilos
 
-const Modal: React.FC = () => {
-  const { modal, closeModal } = useModal();
+interface ModalProps {
+  children: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-  if (!modal.isOpen) return null;
 
-  let width;
-  switch (modal.size) {
-    case 'small':
-      width = '300px';
-      break;
-    case 'medium':
-      width = '500px';
-      break;
-    case 'large':
-      width = '800px';
-      break;
-    default:
-      width = '500px';
-  }
+const Modal: React.FC<ModalProps> = ({ children, isOpen, onClose }) => {
 
+  if (!isOpen) return null;
+
+  
   return (
-    <div className="modal-backdrop" onClick={closeModal}>
-      <div
-        className="modal-content"
-        style={{ width }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className="modal-close" onClick={closeModal}>×</button>
-        {modal.content}
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>×</button>
+        {children}
       </div>
     </div>
   );
