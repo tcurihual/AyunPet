@@ -16,8 +16,8 @@ export interface InstitutionProfile {
   website?: string;
   profilePicture?: string;
   avatar?: string;
-    profile_picture?: string; // Foto de perfil (base64 o URL)
-    profile_mural?: string; // Banner/Mural (base64 o URL)
+    image?: string; // Foto de perfil (base64 o URL)
+    mural?: string; // Banner/Mural (base64 o URL)
   updatedAt?: string;
     images?: string[];
   [key: string]: any; // Para capturar cualquier otro campo que devuelva la API
@@ -204,8 +204,8 @@ export async function fetchInstitutionAdoptionRequests(
  */
 export async function updateInstitutionProfile(
   updates: {
-    profile_picture?: string;
-    profile_mural?: string;
+    image?: string;
+    mural?: string;
     [key: string]: any;
   },
   token: string
@@ -261,15 +261,15 @@ export async function uploadImage(
         const base64 = reader.result as string;
         
         const updates = type === 'profile' 
-          ? { profile_picture: base64 }
-          : { profile_mural: base64 };
+          ? { image: base64 }
+          : { mural: base64 };
         
         const result = await updateInstitutionProfile(updates, token);
         
         if (result.ok && result.data) {
           const imageUrl = type === 'profile' 
-            ? result.data.profile_picture || base64
-            : result.data.profile_mural || base64;
+            ? result.data.image || base64
+            : result.data.mural || base64;
           resolve({ ok: true, data: imageUrl });
         } else {
           resolve({ ok: false, error: result.error || 'Error al subir imagen' });
