@@ -3,25 +3,30 @@ import type { ReactNode } from 'react';
 import { useLoading } from './LoadingContext';
 import { useAuth } from './AuthContext';
 
+// Estructura de la API adaptada a la interfaz de la aplicación
 export interface Publication {
-  id: string; 
+  id: string;
   title: string;
   description: string;
-  createdAt: string; 
+  createdAt: string;
   status: 'active' | 'closed';
-  creator: { id: string; name: string; };
+  creator: {
+    id: string;
+    name: string;
+    image?: string; // La API puede devolver una foto de perfil
+  };
   pet: {
     id: string;
     name: string;
-    image: string; 
+    image: string; // Se usará la primera imagen de la mascota
     species: string;
-    age: number; 
+    age: number; // en meses
     size: 'Pequeño' | 'Mediano' | 'Grande';
     gender: 'Macho' | 'Hembra';
     sterilized: boolean;
-    breed: string; 
-    healthStatus: string; 
-    tags: string[]; 
+    breed: string; // La API no provee raza, se podría omitir o usar un valor por defecto
+    healthStatus: string; // La API no provee un estado de salud general, se podría construir a partir de otros datos
+    tags: string[]; // La API no provee tags
   };
 }
 
@@ -32,57 +37,86 @@ interface PublicationsContextType {
 
 const PublicationsContext = createContext<PublicationsContextType | undefined>(undefined);
 
+// Función para transformar los datos de la API a la estructura de la aplicación
+const transformApiDataToPublication = (item: any): Publication => {
+  const petAgeInMonths = (item.pet.age_years || 0) * 12 + (item.pet.age_months || 0);
+
+  // La API devuelve "male" o "female", se traduce a "Macho" o "Hembra"
+  const gender = item.pet.gender.toLowerCase() === 'male' ? 'Macho' : 'Hembra';
+  // La API devuelve "dog" o "cat", se traduce a "Perro" o "Gato"
+  const species = item.pet.species.toLowerCase() === 'dog' ? 'Perro' : 'Gato';
+  // La API devuelve "small", "medium", "large", se traduce a "Pequeño", "Mediano", "Grande"
+  const size = item.pet.size.toLowerCase() === 'small' ? 'Pequeño' : item.pet.size.toLowerCase() === 'medium' ? 'Mediano' : 'Grande';
+
+
+  return {
+    id: String(item.post.id),
+    title: item.post.title,
+    description: item.post.description,
+    createdAt: new Date(item.post.created_at).toLocaleDateString(),
+    status: item.post.status === 'active' ? 'active' : 'closed',
+    creator: {
+      id: String(item.creator.id),
+      name: item.creator.name,
+      image: item.creator.profilePhoto,
+    },
+    pet: {
+      id: String(item.pet.id),
+      name: item.pet.name,
+      image: item.pet.images?.[0] || '/images/pets/default.jpg', // Usar la primera imagen o una por defecto
+      species: species,
+      age: petAgeInMonths,
+      size: size,
+      gender: gender,
+      sterilized: item.pet.sterilized,
+      breed: 'No especificada', // Valor por defecto
+      healthStatus: 'Sano', // Valor por defecto
+      tags: [], // Valor por defecto
+    },
+  };
+};
+
+
 export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [publications, setPublications] = useState<Publication[]>([]);
   const { setLoading } = useLoading();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const fetchPublications = useCallback(async () => {
-    if (!user) {
-      setPublications([]); 
+    if (!user || !token) {
+      setPublications([]);
       return;
     }
-    
+
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500)); 
+      const response = await fetch('http://ayunpet-api.eastus2.cloudapp.azure.com/v1/adoptions/publications?page=1&pageSize=20&status=active', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-      const mockPublications: Publication[] = [
-        { 
-          id: '1', title: 'Luna busca un hogar', description: 'Una perrita muy juguetona y leal.', createdAt: '05-09-2025', status: 'active',
-          creator: { id: '456', name: 'Fundación Sigma' },
-          pet: { 
-            id: 'p1', name: 'Luna', image: '/images/pets/firulais.jpg',
-            species: 'Perro', age: 7, size: 'Mediano', gender: 'Hembra', sterilized: true,
-            breed: 'Golden Retriever', healthStatus: 'Sano y vacunado', tags: ['Juguetona', 'Leal', 'Familiar'] 
-          }
-        },
-        { 
-          id: '2', title: 'Adopta a Rocky', description: 'Leal y cariñoso, ideal para familias.', createdAt: '01-09-2025', status: 'active',
-          creator: { id: '789', name: 'Rescate Animal Temuco' },
-          pet: { 
-            id: 'p2', name: 'Rocky', image: '/images/pets/simba.jpg',
-            species: 'Gato', age: 24, size: 'Mediano', gender: 'Macho', sterilized: false,
-            breed: 'Caracal', healthStatus: 'Sano y desparasitado', tags: ['Cariñoso', 'Independiente']
-          }
-        },
-        { 
-          id: '3', title: 'Pana Miguel necesita cariño', description: 'Curioso y muy sociable, busca compañía.', createdAt: '10-09-2025', status: 'active',
-          creator: { id: '456', name: 'Fundación Sigma' },
-          pet: { 
-            id: 'p3', name: 'Pana Miguel', image: '/images/pets/Miguel.webp',
-            species: 'Gato', age: 10, size: 'Pequeño', gender: 'Macho', sterilized: true,
-            breed: 'Mestizo', healthStatus: 'Sano y vacunado', tags: ['Sociable', 'Curioso']
-          }
-        },
-      ];
-      setPublications(mockPublications);
+      if (!response.ok) {
+        throw new Error(`Error en la petición: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.type === 'success' && Array.isArray(data.data.items)) {
+        const transformedPublications = data.data.items.map(transformApiDataToPublication);
+        setPublications(transformedPublications);
+      } else {
+        console.error("La respuesta de la API no tiene el formato esperado:", data);
+        setPublications([]);
+      }
+
     } catch (error) {
       console.error("Error al cargar las publicaciones:", error);
+      setPublications([]); // Limpiar en caso de error para no mostrar datos antiguos
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
-  }, [user?.id, setLoading]); 
+  }, [user, token, setLoading]);
 
   const value = { publications, fetchPublications };
 
