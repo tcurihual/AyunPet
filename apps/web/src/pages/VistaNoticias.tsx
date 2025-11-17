@@ -21,7 +21,7 @@ const VistaNoticias: React.FC = () => {
   const [visibleCount, setVisibleCount] = useState(NEWS_PER_PAGE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user, logout } = useAuth(); // ✅ Agregar logout aquí
 
   useEffect(() => {
     loadNews();
@@ -37,10 +37,17 @@ const VistaNoticias: React.FC = () => {
       const activeNews = result.data.filter((n) => n.status === 'active');
       setNews(activeNews);
     } else {
+      // Si el error es 401 o token inválido, cerrar sesión automáticamente
+      if (result.error?.includes('401') || result.error?.includes('autenticado')) {
+        console.warn('Token expirado o inválido. Cerrando sesión...');
+        logout(); // ✅ Ahora funciona correctamente
+        return;
+      }
       setError(result.error || 'Error al cargar noticias');
     }
     setLoading(false);
   };
+
 
   const formatDate = (dateString: string) => {
     try {
