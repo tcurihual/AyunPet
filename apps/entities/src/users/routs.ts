@@ -72,28 +72,44 @@ router.delete("/:id", (req,res)=>{
             method: "delete",
             userId: id
         }
-    })
+  }
+})
 
-    router.patch("/me", (req, res) => {
+    // Almacenamiento temporal de datos de usuario
+const userDataStore = {};
+
+// PATCH /me - endpoint para actualizar el perfil del usuario actual
+router.patch("/me", (req, res) => {
   try {
     const { profile_picture, profile_mural, ...otherUpdates } = req.body;
     
-    // Simply accept and echo back the updates
-    // In production, this would save to database
-    const updates = req.body;
+    // Crear un objeto con todos los datos a guardar
+    const updates = {
+      profile_picture,
+      profile_mural,
+      ...otherUpdates,
+      updated_at: new Date().toISOString()
+    };
     
+    // Guardar en memoria (en producción sería en database)
+    userDataStore['current_user'] = updates;
+    console.log('[PATCH /me] Datos guardados:', updates);
+    
+    // Responder con éxito
     res.status(200).json({
       ok: true,
-      message: "User profile updated successfully",
+      message: "Perfil de usuario actualizado exitosamente",
       data: updates
     });
   } catch (error) {
+    console.error('[PATCH /me] Error:', error);
     res.status(500).json({
       ok: false,
-      error: "Internal server error"
+      error: "Error al actualizar el perfil"
     });
   }
 })
+
 })
 
 export default router
