@@ -271,8 +271,8 @@ export async function uploadImage(
         
         if (result.ok && result.data) {
           const imageUrl = type === 'profile' 
-            ? result.data.image || base64
-            : result.data.mural || base64;
+            ? result.data.profile_picture || base64
+            : result.data.profile_mural || base64;
           resolve({ ok: true, data: imageUrl });
         } else {
           resolve({ ok: false, error: result.error || 'Error al subir imagen' });
