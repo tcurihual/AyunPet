@@ -216,6 +216,7 @@ export async function updateInstitutionProfile(
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`,
     };
+          console.log('[updateInstitutionProfile] Enviando:', updates);
 
     const res = await fetch(`${API_BASE_URL}/entities/users/me`, {
       method: 'PATCH',
@@ -224,6 +225,8 @@ export async function updateInstitutionProfile(
     });
 
     const payload = await res.json().catch(() => ({}));
+          console.log('[updateInstitutionProfile] Response payload completo:', payload);
+          console.log('[updateInstitutionProfile] ¿tiene image?', payload?.image, '¿tiene mural?', payload?.mural);
 
     if (!res.ok) {
       return {
