@@ -39,8 +39,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     try {
       setLoading(true);
       const updates = {
-        [type === 'profile' ? 'profile_picture' : 'profile_mural']: imageBase64
-      };
+      [type === 'profile' ? 'image' : 'mural']: imageBase64      };
       const response = await updateInstitutionProfile(updates, token);
 
       if (response.ok) {
