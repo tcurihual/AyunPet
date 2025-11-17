@@ -85,15 +85,14 @@ const PetDetailPage: React.FC = () => {
   const [publication, setPublication] = useState<Publication | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState('');
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
-  // 1. Cargar todas las publicaciones
   useEffect(() => {
     if (publications.length === 0) {
       fetchPublications();
     }
   }, [fetchPublications, publications.length]);
 
-  // 2. Encontrar la publicación correcta una vez que carguen
   useEffect(() => {
     if (publications.length > 0 && id) {
       const foundPub = publications.find(p => p.id === id);
@@ -107,7 +106,24 @@ const PetDetailPage: React.FC = () => {
     }
   }, [publications, id]);
 
-  // Función para formatear la edad de meses a una cadena legible
+  const getProxiedImageUrl = (url: string, hasError: boolean): string => {
+    if (hasError) return 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+    if (!url) return 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+    
+    if (url.includes('ayunpet-api')) {
+      return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    }
+    return url;
+  };
+
+  const handleImageError = (imageUrl: string) => {
+    console.error('Error al cargar imagen:', imageUrl);
+    setImageErrors(prev => ({
+      ...prev,
+      [imageUrl]: true
+    }));
+  };
+
   const formatAge = (months: number): string => {
     if (months < 12) return `${months} Meses`;
     if (months === 12) return '1 Año';
@@ -116,7 +132,6 @@ const PetDetailPage: React.FC = () => {
     return `${years} Año${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` y ${remainingMonths} Meses` : ''}`;
   };
 
-  // --- Renderizado de Carga y Error ---
   if (loading) {
     return (
       <div className="page-container">
@@ -144,9 +159,8 @@ const PetDetailPage: React.FC = () => {
   }
 
   // --- Renderizado de la Página ---
-  const { pet, creator } = publication;
+  const { pet, creator, post } = publication;
 
-  // Creamos las listas de tags basadas en los datos
   const detailTags = [
     pet.species,
     pet.breed,
@@ -161,12 +175,15 @@ const PetDetailPage: React.FC = () => {
     healthTags.push('Esterilizado');
   }
 
-  // Imágenes de galería (simuladas, ya que solo hay una)
+  // Imágenes de galería con manejo de CORS
   const galleryImages = [
     pet.image,
+    ...(post?.images || []),
     'https://cdn.discordapp.com/attachments/673348241269719043/1439045995827564748/cierre-de-una-mano-hombre-acariciando-un-perro-feliz-al-aire-libre-adopcion-mascotas-terapia-animal-compania-y-conceptos-384750970.webp?ex=69191785&is=6917c605&hm=fd1b76472f076b745e27707412db3a4d8ff2ca2136f56192b3954c9e2e85d43a&', 
     'https://cdn.discordapp.com/attachments/673348241269719043/1439045996297584750/Mascotas-078-1.jpg?ex=69191785&is=6917c605&hm=5d160337db38d02a8c318c8691559f43089b47f3e62491517ffd0536cefb4a7f&', 
-  ];
+  ].filter((img, index, self) => img && self.indexOf(img) === index); // Eliminar duplicados
+
+  const mainImageUrl = getProxiedImageUrl(activeImage, imageErrors[activeImage] || false);
 
   return (
     <div className="page-container">
@@ -176,17 +193,26 @@ const PetDetailPage: React.FC = () => {
         <main className="pet-detail-main">
           {/* Galería de Imágenes */}
           <section className="gallery-container">
-            <img src={activeImage} alt={pet.name} className="main-image" />
+            <img 
+              src={mainImageUrl} 
+              alt={pet.name} 
+              className="main-image"
+              onError={() => handleImageError(activeImage)}
+            />
             <div className="thumbnail-list">
-              {galleryImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Thumbnail ${index + 1}`}
-                  className={`thumbnail ${img === activeImage ? 'active' : ''}`}
-                  onClick={() => setActiveImage(img)}
-                />
-              ))}
+              {galleryImages.map((img, index) => {
+                const thumbnailUrl = getProxiedImageUrl(img, imageErrors[img] || false);
+                return (
+                  <img
+                    key={index}
+                    src={thumbnailUrl}
+                    alt={`Thumbnail ${index + 1}`}
+                    className={`thumbnail ${img === activeImage ? 'active' : ''}`}
+                    onClick={() => setActiveImage(img)}
+                    onError={() => handleImageError(img)}
+                  />
+                );
+              })}
             </div>
           </section>
 
@@ -264,7 +290,7 @@ const PetDetailPage: React.FC = () => {
           {/* Widget de Fundación */}
           <div className="sidebar-widget">
             <img 
-              src="https://cdn.discordapp.com/attachments/1275917279422578753/1383995677687676979/ChatGPT_Image_15_jun_2025_10_23_08_p.m..png?ex=69188d2a&is=69173baa&hm=92407b3b044045c8ea29cae444030e25e5a930ea485765122a821839356e5bf3&" // Imagen placeholder
+              src="https://cdn.discordapp.com/attachments/1275917279422578753/1383995677687676979/ChatGPT_Image_15_jun_2025_10_23_08_p.m..png?ex=69188d2a&is=69173baa&hm=92407b3b044045c8ea29cae444030e25e5a930ea485765122a821839356e5bf3&"
               alt={`Logo ${creator.name}`} 
               className="creator-image"
             />

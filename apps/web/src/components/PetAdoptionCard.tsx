@@ -7,18 +7,24 @@ interface PetAdoptionCardProps {
 }
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
+  const navigate = useNavigate();
   const { creator, pet, post } = publication;
   const [imageError, setImageError] = React.useState(false);
 
   const imageUrl = React.useMemo(() => {
     if (imageError) return 'https://via.placeholder.com/300x300?text=Sin+Imagen';
     const url = post.images?.[0] || pet.images?.[0];
-    // Usar proxy CORS para solucionar el bloqueo temporal
+    
     if (url && url.includes('ayunpet-api')) {
       return `https://corsproxy.io/?${encodeURIComponent(url)}`;
     }
     return url || 'https://via.placeholder.com/300x300?text=Sin+Imagen';
   }, [post.images, pet.images, imageError]);
+
+  const handleViewDetails = () => {
+    console.log('[PetAdoptionCard] Navegando a detalles de mascota:', publication.id);
+    navigate(`/pet/${publication.id}`);
+  };
 
   return (
     <div className="pet-card">
@@ -68,7 +74,10 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
         />
         <div className="card-spacer"></div>
         <div className="pet-card-actions">
-          <button className="btn btn-primary" onClick={handleViewDetails}>
+          <button 
+            className="btn btn-primary"
+            onClick={handleViewDetails}
+          >
             Ver Detalles
           </button>
         </div>
