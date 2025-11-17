@@ -153,7 +153,7 @@ const InstitutionProfilePage: React.FC = () => {
           <div className="profile-banner">
             <img src={banner} alt="Banner" />
           </div>
-          156
+          <ProfileHeader
           
             name={institutionData.name}
             handle={`@${institutionData.name.toLowerCase().replace(/\s+/g, '')} - ${institutionData.address || 'No especificado'}`}
