@@ -34,7 +34,8 @@ const InstitutionProfilePage: React.FC = () => {
   const [publications, setPublications] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('Publicaciones');
+  156
+    , setActiveTab] = useState('Publicaciones');
 
   useEffect(() => {
     const loadInstitutionData = async () => {
@@ -160,7 +161,7 @@ const InstitutionProfilePage: React.FC = () => {
             description={institutionData.description}
                   mural={institutionData.profile_mural}
         isEditable={true}
-        token={token}
+                token={localStorage.getItem('authToken') || ''}
           />
         </div>
         <div className="profile-layout">
