@@ -27,7 +27,10 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   const [muralModalOpen, setMuralModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleImageUpload = async (imageBase64: string, type: 'profile' | 'mural') => {
+  const handleImageUpload = async (
+    imageBase64: string,
+    type: 'profile' | 'mural'
+  ) => {
     if (!token) {
       alert('Token de autenticación no disponible');
       return;
@@ -38,17 +41,35 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
       const updates = {
         [type === 'profile' ? 'profile_picture' : 'profile_mural']: imageBase64
       };
-
       const response = await updateInstitutionProfile(updates, token);
 
       if (response.ok) {
-        alert(`${type === 'profile' ? 'Foto de perfil' : 'Mural'} actualizado exitosamente`);
+        alert(
+          `${
+            type === 'profile' ? 'Foto de perfil' : 'Mural'
+          } actualizado exitosamente`
+        );
         onImageUpdated?.();
       } else {
-        alert(`Error al actualizar: ${response.error}`);
+        // Manejo de errores específicos
+        const errorMsg = response.error || 'Error desconocido';
+        if (
+          errorMsg.includes('500') ||
+          errorMsg.includes('Internal') ||
+          errorMsg.includes('Error')
+        ) {
+          alert(
+            'Error del servidor. Por favor intenta con una imagen más pequeña o de menor resolución.'
+          );
+          console.error('Server error:', errorMsg);
+        } else {
+          alert(`Error al actualizar: ${errorMsg}`);
+        }
       }
     } catch (error) {
-      alert(`Error: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+      const message = error instanceof Error ? error.message : 'Error desconocido';
+      alert(`Error: ${message}`);
+      console.error('Upload error:', error);
     } finally {
       setLoading(false);
     }
@@ -120,4 +141,5 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     </>
   );
 };
+
 export default ProfileHeader;
