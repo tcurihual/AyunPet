@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Modal } from './Modal';
-import '../components/Modal.css';
+import './Modal.css';
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -115,6 +115,5 @@ const ImageUploadModal: React.FC<ImageUploadModalProps> = ({
       </div>
     </Modal>
   );
-};
 
 export default ImageUploadModal;
