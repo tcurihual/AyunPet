@@ -22,6 +22,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (data: LoginData) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
@@ -35,6 +36,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -80,6 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       localStorage.setItem("userRole", mappedRole);
 
       setUser(mappedUser);
+      setToken(token);
     } catch (err: any) {
       console.error("❌ Error en login:", err);
       throw err;
@@ -141,6 +144,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     localStorage.removeItem("userRole");
     localStorage.removeItem("userData");
     setUser(null);
+    setToken(null);
   };
 
   const updateUserVerification = useCallback((verified: boolean) => {
@@ -158,6 +162,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const storedUser = localStorage.getItem("userData");
 
     if (token && storedUser) {
+      setToken(token);
       try {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         let userData: User | null = null;
@@ -230,6 +235,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     <AuthContext.Provider
       value={{
         user,
+        token,
         login,
         register,
         logout,

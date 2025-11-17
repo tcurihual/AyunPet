@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useLoading } from '../context/LoadingContext';
 import { useAuth } from '../context/AuthContext';
 import { createPost } from '../lib/postsService';
+import './css/CreatePostPage.css';
 
 const createPostSchema = z.object({
   title: z.string().min(3, 'El título debe tener al menos 3 caracteres'),
@@ -18,7 +19,9 @@ const createPostSchema = z.object({
   size: z.enum(['small', 'medium', 'large'], { errorMap: () => ({ message: 'Selecciona un tamaño' }) }),
   species: z.enum(['dog', 'cat', 'other'], { errorMap: () => ({ message: 'Selecciona una especie' }) }),
   sterilized: z.boolean(),
-  files: z.any().optional(),
+  files: z.any()
+    .refine((files) => files?.length > 0, 'Debes subir al menos una imagen de la mascota')
+    .refine((files) => files?.length <= 5, 'Máximo 5 imágenes permitidas'),
 });
 
 type CreatePostData = z.infer<typeof createPostSchema>;
@@ -34,9 +37,12 @@ const CreatePostPage: React.FC = () => {
   const onSubmit = async (data: CreatePostData) => {
     setLoading(true);
     try {
-      const files = data.files && data.files.length > 0 
-        ? Array.from(data.files as FileList) 
-        : undefined;
+      // Validación explícita de archivos
+      if (!data.files || data.files.length === 0) {
+        throw new Error('Debes subir al menos una imagen de la mascota');
+      }
+
+      const files = Array.from(data.files as FileList);
 
       const payload = {
         title: data.title.trim(),
@@ -53,16 +59,17 @@ const CreatePostPage: React.FC = () => {
 
       const tokenFromStorage = token || localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
       const result = await createPost(tokenFromStorage, payload);
+      
       if (!result.ok) {
         if (!tokenFromStorage) throw new Error('No estás autenticado. Debes incluir un token de autorización');
         throw new Error(result.error || 'Error al crear la publicación');
       }
 
       reset();
-      alert('Publicación creada correctamente');
+      alert('✅ Publicación creada correctamente');
     } catch (err: any) {
       console.error(err);
-      alert(err.message || 'Error al crear la publicación');
+      alert('❌ ' + (err.message || 'Error al crear la publicación'));
     } finally {
       setLoading(false);
     }
@@ -101,13 +108,24 @@ const CreatePostPage: React.FC = () => {
               
               <div className="form-group">
                 <label htmlFor="title">Título de la publicación *</label>
-                <input id="title" type="text" {...register('title')} disabled={isLoading} placeholder="Ej: Perrito busca hogar" />
+                <input 
+                  id="title" 
+                  type="text" 
+                  {...register('title')} 
+                  disabled={isLoading} 
+                  placeholder="Ej: Perrito busca hogar" 
+                />
                 {errors.title && <p className="error-message">{errors.title.message}</p>}
               </div>
 
               <div className="form-group">
                 <label htmlFor="description">Descripción *</label>
-                <textarea id="description" {...register('description')} disabled={isLoading} placeholder="Cuéntanos más sobre esta mascota..." />
+                <textarea 
+                  id="description" 
+                  {...register('description')} 
+                  disabled={isLoading} 
+                  placeholder="Cuéntanos más sobre esta mascota..." 
+                />
                 {errors.description && <p className="error-message">{errors.description.message}</p>}
               </div>
             </div>
@@ -121,20 +139,42 @@ const CreatePostPage: React.FC = () => {
               
               <div className="form-group">
                 <label htmlFor="name">Nombre de la mascota *</label>
-                <input id="name" type="text" {...register('name')} disabled={isLoading} placeholder="Ej: Luna" />
+                <input 
+                  id="name" 
+                  type="text" 
+                  {...register('name')} 
+                  disabled={isLoading} 
+                  placeholder="Ej: Luna" 
+                />
                 {errors.name && <p className="error-message">{errors.name.message}</p>}
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="age_years">Años *</label>
-                  <input id="age_years" type="number" min={0} max={30} {...register('age_years')} disabled={isLoading} placeholder="0" />
+                  <input 
+                    id="age_years" 
+                    type="number" 
+                    min={0} 
+                    max={30} 
+                    {...register('age_years')} 
+                    disabled={isLoading} 
+                    placeholder="0" 
+                  />
                   {errors.age_years && <p className="error-message">{errors.age_years.message}</p>}
                 </div>
 
                 <div className="form-group">
                   <label htmlFor="age_months">Meses *</label>
-                  <input id="age_months" type="number" min={0} max={11} {...register('age_months')} disabled={isLoading} placeholder="0" />
+                  <input 
+                    id="age_months" 
+                    type="number" 
+                    min={0} 
+                    max={11} 
+                    {...register('age_months')} 
+                    disabled={isLoading} 
+                    placeholder="0" 
+                  />
                   {errors.age_months && <p className="error-message">{errors.age_months.message}</p>}
                 </div>
               </div>
@@ -189,16 +229,18 @@ const CreatePostPage: React.FC = () => {
               </h3>
               
               <div className="form-group">
-                <label htmlFor="files">Imágenes de la mascota (opcional)</label>
+                <label htmlFor="files">Imágenes de la mascota *</label>
                 <input 
                   id="files" 
                   type="file" 
                   accept="image/*" 
                   multiple 
                   {...register('files')} 
-                  disabled={isLoading} 
+                  disabled={isLoading}
+                  required
                 />
-                <small>Puedes subir múltiples imágenes (formato: JPG, PNG, etc.)</small>
+                <small>Debes subir al menos 1 imagen (máximo 5). Formatos: JPG, PNG, etc.</small>
+                {errors.files && <p className="error-message">{errors.files.message}</p>}
               </div>
             </div>
 

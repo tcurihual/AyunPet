@@ -11,19 +11,19 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
   return (
     <div className="pet-card">
       <div className="pet-card-content">
-        <div> 
+        <div>
           <h3>{pet.name}</h3>
           <div className="pet-details-container">
             <span className="pet-detail-item">{pet.species}</span>
-            <span className="pet-detail-item">{pet.breed}</span>
+            <span className="pet-detail-item">{pet.breed || 'Mestizo'}</span>
             <span className="pet-detail-item">{`${pet.age} meses`}</span>
             <span className="pet-detail-item">{pet.size}</span>
-            {pet.tags.map(tag => (
+            {pet.tags?.map(tag => (
               <span key={tag} className="pet-detail-item">{tag}</span>
             ))}
           </div>
         </div>
-        <p className="pet-card-description">{publication.description}</p>  
+        <p className="pet-card-description">{publication.description}</p>
         <div className="pet-card-footer">
           <div className="pet-card-tags">
             {pet.sterilized && (
@@ -39,13 +39,11 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
               </span>
             )}
           </div>
-          
           <div className="pet-card-submitter">
-              <p className="pet-card-submitter-name">Publicado por: <strong>{creator.name}</strong></p>
+            <p className="pet-card-submitter-name">Publicado por: <strong>{creator.name}</strong></p>
           </div>
         </div>
       </div>
-
       <div className="pet-card-aside">
         <img src={pet.image} alt={pet.name} className="pet-card-pet-img" />
         <div className="card-spacer"></div>
