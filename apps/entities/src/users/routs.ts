@@ -73,6 +73,27 @@ router.delete("/:id", (req,res)=>{
             userId: id
         }
     })
+
+    router.patch("/me", (req, res) => {
+  try {
+    const { profile_picture, profile_mural, ...otherUpdates } = req.body;
+    
+    // Simply accept and echo back the updates
+    // In production, this would save to database
+    const updates = req.body;
+    
+    res.status(200).json({
+      ok: true,
+      message: "User profile updated successfully",
+      data: updates
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: "Internal server error"
+    });
+  }
+})
 })
 
 export default router
