@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Publication } from '../context/PublicationsContext';
 
 interface PetAdoptionCardProps {
@@ -7,6 +8,11 @@ interface PetAdoptionCardProps {
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
   const { creator, pet } = publication;
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate(`/pet/${publication.id}`);
+  };
 
   return (
     <div className="pet-card">
@@ -48,7 +54,9 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
         <img src={pet.image} alt={pet.name} className="pet-card-pet-img" />
         <div className="card-spacer"></div>
         <div className="pet-card-actions">
-          <button className="btn btn-primary">Ver Detalles</button>
+          <button className="btn btn-primary" onClick={handleViewDetails}>
+            Ver Detalles
+          </button>
         </div>
       </div>
     </div>

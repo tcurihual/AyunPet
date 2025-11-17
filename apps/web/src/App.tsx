@@ -44,6 +44,8 @@ function App() {
       <Route path="/nosotros" element={<AboutPage />} />
       <Route path="/post" element={<PostPage />} />
       <Route path="/noticias" element={<VistaNoticias />} />
+      <Route path="/pet/:id" element={<PetDetailPage />} />
+"
       
       
       {/* Rutas de autenticación - Recuperación de contraseña */}
