@@ -10,7 +10,6 @@ interface ProfileHeaderProps {
   mural?: string;
   isEditable?: boolean;
   token?: string;
-  onImageUpdated?: () => void;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -21,7 +20,6 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   mural,
   isEditable = false,
   token = '',
-  onImageUpdated
 }) => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [muralModalOpen, setMuralModalOpen] = useState(false);
