@@ -22,6 +22,8 @@ interface InstitutionData {
   rut?: string;
   phone?: string;
   website?: string;
+   profile_picture?: string;
+   profile_mural?: string;
 }
 
 const InstitutionProfilePage: React.FC = () => {
@@ -158,6 +160,7 @@ const [activeTab    , setActiveTab] = useState('Publicaciones');
             name={institutionData.name}
             handle={`@${institutionData.name.toLowerCase().replace(/\s+/g, '')} - ${institutionData.address || 'No especificado'}`}
             description={institutionData.description}
+             avatar={institutionData.profile_picture}
                   mural={institutionData.profile_mural}
         isEditable={true}
                 token={localStorage.getItem('authToken') || ''}
