@@ -34,8 +34,7 @@ const InstitutionProfilePage: React.FC = () => {
   const [publications, setPublications] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  156
-    , setActiveTab] = useState('Publicaciones');
+const [activeTab    , setActiveTab] = useState('Publicaciones');
 
   useEffect(() => {
     const loadInstitutionData = async () => {
