@@ -7,6 +7,17 @@ interface PetAdoptionCardProps {
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
   const { creator, pet, post } = publication;
+  const [imageError, setImageError] = React.useState(false);
+
+  const imageUrl = React.useMemo(() => {
+    if (imageError) return 'https://via.placeholder.com/300x300?text=Sin+Imagen';
+    const url = post.images?.[0] || pet.images?.[0];
+    // Usar proxy CORS para solucionar el bloqueo temporal
+    if (url && url.includes('ayunpet-api')) {
+      return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    }
+    return url || 'https://via.placeholder.com/300x300?text=Sin+Imagen';
+  }, [post.images, pet.images, imageError]);
 
   return (
     <div className="pet-card">
@@ -46,11 +57,12 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
       </div>
       <div className="pet-card-aside">
         <img 
-          src={post.images?.[0] || pet.images?.[0] || '/images/pets/default.jpg'} 
+          src={imageUrl}
           alt={pet.name} 
           className="pet-card-pet-img"
-          onError={(e) => {
-            e.currentTarget.src = '/images/pets/default.jpg';
+          onError={() => {
+            console.error('Error al cargar imagen:', imageUrl);
+            setImageError(true);
           }}
         />
         <div className="card-spacer"></div>
