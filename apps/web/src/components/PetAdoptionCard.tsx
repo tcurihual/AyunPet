@@ -7,12 +7,18 @@ interface PetAdoptionCardProps {
 }
 
 const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
-  const { creator, pet } = publication;
-  const navigate = useNavigate();
+  const { creator, pet, post } = publication;
+  const [imageError, setImageError] = React.useState(false);
 
-  const handleViewDetails = () => {
-    navigate(`/pet/${publication.id}`);
-  };
+  const imageUrl = React.useMemo(() => {
+    if (imageError) return 'https://via.placeholder.com/300x300?text=Sin+Imagen';
+    const url = post.images?.[0] || pet.images?.[0];
+    // Usar proxy CORS para solucionar el bloqueo temporal
+    if (url && url.includes('ayunpet-api')) {
+      return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    }
+    return url || 'https://via.placeholder.com/300x300?text=Sin+Imagen';
+  }, [post.images, pet.images, imageError]);
 
   return (
     <div className="pet-card">
@@ -21,8 +27,8 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
           <h3>{pet.name}</h3>
           <div className="pet-details-container">
             <span className="pet-detail-item">{pet.species}</span>
-            <span className="pet-detail-item">{pet.breed || 'Mestizo'}</span>
-            <span className="pet-detail-item">{`${pet.age} meses`}</span>
+            <span className="pet-detail-item">{pet.breed}</span>
+            <span className="pet-detail-item">{`${Math.floor(pet.age / 12)} años, ${pet.age % 12} meses`}</span>
             <span className="pet-detail-item">{pet.size}</span>
             {pet.tags?.map(tag => (
               <span key={tag} className="pet-detail-item">{tag}</span>
@@ -51,7 +57,15 @@ const PetAdoptionCard: React.FC<PetAdoptionCardProps> = ({ publication }) => {
         </div>
       </div>
       <div className="pet-card-aside">
-        <img src={pet.image} alt={pet.name} className="pet-card-pet-img" />
+        <img 
+          src={imageUrl}
+          alt={pet.name} 
+          className="pet-card-pet-img"
+          onError={() => {
+            console.error('Error al cargar imagen:', imageUrl);
+            setImageError(true);
+          }}
+        />
         <div className="card-spacer"></div>
         <div className="pet-card-actions">
           <button className="btn btn-primary" onClick={handleViewDetails}>

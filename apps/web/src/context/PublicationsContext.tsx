@@ -13,22 +13,26 @@ export interface Publication {
   creator: {
     id: string;
     name: string;
-    image?: string; // La API puede devolver una foto de perfil
+    image?: string;
   };
   pet: {
     id: string;
     name: string;
-    image: string; // Se usará la primera imagen de la mascota
+    images: string[]; 
     species: string;
-    age: number; // en meses
+    age: number;
     size: 'Pequeño' | 'Mediano' | 'Grande';
     gender: 'Macho' | 'Hembra';
     sterilized: boolean;
-    breed: string; // La API no provee raza, se podría omitir o usar un valor por defecto
-    healthStatus: string; // La API no provee un estado de salud general, se podría construir a partir de otros datos
-    tags: string[]; // La API no provee tags
+    breed: string;
+    healthStatus: string;
+    tags: string[];
+  };
+  post: { 
+    images: string[];
   };
 }
+
 
 interface PublicationsContextType {
   publications: Publication[];
@@ -41,13 +45,10 @@ const PublicationsContext = createContext<PublicationsContextType | undefined>(u
 const transformApiDataToPublication = (item: any): Publication => {
   const petAgeInMonths = (item.pet.age_years || 0) * 12 + (item.pet.age_months || 0);
 
-  // La API devuelve "male" o "female", se traduce a "Macho" o "Hembra"
   const gender = item.pet.gender.toLowerCase() === 'male' ? 'Macho' : 'Hembra';
-  // La API devuelve "dog" o "cat", se traduce a "Perro" o "Gato"
   const species = item.pet.species.toLowerCase() === 'dog' ? 'Perro' : 'Gato';
-  // La API devuelve "small", "medium", "large", se traduce a "Pequeño", "Mediano", "Grande"
-  const size = item.pet.size.toLowerCase() === 'small' ? 'Pequeño' : item.pet.size.toLowerCase() === 'medium' ? 'Mediano' : 'Grande';
-
+  const size = item.pet.size.toLowerCase() === 'small' ? 'Pequeño' : 
+                item.pet.size.toLowerCase() === 'medium' ? 'Mediano' : 'Grande';
 
   return {
     id: String(item.post.id),
@@ -63,18 +64,22 @@ const transformApiDataToPublication = (item: any): Publication => {
     pet: {
       id: String(item.pet.id),
       name: item.pet.name,
-      image: item.pet.images?.[0] || '/images/pets/default.jpg', // Usar la primera imagen o una por defecto
+      images: item.pet.images || [], 
       species: species,
       age: petAgeInMonths,
       size: size,
       gender: gender,
       sterilized: item.pet.sterilized,
-      breed: 'No especificada', // Valor por defecto
-      healthStatus: 'Sano', // Valor por defecto
-      tags: [], // Valor por defecto
+      breed: 'No especificada',
+      healthStatus: 'Sano',
+      tags: [],
+    },
+    post: {
+      images: item.post.images || [],
     },
   };
 };
+
 
 
 export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

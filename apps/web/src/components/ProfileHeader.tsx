@@ -1,17 +1,29 @@
 import React from 'react';
 
-const ProfileHeader: React.FC = () => {
+interface ProfileHeaderProps {
+  name: string;
+  avatar?: string;
+  handle?: string;
+  description?: string;
+}
+
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ 
+  name, 
+  avatar = '/images/avatars/miguel.jpeg',
+  handle = '',
+  description = ''
+}) => {
   return (
     <div className="profile-header">
       <img 
-        src="/images/avatars/miguel.jpeg" 
-        alt="Logo de la Fundación" 
+        src={avatar} 
+        alt={`Logo de ${name}`} 
         className="profile-avatar"
       />
       <div className="profile-info">
-        <h2>Fundación Sigma</h2>
-        <span className="profile-handle">@Sigma · Temuco</span>
-        <p>Rescatamos, rehabilitamos y damos en adopción responsable a perros y gatos en situación de vulnerabilidad.</p>
+        <h2>{name}</h2>
+        {handle && <span className="profile-handle">{handle}</span>}
+        {description && <p>{description}</p>}
       </div>
     </div>
   );
