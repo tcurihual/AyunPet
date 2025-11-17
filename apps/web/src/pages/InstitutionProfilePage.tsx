@@ -153,10 +153,14 @@ const InstitutionProfilePage: React.FC = () => {
           <div className="profile-banner">
             <img src={banner} alt="Banner" />
           </div>
-          <ProfileHeader 
+          156
+          
             name={institutionData.name}
             handle={`@${institutionData.name.toLowerCase().replace(/\s+/g, '')} - ${institutionData.address || 'No especificado'}`}
             description={institutionData.description}
+                  mural={institutionData.profile_mural}
+        isEditable={true}
+        token={token}
           />
         </div>
         <div className="profile-layout">
