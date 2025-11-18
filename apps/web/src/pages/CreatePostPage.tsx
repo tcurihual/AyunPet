@@ -21,59 +21,115 @@ const createPostSchema = z.object({
   sterilized: z.boolean(),
   files: z.any()
     .refine((files) => files?.length > 0, 'Debes subir al menos una imagen de la mascota')
-    .refine((files) => files?.length <= 5, 'Máximo 5 imágenes permitidas'),
+    .refine((files) => files?.length <= 3, 'Máximo 3 imágenes permitidas')
+    .refine(
+      (files) => Array.from(files).every((f: File) => 
+        ['image/jpeg', 'image/png', 'image/jpg'].includes(f.type)
+      ),
+      'Solo se permiten imágenes en formato JPG o PNG (no WEBP)'
+    ),
 });
+
 
 type CreatePostData = z.infer<typeof createPostSchema>;
 
 const CreatePostPage: React.FC = () => {
   const { isLoading, setLoading } = useLoading();
   const { user, token } = useAuth();
+  const [selectedFiles, setSelectedFiles] = React.useState<File[]>([]);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<CreatePostData>({
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<CreatePostData>({
     resolver: zodResolver(createPostSchema),
   });
 
-  const onSubmit = async (data: CreatePostData) => {
-    setLoading(true);
-    try {
-      // Validación explícita de archivos
-      if (!data.files || data.files.length === 0) {
-        throw new Error('Debes subir al menos una imagen de la mascota');
-      }
-
-      const files = Array.from(data.files as FileList);
-
-      const payload = {
-        title: data.title.trim(),
-        description: data.description.trim(),
-        name: data.name.trim(),
-        age_years: Number(data.age_years),
-        age_months: Number(data.age_months),
-        gender: data.gender,
-        size: data.size,
-        species: data.species,
-        sterilized: Boolean(data.sterilized),
-        files,
-      };
-
-      const tokenFromStorage = token || localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
-      const result = await createPost(tokenFromStorage, payload);
-      
-      if (!result.ok) {
-        if (!tokenFromStorage) throw new Error('No estás autenticado. Debes incluir un token de autorización');
-        throw new Error(result.error || 'Error al crear la publicación');
-      }
-
-      reset();
-      alert('✅ Publicación creada correctamente');
-    } catch (err: any) {
-      console.error(err);
-      alert('❌ ' + (err.message || 'Error al crear la publicación'));
-    } finally {
-      setLoading(false);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    // Validar cantidad
+    if (files.length > 3) {
+      alert('❌ Solo puedes subir máximo 3 imágenes');
+      e.target.value = '';
+      setSelectedFiles([]);
+      return;
     }
+    
+    // Validar formato (bloquear WEBP)
+    const invalidFiles = files.filter(f => !['image/jpeg', 'image/png', 'image/jpg'].includes(f.type));
+    if (invalidFiles.length > 0) {
+      alert('❌ Solo se permiten imágenes JPG o PNG. Archivos no válidos:\n' + 
+            invalidFiles.map(f => `- ${f.name} (${f.type})`).join('\n'));
+      e.target.value = '';
+      setSelectedFiles([]);
+      return;
+    }
+    
+    setSelectedFiles(files);
+    setValue('files', files.length > 0 ? files : undefined);
   };
+
+
+  const removeFile = (index: number) => {
+    const newFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(newFiles);
+    setValue('files', newFiles.length > 0 ? newFiles : undefined);
+  };
+
+const onSubmit = async (data: CreatePostData) => {
+  setLoading(true);
+  try {
+    // ✅ Usar selectedFiles directamente (ya validado)
+    if (selectedFiles.length === 0) {
+      throw new Error('Debes subir al menos una imagen de la mascota');
+    }
+
+    if (selectedFiles.length > 3) {
+      throw new Error('Máximo 3 imágenes permitidas');
+    }
+
+    const payload = {
+      title: data.title.trim(),
+      description: data.description.trim(),
+      name: data.name.trim(),
+      age_years: Number(data.age_years),
+      age_months: Number(data.age_months),
+      gender: data.gender,
+      size: data.size,
+      species: data.species,
+      sterilized: Boolean(data.sterilized),
+      files: selectedFiles, // ✅ Usar selectedFiles en lugar de data.files
+    };
+
+    const tokenFromStorage = token || localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
+    
+    console.log('📤 Enviando:', {
+      ...payload,
+      files: payload.files.map(f => ({ name: f.name, size: f.size, type: f.type }))
+    });
+    
+    const result = await createPost(tokenFromStorage, payload);
+    
+    if (!result.ok) {
+      if (!tokenFromStorage) throw new Error('No estás autenticado. Debes incluir un token de autorización');
+      throw new Error(result.error || 'Error al crear la publicación');
+    }
+
+    // ✅ Limpiar formulario y archivos
+    reset();
+    setSelectedFiles([]);
+    
+    // ✅ Limpiar también el input file
+    const fileInput = document.getElementById('files') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    
+    alert('✅ Publicación creada correctamente');
+  } catch (err: any) {
+    console.error('❌ Error completo:', err);
+    alert('❌ ' + (err.message || 'Error al crear la publicación'));
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (!user) {
     return (
@@ -235,15 +291,57 @@ const CreatePostPage: React.FC = () => {
                   type="file" 
                   accept="image/*" 
                   multiple 
-                  {...register('files')} 
+                  onChange={handleFileChange}
                   disabled={isLoading}
                   required
                 />
-                <small>Debes subir al menos 1 imagen (máximo 5). Formatos: JPG, PNG, etc.</small>
+                <small>Debes subir entre 1 y 3 imágenes. Formatos: JPG, PNG, etc.</small>
                 {errors.files && <p className="error-message">{errors.files.message}</p>}
               </div>
-            </div>
 
+              {/* Preview de imágenes seleccionadas */}
+              {selectedFiles.length > 0 && (
+                <div className="file-preview-container" style={{ marginTop: '16px' }}>
+                  <p style={{ fontWeight: 600, marginBottom: '8px' }}>
+                    {selectedFiles.length} imagen{selectedFiles.length > 1 ? 'es' : ''} seleccionada{selectedFiles.length > 1 ? 's' : ''}:
+                  </p>
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    {selectedFiles.map((file, index) => (
+                      <div key={index} style={{ position: 'relative', border: '1px solid #ddd', borderRadius: '8px', padding: '8px' }}>
+                        <img 
+                          src={URL.createObjectURL(file)} 
+                          alt={`Preview ${index + 1}`}
+                          style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeFile(index)}
+                          style={{
+                            position: 'absolute',
+                            top: '4px',
+                            right: '4px',
+                            background: 'red',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '24px',
+                            height: '24px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          ×
+                        </button>
+                        <p style={{ fontSize: '11px', marginTop: '4px', textAlign: 'center' }}>
+                          {file.name.slice(0, 15)}...
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <button type="submit" className="btn btn-submit" disabled={isLoading}>
               {isLoading ? '⏳ Creando...' : '✨ Crear Publicación'}
             </button>

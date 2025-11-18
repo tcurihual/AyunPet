@@ -5,7 +5,6 @@ import Loading from '../components/Loading';
 import { useAuth } from '../context/AuthContext';
 import '../components/perfil.css';
 
-// Campos que llegan del login de la API
 interface UserProfileData {
   id: string | number;
   role: string | number;
