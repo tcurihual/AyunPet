@@ -37,8 +37,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
     try {
       setLoading(true);
       const updates = {
-      [type === 'profile' ? 'profile_picture' : 'profile_mural']: imageBase64      };
-            console.log('[ProfileHeader] Sending to API:', updates, 'Token:', token);
+        [type === 'profile' ? 'image' : 'mural']: imageBase64            console.log('[ProfileHeader] Sending to API:', updates, 'Token:', token);
       const response = await updateInstitutionProfile(updates, token);
             console.log('[ProfileHeader] Response from API:', response);
 
