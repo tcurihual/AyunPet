@@ -49,28 +49,32 @@ const solicitudesEjemplo = [
 ];
 
 const UserProfile: React.FC = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulación, reemplaza esto por la llamada real a tu login API si lo necesitas.
-    setTimeout(() => {
+    // Si hay usuario en el contexto de auth, usarlo directamente
+    if (user) {
       setProfileData({
-        id: 76,
-        role: 20,
-        rut: "203575823",
-        email: "paxchipro27@gmail.com",
-        name: "José Jiménez",
-        validated: true,
-        address: "lima,peru",
-        description: "tryhard del profe caro",
-        created_at: "2025-11-08T00:03:54.987004",
+        id: user.id,
+        role: user.role,
+        rut: user.rut || '',
+        email: user.email,
+        name: user.name,
+        validated: user.validated !== undefined ? user.validated : true,
+        address: user.address || null,
+        description: user.description || null,
+        created_at: user.created_at || new Date().toISOString(),
       });
       setIsLoading(false);
-    }, 300);
-  }, []);
+    } else {
+      // Si no hay usuario en contexto, redirigir al login
+      setIsLoading(false);
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   if (isLoading || !profileData) {
     return (
@@ -90,6 +94,21 @@ const UserProfile: React.FC = () => {
   // Verificar si es institución (rol 21)
   const isInstitution = profileData.role === 21 || profileData.role === '21';
 
+  // Determinar el tipo de rol para mostrar
+  const getRoleName = (role: string | number): string => {
+    const roleNum = typeof role === 'string' ? parseInt(role) : role;
+    switch (roleNum) {
+      case 20:
+        return 'Usuario';
+      case 21:
+        return 'Institución';
+      case 22:
+        return 'Dador de Adopción';
+      default:
+        return 'Usuario';
+    }
+  };
+
   return (
     <>
       <Header />
@@ -99,13 +118,13 @@ const UserProfile: React.FC = () => {
             <div className="perfil-avatar-section">
               <div className="perfil-avatar-box">
                 {/* Avatar sólo inicial del nombre */}
-                <span className="perfil-avatar-text">{profileData.name.charAt(0)}</span>
+                <span className="perfil-avatar-text">{profileData.name.charAt(0).toUpperCase()}</span>
               </div>
             </div>
             <div className="perfil-info-section">
               <div className="perfil-nombre-rol">
                 <span className="perfil-nombre">{profileData.name}</span>
-                <span className="perfil-rol">{isInstitution ? 'Institución' : 'Usuario'}</span>
+                <span className="perfil-rol">{getRoleName(profileData.role)}</span>
               </div>
               <div className="perfil-miembro">
                 Miembro desde {miembroDesde}
@@ -132,7 +151,9 @@ const UserProfile: React.FC = () => {
             <div className="perfil-left">
               <div className="perfil-section-title"><span>Sobre mí</span></div>
               <div className="perfil-section-box">
-                <div className="perfil-bio">{profileData.description}</div>
+                <div className="perfil-bio">
+                  {profileData.description || 'Sin descripción proporcionada.'}
+                </div>
               </div>
               <div className="perfil-section-title" style={{ marginTop: 30 }}>
                 <span>Solicitudes Pendientes de Adopción</span>
@@ -170,7 +191,9 @@ const UserProfile: React.FC = () => {
                 </div>
                 <div className="perfil-contact-item">
                   <span className="perfil-contact-label">DIRECCIÓN</span>
-                  <span className="perfil-contact-value">{profileData.address}</span>
+                  <span className="perfil-contact-value">
+                    {profileData.address || 'No especificada'}
+                  </span>
                 </div>
               </div>
             </div>
