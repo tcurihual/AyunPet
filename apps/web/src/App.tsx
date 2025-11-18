@@ -12,7 +12,6 @@ import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import Maintenance from './pages/MaintenancePage';
 import SearchAccountsPage from './pages/search_acounts.tsx';
-import PostPage from './pages/PostPage';
 import AdminPage from './pages/AdminPage';
 import SavedPostsPage from './pages/SavedPostsPage';
 import VerificacionAdminPage from './pages/VerificationAdminPage.tsx';
@@ -42,7 +41,6 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/nosotros" element={<AboutPage />} />
-      <Route path="/post" element={<PostPage />} />
       <Route path="/noticias" element={<VistaNoticias />} />
       
       
