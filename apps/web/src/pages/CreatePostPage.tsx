@@ -21,7 +21,13 @@ const createPostSchema = z.object({
   sterilized: z.boolean(),
   files: z.any()
     .refine((files) => files?.length > 0, 'Debes subir al menos una imagen de la mascota')
-    .refine((files) => files?.length <= 3, 'Máximo 3 imágenes permitidas'), // ✅ Cambiar a 3
+    .refine((files) => files?.length <= 3, 'Máximo 3 imágenes permitidas')
+    .refine(
+      (files) => Array.from(files).every((f: File) => 
+        ['image/jpeg', 'image/png', 'image/jpg'].includes(f.type)
+      ),
+      'Solo se permiten imágenes en formato JPG o PNG (no WEBP)'
+    ),
 });
 
 
@@ -38,15 +44,29 @@ const CreatePostPage: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    
+    // Validar cantidad
     if (files.length > 3) {
       alert('❌ Solo puedes subir máximo 3 imágenes');
       e.target.value = '';
       setSelectedFiles([]);
       return;
     }
+    
+    // Validar formato (bloquear WEBP)
+    const invalidFiles = files.filter(f => !['image/jpeg', 'image/png', 'image/jpg'].includes(f.type));
+    if (invalidFiles.length > 0) {
+      alert('❌ Solo se permiten imágenes JPG o PNG. Archivos no válidos:\n' + 
+            invalidFiles.map(f => `- ${f.name} (${f.type})`).join('\n'));
+      e.target.value = '';
+      setSelectedFiles([]);
+      return;
+    }
+    
     setSelectedFiles(files);
     setValue('files', files.length > 0 ? files : undefined);
   };
+
 
   const removeFile = (index: number) => {
     const newFiles = selectedFiles.filter((_, i) => i !== index);
@@ -57,7 +77,7 @@ const CreatePostPage: React.FC = () => {
 const onSubmit = async (data: CreatePostData) => {
   setLoading(true);
   try {
-    // ✅ Usar directamente selectedFiles en lugar de data.files
+    // ✅ Usar selectedFiles directamente (ya validado)
     if (selectedFiles.length === 0) {
       throw new Error('Debes subir al menos una imagen de la mascota');
     }
@@ -76,15 +96,15 @@ const onSubmit = async (data: CreatePostData) => {
       size: data.size,
       species: data.species,
       sterilized: Boolean(data.sterilized),
-      files: selectedFiles, // ✅ Usar selectedFiles directamente
+      files: selectedFiles, // ✅ Usar selectedFiles en lugar de data.files
     };
 
     const tokenFromStorage = token || localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
     
-    console.log('📤 Enviando payload:', {
+    console.log('📤 Enviando:', {
       ...payload,
       files: payload.files.map(f => ({ name: f.name, size: f.size, type: f.type }))
-    }); // ✅ Debug
+    });
     
     const result = await createPost(tokenFromStorage, payload);
     
@@ -93,8 +113,14 @@ const onSubmit = async (data: CreatePostData) => {
       throw new Error(result.error || 'Error al crear la publicación');
     }
 
+    // ✅ Limpiar formulario y archivos
     reset();
     setSelectedFiles([]);
+    
+    // ✅ Limpiar también el input file
+    const fileInput = document.getElementById('files') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    
     alert('✅ Publicación creada correctamente');
   } catch (err: any) {
     console.error('❌ Error completo:', err);
