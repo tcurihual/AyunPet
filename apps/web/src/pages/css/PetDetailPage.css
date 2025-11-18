@@ -244,3 +244,150 @@
     height: fit-content; /* Para que el sticky funcione */
   }
 }
+
+/* ===========================
+   Modal (overlay + contenido)
+   =========================== */
+
+/* Overlay semi-transparente que oscurece el fondo */
+.modal-overlay {
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45); /* oscuro semi-transparente */
+  z-index: 9999; /* por encima de todo */
+  padding: 20px; /* espacio en móviles */
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Contenedor principal de la modal */
+.modal-content {
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh; /* evita que se salga de la pantalla */
+  overflow: auto;
+  background: var(--color-bg-content); /* respeta modo claro/oscuro */
+  color: var(--color-text-primary);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35), 0 2px 8px var(--color-shadow);
+  padding: 20px;
+  position: relative;
+  animation: modal-fade-in 180ms ease;
+}
+
+/* Encabezado de la modal (titulo + cerrar) */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-accent);
+  margin: 0;
+}
+
+/* Botón cerrar (esquina) */
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  padding: 6px;
+  border-radius: 8px;
+}
+.modal-close:hover {
+  background: color-mix(in srgb, var(--color-text-link) 8%, transparent);
+  color: var(--color-text-primary);
+}
+
+/* Cuerpo de modal */
+.modal-body {
+  font-size: 0.98rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  padding-top: 8px;
+}
+
+/* Footer: acciones (botones) */
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+/* Botones dentro de la modal (primario y secundario) */
+.modal-btn {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  min-width: 110px;
+}
+
+/* Primario (enviar solicitud / contactar) */
+.modal-btn.primary {
+  background: var(--color-text-link);
+  color: var(--color-text-light, #fff);
+  border-color: transparent;
+}
+.modal-btn.primary:hover {
+  transform: translateY(-2px);
+}
+
+/* Secundario (cerrar / cancelar) */
+.modal-btn.secondary {
+  background: transparent;
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
+}
+.modal-btn.secondary:hover {
+  background: color-mix(in srgb, var(--color-text-link) 6%, transparent);
+}
+
+/* Acomodo responsive: para pantallas chicas, footer apila */
+@media (max-width: 520px) {
+  .modal-footer {
+    justify-content: center;
+  }
+  .modal-content {
+    padding: 16px;
+    border-radius: 10px;
+  }
+}
+
+/* Animación sutil al abrir */
+@keyframes modal-fade-in {
+  from { transform: translateY(6px) scale(0.995); opacity: 0; }
+  to   { transform: translateY(0px) scale(1); opacity: 1; }
+}
+
+/* Protection: si tu modal ya tiene clases distintas, añade un selector alterno
+   Por ejemplo: .create-adoption-modal .modal-content { ... } 
+   (descomenta y adapta si lo necesitas) */
+
+/* ===========================
+   Prefers color scheme (ajustes para modo oscuro)
+   =========================== */
+@media (prefers-color-scheme: dark) {
+  .modal-overlay {
+    background: rgba(0,0,0,0.6);
+  }
+  .modal-content {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  }
+}
