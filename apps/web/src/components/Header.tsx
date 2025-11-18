@@ -60,7 +60,6 @@ const Header: React.FC = () => {
         <nav>
           <ul>
             <li><Link to="/adopta">Adopta</Link></li>
-            <li><Link to="/refugios">Refugios y Organizaciones</Link></li>
             <li><Link to="/noticias">Noticias</Link></li>
             <li><Link to="/nosotros">Nosotros</Link></li>
           </ul>
