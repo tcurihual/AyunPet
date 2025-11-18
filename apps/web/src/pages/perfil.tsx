@@ -1,32 +1,132 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../index.css';
-import Header from '../components/Header'; 
-import Footer from '../components/Footer'; 
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import Loading from '../components/Loading';
+import { useAuth } from '../context/AuthContext';
+
+interface UserProfileData {
+  id: string;
+  nombre: string;
+  rut: string;
+  email: string;
+  telefono?: string;
+  ciudad?: string;
+  direccion?: string;
+  bio?: string;
+  intereses?: string[];
+  rol: string;
+  miembro_desde?: string;
+  avatar_url?: string;
+  estadisticas?: {
+    adopciones: number;
+    favoritos: number;
+    publicaciones: number;
+  };
+}
 
 const UserProfile: React.FC = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('about');
+  const [profileData, setProfileData] = useState<UserProfileData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const user = {
-    nombre: "José Martínez",
-    rut: "12.345.678-9",
-    email: "jose.martinez@example.com",
-    telefono: "+56 9 1234 5678",
-    ciudad: "Temuco",
-    direccion: "Av. Alemania 0281",
-    bio: "Amante de los animales con más de 5 años de experiencia en rescate y rehabilitación. Creo firmemente en darles una segunda oportunidad a quienes más lo necesitan. Hogar temporal certificado y voluntario activo.",
-    intereses: ["Perros", "Gatos", "Adopción Responsable", "Voluntariado"],
-    estadisticas: { adopciones: 3, favoritos: 8, publicaciones: 2 },
-    rol: "tester",
-    miembro_desde: "Enero 2024",
-    avatar_color: "#4f4641"
-  };
+  // Cargar datos del perfil desde la API
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
 
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('authToken');
+
+        const response = await fetch(
+          `http://ayunpet-api.eastus2.cloudapp.azure.com/v1/users/${user.id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        const mappedData: UserProfileData = {
+          id: data.id || user.id,
+          nombre: data.name || data.nombre || user.name,
+          rut: data.rut || 'No especificado',
+          email: data.email || user.email,
+          telefono: data.phone || data.telefono || 'No especificado',
+          ciudad: data.city || data.ciudad || 'No especificado',
+          direccion: data.address || data.direccion || 'No especificado',
+          bio: data.bio || data.description || 'Sin descripción',
+          intereses: data.interests || data.intereses || [],
+          rol: data.role || data.rol || user.role,
+          miembro_desde: data.created_at
+            ? new Date(data.created_at).toLocaleDateString('es-CL', {
+                month: 'long',
+                year: 'numeric'
+              })
+            : 'Recientemente',
+          avatar_url: data.avatar_url || data.avatar,
+          estadisticas: {
+            adopciones: data.statistics?.adoptions || data.estadisticas?.adopciones || 0,
+            favoritos: data.statistics?.favorites || data.estadisticas?.favoritos || 0,
+            publicaciones: data.statistics?.publications || data.estadisticas?.publicaciones || 0,
+          }
+        };
+
+        setProfileData(mappedData);
+        setError(null);
+      } catch (err: any) {
+        console.error('Error al cargar perfil:', err);
+        setError(err.message || 'Error al cargar el perfil');
+        
+        // Datos de respaldo si falla la API
+        setProfileData({
+          id: user.id,
+          nombre: user.name,
+          rut: 'No especificado',
+          email: user.email,
+          telefono: 'No especificado',
+          ciudad: 'No especificado',
+          direccion: 'No especificado',
+          bio: 'Sin descripción',
+          intereses: [],
+          rol: user.role,
+          miembro_desde: 'Recientemente',
+          estadisticas: {
+            adopciones: 0,
+            favoritos: 0,
+            publicaciones: 0,
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
+
+  // Actividades recientes (podrían venir de otro endpoint)
   const actividades_recientes = [
     { tipo: "adopcion", titulo: "Adoptó a Luna", fecha: "Hace 2 días", icono: "🐕" },
     { tipo: "favorito", titulo: "Guardó 3 publicaciones", fecha: "Hace 5 días", icono: "❤️" },
     { tipo: "publicacion", titulo: "Publicó sobre Max", fecha: "Hace 1 semana", icono: "📝" }
   ];
 
+  // Iconos SVG
   const UserIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -111,34 +211,111 @@ const UserProfile: React.FC = () => {
     { id: 'interests', label: 'Intereses', icon: <HeartIcon /> }
   ];
 
-  const contactInfo = [
-    { icon: <MailIcon />, label: 'Email', value: user.email },
-    { icon: <PhoneIcon />, label: 'Teléfono', value: user.telefono },
-    { icon: <MapPinIcon />, label: 'Ciudad', value: user.ciudad },
-    { icon: <HomeIcon />, label: 'Dirección', value: user.direccion }
-  ];
-
   const quickLinks = ['Mis favoritos', 'Mis publicaciones', 'Solicitudes'];
+
+  // Mostrar loading
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <Loading />
+        <Footer />
+      </>
+    );
+  }
+
+  // Mostrar error
+  if (error && !profileData) {
+    return (
+      <>
+        <Header />
+        <div className="user-profile-page">
+          <div className="error-container" style={{
+            textAlign: 'center',
+            padding: '60px 20px',
+            maxWidth: '600px',
+            margin: '0 auto'
+          }}>
+            <h2 style={{ color: '#d32f2f', marginBottom: '15px' }}>Error al cargar perfil</h2>
+            <p style={{ color: '#666', marginBottom: '20px' }}>{error}</p>
+            <button 
+              className="btn btn-primary"
+              onClick={() => window.location.reload()}
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // No hay usuario logueado
+  if (!user || !profileData) {
+    return (
+      <>
+        <Header />
+        <div className="user-profile-page">
+          <div style={{
+            textAlign: 'center',
+            padding: '60px 20px'
+          }}>
+            <h2>Debes iniciar sesión para ver tu perfil</h2>
+            <a href="/login" className="btn btn-primary" style={{ marginTop: '20px' }}>
+              Iniciar Sesión
+            </a>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  const contactInfo = [
+    { icon: <MailIcon />, label: 'Email', value: profileData.email },
+    { icon: <PhoneIcon />, label: 'Teléfono', value: profileData.telefono },
+    { icon: <MapPinIcon />, label: 'Ciudad', value: profileData.ciudad },
+    { icon: <HomeIcon />, label: 'Dirección', value: profileData.direccion }
+  ];
 
   return (
     <>
-      <Header /> {/* Added Header component */}
+      <Header />
       <div className="user-profile-page">
+        {/* Mostrar advertencia si hay error pero hay datos de respaldo */}
+        {error && (
+          <div style={{
+            backgroundColor: '#fff3cd',
+            border: '1px solid #ffc107',
+            padding: '12px 20px',
+            margin: '0 auto 20px',
+            maxWidth: '1200px',
+            borderRadius: '8px',
+            textAlign: 'center',
+            color: '#856404'
+          }}>
+            ⚠️ Mostrando datos almacenados localmente. {error}
+          </div>
+        )}
+
         <div className="user-profile-container">
 
           {/* Header Card */}
           <div className="profile-header-card">
-            {/* Background Pattern */}
             <div className="profile-header-background" />
 
-            {/* Profile Content */}
             <div className="profile-header-content">
               <div className="profile-header-flex">
 
                 {/* Avatar */}
                 <div className="profile-avatar-wrapper">
                   <div className="profile-avatar">
-                    {user.nombre[0]}
+                    {profileData.avatar_url ? (
+                      <img src={profileData.avatar_url} alt={profileData.nombre} />
+                    ) : (
+                      profileData.nombre[0]
+                    )}
                   </div>
                   <button className="profile-avatar-camera-btn">
                     <CameraIcon />
@@ -149,22 +326,22 @@ const UserProfile: React.FC = () => {
                 <div className="profile-user-info">
                   <div className="profile-user-name-row">
                     <h1 className="profile-user-name">
-                      {user.nombre}
+                      {profileData.nombre}
                     </h1>
                     <span className="profile-role-badge">
-                      {user.rol}
+                      {profileData.rol}
                     </span>
                   </div>
                   <p className="profile-member-since">
                     <AwardIcon />
-                    Miembro desde {user.miembro_desde}
+                    Miembro desde {profileData.miembro_desde}
                   </p>
 
                   {/* Stats Row */}
                   <div className="profile-stats-row">
                     <div className="profile-stat-item">
                       <div className="profile-stat-value adopciones">
-                        {user.estadisticas.adopciones}
+                        {profileData.estadisticas?.adopciones || 0}
                       </div>
                       <div className="profile-stat-label">
                         Adopciones
@@ -172,7 +349,7 @@ const UserProfile: React.FC = () => {
                     </div>
                     <div className="profile-stat-item">
                       <div className="profile-stat-value favoritos">
-                        {user.estadisticas.favoritos}
+                        {profileData.estadisticas?.favoritos || 0}
                       </div>
                       <div className="profile-stat-label">
                         Favoritos
@@ -180,7 +357,7 @@ const UserProfile: React.FC = () => {
                     </div>
                     <div className="profile-stat-item">
                       <div className="profile-stat-value publicaciones">
-                        {user.estadisticas.publicaciones}
+                        {profileData.estadisticas?.publicaciones || 0}
                       </div>
                       <div className="profile-stat-label">
                         Publicaciones
@@ -229,7 +406,7 @@ const UserProfile: React.FC = () => {
                 {activeTab === 'about' && (
                   <div>
                     <h3 className="profile-tab-title">Sobre mí</h3>
-                    <p className="profile-bio-text">{user.bio}</p>
+                    <p className="profile-bio-text">{profileData.bio}</p>
                   </div>
                 )}
 
@@ -260,11 +437,15 @@ const UserProfile: React.FC = () => {
                   <div>
                     <h3 className="profile-tab-title">Mis Intereses</h3>
                     <div className="profile-interests-grid">
-                      {user.intereses.map((int, i) => (
-                        <span key={i} className="profile-interest-tag">
-                          {int}
-                        </span>
-                      ))}
+                      {profileData.intereses && profileData.intereses.length > 0 ? (
+                        profileData.intereses.map((int, i) => (
+                          <span key={i} className="profile-interest-tag">
+                            {int}
+                          </span>
+                        ))
+                      ) : (
+                        <p style={{ color: '#666' }}>No has agregado intereses aún</p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -313,7 +494,7 @@ const UserProfile: React.FC = () => {
                       {link}
                     </a>
                   ))}
-                  {(user.rol === "admin" || user.rol === "tester") && (
+                  {(profileData.rol === "admin" || profileData.rol === "tester") && (
                     <a
                       href="#"
                       className="profile-quick-link admin"
@@ -327,7 +508,7 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
       </div>
-      <Footer /> {/* Added Footer component */}
+      <Footer />
     </>
   );
 };
