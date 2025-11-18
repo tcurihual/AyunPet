@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
@@ -49,6 +50,7 @@ const solicitudesEjemplo = [
 
 const UserProfile: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -85,6 +87,9 @@ const UserProfile: React.FC = () => {
     ? new Date(profileData.created_at).toLocaleDateString('es-CL', { month: 'long', year: 'numeric' })
     : 'Recientemente';
 
+  // Verificar si es institución (rol 21)
+  const isInstitution = profileData.role === 21 || profileData.role === '21';
+
   return (
     <>
       <Header />
@@ -100,7 +105,7 @@ const UserProfile: React.FC = () => {
             <div className="perfil-info-section">
               <div className="perfil-nombre-rol">
                 <span className="perfil-nombre">{profileData.name}</span>
-                <span className="perfil-rol">Usuario</span>
+                <span className="perfil-rol">{isInstitution ? 'Institución' : 'Usuario'}</span>
               </div>
               <div className="perfil-miembro">
                 Miembro desde {miembroDesde}
@@ -109,6 +114,19 @@ const UserProfile: React.FC = () => {
               <div className="perfil-adopciones-label">ADOPCIONES</div>
             </div>
           </div>
+
+          {/* Botón Crear Post solo para instituciones */}
+          {isInstitution && (
+            <div className="perfil-crear-post-section">
+              <button 
+                className="perfil-btn-crear-post"
+                onClick={() => navigate('/crear-post')}
+              >
+                ➕ Crear Publicación
+              </button>
+            </div>
+          )}
+
           <div className="perfil-divider" />
           <div className="perfil-content-columns">
             <div className="perfil-left">
