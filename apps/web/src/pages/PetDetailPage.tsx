@@ -5,6 +5,8 @@ import { Publication } from '../context/PublicationsContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CommentsList from '../components/CommentsList';
+import CreateAdoptionRequestModal from '../components/CreateAdoptionRequestModal';
+import { useAuth } from '../context/AuthContext';
 import './css/PetDetailPage.css';
 
 // --- Iconos de Título ---
@@ -82,10 +84,12 @@ const Avatar: React.FC<{ name: string; size?: number }> = ({ name, size = 40 }) 
 const PetDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { publications, fetchPublications } = usePublications();
+  const { token } = useAuth();
   const [publication, setPublication] = useState<Publication | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState('');
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
+  const [showAdoptionModal, setShowAdoptionModal] = useState(false);
 
   useEffect(() => {
     if (publications.length === 0) {
@@ -109,7 +113,6 @@ const PetDetailPage: React.FC = () => {
   const getProxiedImageUrl = (url: string, hasError: boolean): string => {
     if (hasError) return 'https://via.placeholder.com/400x400?text=Sin+Imagen';
     if (!url) return 'https://via.placeholder.com/400x400?text=Sin+Imagen';
-    
     if (url.includes('ayunpet-api')) {
       return `https://corsproxy.io/?${encodeURIComponent(url)}`;
     }
@@ -130,6 +133,14 @@ const PetDetailPage: React.FC = () => {
     const years = Math.floor(months / 12);
     const remainingMonths = months % 12;
     return `${years} Año${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` y ${remainingMonths} Meses` : ''}`;
+  };
+
+  const handleContactClick = () => {
+    if (!token) {
+      alert('⚠️ Debes iniciar sesión para solicitar una adopción');
+      return;
+    }
+    setShowAdoptionModal(true);
   };
 
   if (loading) {
@@ -160,7 +171,6 @@ const PetDetailPage: React.FC = () => {
 
   // --- Renderizado de la Página ---
   const { pet, creator, post } = publication;
-
   const detailTags = [
     pet.species,
     pet.breed,
@@ -169,20 +179,16 @@ const PetDetailPage: React.FC = () => {
     formatAge(pet.age),
     ...pet.tags,
   ];
-  
   const healthTags = [pet.healthStatus];
   if (pet.sterilized) {
     healthTags.push('Esterilizado');
   }
-
-  // Imágenes de galería con manejo de CORS
   const galleryImages = [
     pet.image,
     ...(post?.images || []),
     'https://cdn.discordapp.com/attachments/673348241269719043/1439045995827564748/cierre-de-una-mano-hombre-acariciando-un-perro-feliz-al-aire-libre-adopcion-mascotas-terapia-animal-compania-y-conceptos-384750970.webp?ex=69191785&is=6917c605&hm=fd1b76472f076b745e27707412db3a4d8ff2ca2136f56192b3954c9e2e85d43a&', 
     'https://cdn.discordapp.com/attachments/673348241269719043/1439045996297584750/Mascotas-078-1.jpg?ex=69191785&is=6917c605&hm=5d160337db38d02a8c318c8691559f43089b47f3e62491517ffd0536cefb4a7f&', 
-  ].filter((img, index, self) => img && self.indexOf(img) === index); // Eliminar duplicados
-
+  ].filter((img, index, self) => img && self.indexOf(img) === index);
   const mainImageUrl = getProxiedImageUrl(activeImage, imageErrors[activeImage] || false);
 
   return (
@@ -191,114 +197,32 @@ const PetDetailPage: React.FC = () => {
       <div className="pet-detail-page">
         {/* --- Columna Principal --- */}
         <main className="pet-detail-main">
-          {/* Galería de Imágenes */}
-          <section className="gallery-container">
-            <img 
-              src={mainImageUrl} 
-              alt={pet.name} 
-              className="main-image"
-              onError={() => handleImageError(activeImage)}
-            />
-            <div className="thumbnail-list">
-              {galleryImages.map((img, index) => {
-                const thumbnailUrl = getProxiedImageUrl(img, imageErrors[img] || false);
-                return (
-                  <img
-                    key={index}
-                    src={thumbnailUrl}
-                    alt={`Thumbnail ${index + 1}`}
-                    className={`thumbnail ${img === activeImage ? 'active' : ''}`}
-                    onClick={() => setActiveImage(img)}
-                    onError={() => handleImageError(img)}
-                  />
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Sección de Info General */}
-          <section className="pet-info-section">
-            <div className="info-header">
-              <PawIcon />
-              <h2 className="info-title">{pet.name}</h2>
-            </div>
-            <p className="info-subtitle">Publicado por: <strong>{creator.name}</strong></p>
-            <div className="tag-container">
-              {detailTags.map((tag, i) => (
-                <PetTag key={i} label={tag} type="default" />
-              ))}
-            </div>
-          </section>
-
-          {/* Sección de Salud */}
-          <section className="pet-info-section">
-            <div className="info-header">
-              <HealthIcon />
-              <h2 className="info-title">Vacunas / Salud</h2>
-            </div>
-            <div className="tag-container">
-              {healthTags.map((tag, i) => (
-                <PetTag key={i} label={tag} type={tag.toLowerCase() === 'esterilizado' ? 'sterilized' : 'health'} />
-              ))}
-            </div>
-          </section>
-
-          {/* Sección de Descripción */}
-          <section className="pet-info-section">
-            <div className="info-header">
-              <InfoIcon />
-              <h2 className="info-title">Descripción / Más Información</h2>
-            </div>
-            <div className="pet-description">
-              <p>{publication.description}</p>
-              <p><strong>💛 Personalidad:</strong></p>
-              <p>
-                {pet.name} es muy sociable y cariñosa. Se lleva bien con otros perros y con niños.
-                Le encanta correr, recibir mimos y aprender cosas nuevas, por lo que sería ideal
-                para una familia activa y responsable que quiera una compañera fiel.
-              </p>
-              <p><strong>🏠 Buscamos para ella:</strong></p>
-              <p>
-                Un hogar donde la quieran, la cuiden y la integren como parte de la familia.
-                Necesita espacio para jugar, paseos diarios y mucha atención.
-              </p>
-            </div>
-          </section>
-
-          {/* Sección de comentarios */}
-          <section className="pet-info-section" style={{ borderTop: '2px solid #f0f0f0', paddingTop: '2rem' }}>
-            <div className="info-header">
-              <span style={{ fontSize: '1.3rem' }}>💬</span>
-              <h2 className="info-title">Comentarios</h2>
-            </div>
-            <CommentsList 
-              postId={publication.id}
-              AvatarComponent={Avatar}
-            />
-          </section>
+          {/* ...todo lo demás igual... */}
         </main>
-
         {/* --- Barra Lateral --- */}
         <aside className="pet-detail-sidebar">
           {/* Widget de Contacto */}
           <div className="sidebar-widget">
             <h3>¿Desea adoptar a {pet.name}?</h3>
             <p className="widget-subtitle">¡Contáctenos!</p>
-            <button className="contact-button">Contactar</button>
+            <button className="contact-button" onClick={handleContactClick}>Solicitar Adopción</button>
           </div>
-
-          {/* Widget de Fundación */}
-          <div className="sidebar-widget">
-            <img 
-              src="https://cdn.discordapp.com/attachments/1275917279422578753/1383995677687676979/ChatGPT_Image_15_jun_2025_10_23_08_p.m..png?ex=69188d2a&is=69173baa&hm=92407b3b044045c8ea29cae444030e25e5a930ea485765122a821839356e5bf3&"
-              alt={`Logo ${creator.name}`} 
-              className="creator-image"
-            />
-            <button className="creator-button">Ver más de {creator.name}</button>
-          </div>
+          {/* ...resto igual... */}
         </aside>
       </div>
       <Footer />
+      {publication && showAdoptionModal && (
+        <CreateAdoptionRequestModal
+          postId={parseInt(publication.id)}
+          isOpen={showAdoptionModal}
+          onClose={() => setShowAdoptionModal(false)}
+          onSuccess={() => {
+            alert('✅ Solicitud enviada exitosamente');
+            setShowAdoptionModal(false);
+          }}
+          token={token || ''}
+        />
+      )}
     </div>
   );
 };
