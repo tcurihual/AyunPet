@@ -226,6 +226,10 @@ export async function updateInstitutionProfile(
 
     const payload = await res.json().catch(() => ({}));
           console.log('[updateInstitutionProfile] Response payload completo:', payload);
+         console.log('[updateInstitutionProfile] Todos los campos:', Object.keys(payload));
+         if (payload?.data) console.log('[updateInstitutionProfile] Contenido de data:', payload.data);
+         console.log('[updateInstitutionProfile] ¿tiene profile_picture?', payload?.profile_picture, '¿tiene profile_mural?', payload?.profile_mural);
+         if (payload?.data) console.log('[updateInstitutionProfile] ¿data.profile_picture?', payload.data?.profile_picture, '¿data.profile_mural?', payload.data?.profile_mural);
           console.log('[updateInstitutionProfile] ¿tiene image?', payload?.image, '¿tiene mural?', payload?.mural);
 
     if (!res.ok) {
