@@ -1,0 +1,226 @@
+/* estilos para post, el que lo borra es gay */
+.create-post-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.create-post-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-accent);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.create-post-form {
+  background-color: var(--color-bg-content);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 25px var(--color-shadow);
+  transition: background-color 0.3s ease;
+}
+
+.form-section {
+  margin-bottom: 35px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text-accent);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-section-icon {
+  font-size: 1.6rem;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-bg-content);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--color-text-link);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-text-link) 20%, transparent);
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-group select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20292%20292%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 15px top 50%;
+  background-size: .65em auto;
+  padding-right: 40px;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 6px;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+  accent-color: var(--color-btn-primary-bg);
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: 0.8rem;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-text-light);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 10px;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: var(--color-btn-primary-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px var(--color-shadow);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.not-authenticated-message {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--color-bg-content);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px var(--color-shadow);
+}
+
+.not-authenticated-message h2 {
+  font-size: 2rem;
+  color: var(--color-text-accent);
+  margin-bottom: 16px;
+}
+
+.not-authenticated-message p {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 24px;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--color-btn-primary-bg);
+  color: var(--color-text-light);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-btn-primary-hover);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .create-post-container {
+    padding: 20px 15px;
+  }
+
+  .create-post-title {
+    font-size: 2rem;
+  }
+
+  .create-post-form {
+    padding: 30px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section-title {
+    font-size: 1.2rem;
+  }
+}

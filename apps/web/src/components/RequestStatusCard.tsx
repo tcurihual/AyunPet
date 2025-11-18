@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 type RequestStatusCardProps = {
-  petName: string; petImage: string; rating: number; description: string;
-  submitterName: string; submitterAvatar: string; date: string;
+  petName: string; 
+  petImage: string; 
+  rating: number; 
+  description: string;
+  submitterName: string; 
+  submitterAvatar: string; 
+  date: string;
   status: 'en_espera' | 'aceptado' | 'rechazado';
+  onInfoClick: () => void;
 };
 
 const StarRating: React.FC<{ rating: number }> = ({ rating }) => (
@@ -22,17 +28,92 @@ const StatusBadge: React.FC<{ status: RequestStatusCardProps['status'] }> = ({ s
   return <span className={`status-badge ${statusClasses[status]}`}>{statusText[status]}</span>;
 };
 
+type ModalProps = Omit<RequestStatusCardProps, 'onInfoClick'> & {
+  onClose: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+  isInstitution?: boolean;
+};
+
+export const RequestDetailModal: React.FC<ModalProps> = ({
+  onClose,
+  petName,
+  petImage,
+  rating,
+  description,
+  submitterName,
+  submitterAvatar,
+  date,
+  status,
+  onApprove,
+  onReject,
+  isInstitution
+}) => {
+
+  const handleViewForm = () => {
+    console.log("Clic en Ver formulario");
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close-btn" onClick={onClose}>&times;</button>
+        
+        <img src={petImage} alt={petName} className="modal-pet-image" />
+        
+        <div className="modal-body">
+          <h3>{petName}</h3>
+          <StarRating rating={rating} />
+          <p className="modal-description">{description}</p>
+          
+          <div className="request-card-submitter modal-submitter">
+            <img src={submitterAvatar} alt={submitterName} />
+            <div>
+              <p className="request-card-submitter-name">{submitterName}</p>
+              <p className="request-card-submitter-date">{date}</p>
+            </div>
+          </div>
+          
+          <StatusBadge status={status} />
+
+          {isInstitution && status === 'en_espera' && (
+            <button 
+              className="btn btn-primary"
+              onClick={handleViewForm}
+              style={{ width: '100%', marginTop: '20px' }}
+            >
+              Ver formulario
+            </button>
+          )}
+        </div>
+        
+        {isInstitution && status === 'en_espera' && (
+          <div className="modal-actions">
+            <button className="btn btn-reject" onClick={onReject}>
+              Rechazar
+            </button>
+            <button className="btn btn-approve" onClick={onApprove}>
+              Aprobar
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function RequestStatusCard({ 
-    petName, 
-    petImage, 
-    rating, 
-    description, 
-    submitterName, 
-    submitterAvatar, 
-    date, 
-    status 
-}: 
-RequestStatusCardProps) {
+  petName, 
+  petImage, 
+  rating, 
+  description, 
+  submitterName, 
+  submitterAvatar, 
+  date, 
+  status,
+  onInfoClick 
+}: RequestStatusCardProps) {
+  
   return (
     <div className="request-card">
       <div className="request-card-content">
@@ -50,7 +131,9 @@ RequestStatusCardProps) {
       <div className="request-card-aside">
         <img src={petImage} alt={petName} className="request-card-pet-img" />
         <div className="request-card-actions">
-          <button className="btn btn-secondary">Informacion</button>
+          <button className="btn btn-secondary" onClick={onInfoClick}>
+            Informacion
+          </button>
           <StatusBadge status={status} />
         </div>
       </div>

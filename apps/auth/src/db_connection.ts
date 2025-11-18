@@ -1,9 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+dotenv.config({
+    path: path.resolve(__dirname, "./.env")
+});
 
-const supabaseUrl = process.env.SUPABASE_URL as string;
-const supabaseKey = process.env.SUPABASE_API_KEY as string;
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Faltan variables de entorno de Supabase: SUPABASE_URL y SUPABASE_API_KEY');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseKey);

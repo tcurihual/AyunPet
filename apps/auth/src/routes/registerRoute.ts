@@ -1,10 +1,21 @@
-// userRoutes.ts
 import { Router } from "express";
 import { UserController } from "../controllers/userController";
 
 const router = Router();
 
-// POST /api/users/register
+// Ruta de registro
 router.post("/register", UserController.register);
+
+// Ruta de salud para probar que el endpoint está disponible
+router.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "auth-users",
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      register: "POST /api/auth/users/register"
+    }
+  });
+});
 
 export default router;

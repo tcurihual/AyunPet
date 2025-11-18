@@ -20,5 +20,5 @@ app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")))
 
 app.use(errorHandler)
 app.listen(MEDIA_PORT, () => {
-    console.log("🚀 Adoptions service running on http://localhost/api/media")
+    console.log(`🚀 Adoptions service running on http://localhost:${MEDIA_PORT}`)
 })

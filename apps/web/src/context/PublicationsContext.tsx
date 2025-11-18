@@ -3,29 +3,36 @@ import type { ReactNode } from 'react';
 import { useLoading } from './LoadingContext';
 import { useAuth } from './AuthContext';
 
+// Estructura de la API adaptada a la interfaz de la aplicación
 export interface Publication {
   id: string;
   title: string;
   description: string;
-  createdAt: string; 
+  createdAt: string;
   status: 'active' | 'closed';
-  
   creator: {
     id: string;
     name: string;
+    image?: string;
   };
-  
   pet: {
     id: string;
     name: string;
-    image: string;
+    images: string[]; 
     species: string;
-    age: number; 
+    age: number;
     size: 'Pequeño' | 'Mediano' | 'Grande';
     gender: 'Macho' | 'Hembra';
     sterilized: boolean;
+    breed: string;
+    healthStatus: string;
+    tags: string[];
+  };
+  post: { 
+    images: string[];
   };
 }
+
 
 interface PublicationsContextType {
   publications: Publication[];
@@ -34,59 +41,89 @@ interface PublicationsContextType {
 
 const PublicationsContext = createContext<PublicationsContextType | undefined>(undefined);
 
+// Función para transformar los datos de la API a la estructura de la aplicación
+const transformApiDataToPublication = (item: any): Publication => {
+  const petAgeInMonths = (item.pet.age_years || 0) * 12 + (item.pet.age_months || 0);
+
+  const gender = item.pet.gender.toLowerCase() === 'male' ? 'Macho' : 'Hembra';
+  const species = item.pet.species.toLowerCase() === 'dog' ? 'Perro' : 'Gato';
+  const size = item.pet.size.toLowerCase() === 'small' ? 'Pequeño' : 
+                item.pet.size.toLowerCase() === 'medium' ? 'Mediano' : 'Grande';
+
+  return {
+    id: String(item.post.id),
+    title: item.post.title,
+    description: item.post.description,
+    createdAt: new Date(item.post.created_at).toLocaleDateString(),
+    status: item.post.status === 'active' ? 'active' : 'closed',
+    creator: {
+      id: String(item.creator.id),
+      name: item.creator.name,
+      image: item.creator.profilePhoto,
+    },
+    pet: {
+      id: String(item.pet.id),
+      name: item.pet.name,
+      images: item.pet.images || [], 
+      species: species,
+      age: petAgeInMonths,
+      size: size,
+      gender: gender,
+      sterilized: item.pet.sterilized,
+      breed: 'No especificada',
+      healthStatus: 'Sano',
+      tags: [],
+    },
+    post: {
+      images: item.post.images || [],
+    },
+  };
+};
+
+
+
 export const PublicationsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [publications, setPublications] = useState<Publication[]>([]);
   const { setLoading } = useLoading();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const fetchPublications = useCallback(async () => {
-    if (!user) {
-      setPublications([]); 
+    if (!user || !token) {
+      setPublications([]);
       return;
     }
-    
+
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500)); 
+      const response = await fetch('http://ayunpet-api.eastus2.cloudapp.azure.com/v1/adoptions/publications?page=1&pageSize=20&status=active', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-      const mockPublications: Publication[] = [
-        { 
-          id: '1', title: 'Luna busca un hogar', description: 'Una perrita muy juguetona y leal.', createdAt: '05-09-2025', status: 'active',
-          creator: { id: '456', name: 'Fundación Sigma' },
-          pet: { 
-            id: 'p1', name: 'Luna', image: '/images/pets/firulais.jpg',
-            species: 'Perro', age: 7, size: 'Mediano', gender: 'Hembra', sterilized: true 
-          }
-        },
-        { 
-          id: '2', title: 'Adopta a Rocky', description: 'Leal y cariñoso, ideal para familias.', createdAt: '01-09-2025', status: 'active',
-          creator: { id: '789', name: 'Rescate Animal Temuco' },
-          pet: { 
-            id: 'p2', name: 'Rocky', image: '/images/pets/simba.jpg',
-            species: 'Gato', age: 24, size: 'Mediano', gender: 'Macho', sterilized: false 
-          }
-        },
-        { 
-          id: '3', title: 'Pana Miguel necesita cariño', description: 'Curioso y muy sociable, busca compañía.', createdAt: '10-09-2025', status: 'active',
-          creator: { id: '456', name: 'Fundación Sigma' },
-          pet: { 
-            id: 'p3', name: 'Pana Miguel', image: '/images/pets/Miguel.webp',
-            species: 'Gato', age: 10, size: 'Pequeño', gender: 'Macho', sterilized: true 
-          }
-        },
-      ];
-      setPublications(mockPublications);
+      if (!response.ok) {
+        throw new Error(`Error en la petición: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.type === 'success' && Array.isArray(data.data.items)) {
+        const transformedPublications = data.data.items.map(transformApiDataToPublication);
+        setPublications(transformedPublications);
+      } else {
+        console.error("La respuesta de la API no tiene el formato esperado:", data);
+        setPublications([]);
+      }
+
     } catch (error) {
       console.error("Error al cargar las publicaciones:", error);
+      setPublications([]); // Limpiar en caso de error para no mostrar datos antiguos
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
-  }, [user?.id, setLoading]); 
+  }, [user, token, setLoading]);
 
-  const value = {
-    publications,
-    fetchPublications,
-  };
+  const value = { publications, fetchPublications };
 
   return (
     <PublicationsContext.Provider value={value}>
