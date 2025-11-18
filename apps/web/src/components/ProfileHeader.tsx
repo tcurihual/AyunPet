@@ -51,7 +51,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
         );
         // Recargar la página después de 1 segundo para ver los cambios
         setTimeout(() => {
-          window.location.reload();
+                if (type === 'profile') setProfileModalOpen(false);
+      else if (type === 'mural') setMuralModalOpen(false);
         }, 1000);
       } else {
         // Manejo de errores específicos
