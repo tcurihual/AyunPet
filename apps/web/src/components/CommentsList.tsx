@@ -23,6 +23,33 @@ interface CommentsListProps {
 
 const API_BASE_URL = 'http://ayunpet-api.eastus2.cloudapp.azure.com/v1';
 
+const CommentItem: React.FC<{ 
+  comment: Comment; 
+  AvatarComponent: React.FC<{ name: string; size?: number }> 
+}> = ({ comment, AvatarComponent }) => (
+  <div
+    style={{
+      display: 'flex',
+      gap: '1rem',
+      padding: '1.25rem',
+      backgroundColor: '#f8f9fa',
+      borderRadius: '12px'
+    }}
+  >
+    <AvatarComponent name={comment.creator.name} size={40} />
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.5rem' }}>
+        <span style={{ fontWeight: '600', fontSize: '0.95rem', color: '#2c3e50' }}>
+          {comment.creator.name}
+        </span>
+      </div>
+      <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5', color: '#495057' }}>
+        {comment.description}
+      </p>
+    </div>
+  </div>
+);
+
 const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -41,8 +68,6 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
     
     try {
-      console.log(`[CommentsList] Cargando comentarios para post: ${postId}`);
-      
       const response = await fetch(
         `${API_BASE_URL}/adoptions/messages/post/${postId}`,
         {
@@ -56,18 +81,14 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
 
       if (response.ok) {
         const result = await response.json();
-        console.log('[CommentsList] Respuesta de comentarios:', result);
-        
         if (result.data && Array.isArray(result.data)) {
           setComments(result.data);
         } else if (Array.isArray(result)) {
           setComments(result);
         }
-      } else {
-        console.error('[CommentsList] Error en respuesta:', response.status);
       }
     } catch (error) {
-      console.error('[CommentsList] Error al cargar comentarios:', error);
+      // No hacer nada, solo evitar que caiga la interfaz
     } finally {
       setLoading(false);
     }
@@ -75,29 +96,18 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !user) {
-      console.warn('[CommentsList] No hay comentario o usuario');
-      return;
-    }
+    if (!newComment.trim() || !user) return;
 
     setSubmitting(true);
     setError(null);
     const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
 
     try {
-      console.log('[CommentsList] Enviando comentario:', {
-        postId,
-        creatorId: user.id,
-        description: newComment
-      });
-
       const body = {
         postId: postId,
         creatorId: user.id,
         description: newComment
       };
-
-      console.log('[CommentsList] Body del POST:', JSON.stringify(body));
 
       const response = await fetch(
         `${API_BASE_URL}/adoptions/messages`,
@@ -111,41 +121,17 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
         }
       );
 
-      const responseData = await response.json();
-      console.log('[CommentsList] Respuesta del servidor:', responseData);
-
       if (response.ok) {
         setNewComment('');
         await loadComments();
       } else {
+        const responseData = await response.json();
         setError(responseData?.message || 'Error al enviar comentario');
-        console.error('[CommentsList] Error al enviar:', responseData);
       }
     } catch (error) {
-      console.error('[CommentsList] Error al enviar comentario:', error);
       setError('Error de conexión al enviar comentario');
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      const now = new Date();
-      const diffTime = Math.abs(now.getTime() - date.getTime());
-      const diffMinutes = Math.floor(diffTime / (1000 * 60));
-      const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      if (diffMinutes < 1) return 'Justo ahora';
-      if (diffMinutes < 60) return `Hace ${diffMinutes} min`;
-      if (diffHours < 24) return `Hace ${diffHours}h`;
-      if (diffDays === 1) return 'Ayer';
-      if (diffDays < 7) return `Hace ${diffDays} días`;
-      return date.toLocaleDateString('es-ES');
-    } catch {
-      return dateString;
     }
   };
 
@@ -229,31 +215,11 @@ const CommentsList: React.FC<CommentsListProps> = ({ postId, AvatarComponent }) 
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {comments.map((comment) => (
-            <div
+            <CommentItem 
               key={comment.id}
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                padding: '1.25rem',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '12px'
-              }}
-            >
-              <AvatarComponent name={comment.creator.name} size={40} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                  <span style={{ fontWeight: '600', fontSize: '0.95rem', color: '#2c3e50' }}>
-                    {comment.creator.name}
-                  </span>
-                  <span style={{ fontSize: '0.85rem', color: '#7f8c8d' }}>
-                    {formatDate(comment.created_at)}
-                  </span>
-                </div>
-                <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5', color: '#495057' }}>
-                  {comment.description}
-                </p>
-              </div>
-            </div>
+              comment={comment}
+              AvatarComponent={AvatarComponent}
+            />
           ))}
         </div>
       )}
