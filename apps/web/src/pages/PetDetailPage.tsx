@@ -4,6 +4,7 @@ import { usePublications } from '../context/PublicationsContext';
 import { Publication } from '../context/PublicationsContext'; 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import CommentsList from '../components/CommentsList';
 import './css/PetDetailPage.css';
 
 // --- Iconos de Título ---
@@ -15,12 +16,12 @@ const InfoIcon = () => <span className="info-icon">ⓘ</span>;
 const HealthCheckIcon: React.FC = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="14"  /* Ajustado para el tamaño del tag */
-    height="14" /* Ajustado para el tamaño del tag */
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
-    stroke="currentColor" /* Hereda el color del texto (verde) */
-    strokeWidth="2.5" /* Un poco más grueso para verse bien */
+    stroke="currentColor"
+    strokeWidth="2.5"
     strokeLinecap="round"
     strokeLinejoin="round"
   >
@@ -29,52 +30,100 @@ const HealthCheckIcon: React.FC = () => (
   </svg>
 );
 
-// --- Componente PetTag MODIFICADO ---
+// --- Componente PetTag ---
 interface PetTagProps {
   label: string;
   type?: 'default' | 'health' | 'sterilized';
 }
 const PetTag: React.FC<PetTagProps> = ({ label, type = 'default' }) => (
   <span className={`pet-tag tag-${type}`}>
-    {/* Mostrar ícono SOLO si es de tipo salud o esterilizado */}
     {(type === 'health' || type === 'sterilized') && <HealthCheckIcon />}
     {label}
   </span>
 );
 
+// --- Componente Avatar con iniciales ---
+const getColorFromName = (name: string): string => {
+  const colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
+    '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    '#F8B739', '#52B788', '#E76F51', '#264653'
+  ];
+  
+  const charCodeSum = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return colors[charCodeSum % colors.length];
+};
+
+const Avatar: React.FC<{ name: string; size?: number }> = ({ name, size = 40 }) => {
+  const initial = (name || 'U')[0].toUpperCase();
+  const backgroundColor = getColorFromName(name);
+  
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        backgroundColor,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: size * 0.4,
+        flexShrink: 0,
+      }}
+    >
+      {initial}
+    </div>
+  );
+};
 
 const PetDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { publications, fetchPublications } = usePublications();
   const [publication, setPublication] = useState<Publication | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [activeImage, setActiveImage] = useState('');
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
-  // 1. Cargar todas las publicaciones
   useEffect(() => {
-    // Si las publicaciones están vacías (ej. recarga de página), búscalas
     if (publications.length === 0) {
       fetchPublications();
     }
   }, [fetchPublications, publications.length]);
 
-  // 2. Encontrar la publicación correcta una vez que carguen
   useEffect(() => {
     if (publications.length > 0 && id) {
       const foundPub = publications.find(p => p.id === id);
       if (foundPub) {
         setPublication(foundPub);
-        setActiveImage(foundPub.pet.image); // Imagen principal
+        setActiveImage(foundPub.pet.image);
       }
       setLoading(false);
     } else if (publications.length === 0 && id) {
-      // Si aún no hay publicaciones, sigue cargando
       setLoading(true);
     }
   }, [publications, id]);
 
-  // Función para formatear la edad de meses a una cadena legible
+  const getProxiedImageUrl = (url: string, hasError: boolean): string => {
+    if (hasError) return 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+    if (!url) return 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+    
+    if (url.includes('ayunpet-api')) {
+      return `https://corsproxy.io/?${encodeURIComponent(url)}`;
+    }
+    return url;
+  };
+
+  const handleImageError = (imageUrl: string) => {
+    console.error('Error al cargar imagen:', imageUrl);
+    setImageErrors(prev => ({
+      ...prev,
+      [imageUrl]: true
+    }));
+  };
+
   const formatAge = (months: number): string => {
     if (months < 12) return `${months} Meses`;
     if (months === 12) return '1 Año';
@@ -83,7 +132,6 @@ const PetDetailPage: React.FC = () => {
     return `${years} Año${years > 1 ? 's' : ''}${remainingMonths > 0 ? ` y ${remainingMonths} Meses` : ''}`;
   };
 
-  // --- Renderizado de Carga y Error ---
   if (loading) {
     return (
       <div className="page-container">
@@ -111,11 +159,10 @@ const PetDetailPage: React.FC = () => {
   }
 
   // --- Renderizado de la Página ---
-  const { pet, creator } = publication;
+  const { pet, creator, post } = publication;
 
-  // Creamos las listas de tags basadas en los datos
   const detailTags = [
-    pet.species, // <-- AÑADIDO
+    pet.species,
     pet.breed,
     pet.gender,
     pet.size,
@@ -128,12 +175,15 @@ const PetDetailPage: React.FC = () => {
     healthTags.push('Esterilizado');
   }
 
-  // Imágenes de galería (simuladas, ya que solo hay una)
+  // Imágenes de galería con manejo de CORS
   const galleryImages = [
     pet.image,
+    ...(post?.images || []),
     'https://cdn.discordapp.com/attachments/673348241269719043/1439045995827564748/cierre-de-una-mano-hombre-acariciando-un-perro-feliz-al-aire-libre-adopcion-mascotas-terapia-animal-compania-y-conceptos-384750970.webp?ex=69191785&is=6917c605&hm=fd1b76472f076b745e27707412db3a4d8ff2ca2136f56192b3954c9e2e85d43a&', 
     'https://cdn.discordapp.com/attachments/673348241269719043/1439045996297584750/Mascotas-078-1.jpg?ex=69191785&is=6917c605&hm=5d160337db38d02a8c318c8691559f43089b47f3e62491517ffd0536cefb4a7f&', 
-  ];
+  ].filter((img, index, self) => img && self.indexOf(img) === index); // Eliminar duplicados
+
+  const mainImageUrl = getProxiedImageUrl(activeImage, imageErrors[activeImage] || false);
 
   return (
     <div className="page-container">
@@ -143,17 +193,26 @@ const PetDetailPage: React.FC = () => {
         <main className="pet-detail-main">
           {/* Galería de Imágenes */}
           <section className="gallery-container">
-            <img src={activeImage} alt={pet.name} className="main-image" />
+            <img 
+              src={mainImageUrl} 
+              alt={pet.name} 
+              className="main-image"
+              onError={() => handleImageError(activeImage)}
+            />
             <div className="thumbnail-list">
-              {galleryImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Thumbnail ${index + 1}`}
-                  className={`thumbnail ${img === activeImage ? 'active' : ''}`}
-                  onClick={() => setActiveImage(img)}
-                />
-              ))}
+              {galleryImages.map((img, index) => {
+                const thumbnailUrl = getProxiedImageUrl(img, imageErrors[img] || false);
+                return (
+                  <img
+                    key={index}
+                    src={thumbnailUrl}
+                    alt={`Thumbnail ${index + 1}`}
+                    className={`thumbnail ${img === activeImage ? 'active' : ''}`}
+                    onClick={() => setActiveImage(img)}
+                    onError={() => handleImageError(img)}
+                  />
+                );
+              })}
             </div>
           </section>
 
@@ -205,6 +264,18 @@ const PetDetailPage: React.FC = () => {
               </p>
             </div>
           </section>
+
+          {/* Sección de comentarios */}
+          <section className="pet-info-section" style={{ borderTop: '2px solid #f0f0f0', paddingTop: '2rem' }}>
+            <div className="info-header">
+              <span style={{ fontSize: '1.3rem' }}>💬</span>
+              <h2 className="info-title">Comentarios</h2>
+            </div>
+            <CommentsList 
+              postId={publication.id}
+              AvatarComponent={Avatar}
+            />
+          </section>
         </main>
 
         {/* --- Barra Lateral --- */}
@@ -219,7 +290,7 @@ const PetDetailPage: React.FC = () => {
           {/* Widget de Fundación */}
           <div className="sidebar-widget">
             <img 
-              src="https://cdn.discordapp.com/attachments/1275917279422578753/1383995677687676979/ChatGPT_Image_15_jun_2025_10_23_08_p.m..png?ex=69188d2a&is=69173baa&hm=92407b3b044045c8ea29cae444030e25e5a930ea485765122a821839356e5bf3&" // Imagen placeholder
+              src="https://cdn.discordapp.com/attachments/1275917279422578753/1383995677687676979/ChatGPT_Image_15_jun_2025_10_23_08_p.m..png?ex=69188d2a&is=69173baa&hm=92407b3b044045c8ea29cae444030e25e5a930ea485765122a821839356e5bf3&"
               alt={`Logo ${creator.name}`} 
               className="creator-image"
             />
