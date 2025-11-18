@@ -273,22 +273,21 @@ export async function uploadImage(
         
         const result = await updateInstitutionProfile(updates, token);
         
-        if (result.ok && result.data) {
-          const imageUrl = type === 'profile' 
-            ? result.data.profile_picture || base64
-            : result.data.profile_mural || base64;
-          resolve({ ok: true, data: imageUrl });
-        } else {
-          resolve({ ok: false, error: result.error || 'Error al subir imagen' });
-        }
-      };
-      reader.onerror = () => {
-        resolve({ ok: false, error: 'Error al leer archivo' });
-      };
-      reader.readAsDataURL(file);
-    });
-  } catch (e: any) {
-    console.error('[uploadImage] Error:', e);
-    return { ok: false, error: e?.message || 'Error de red' };
-  }
+if (result.ok) {
+     // El API no devuelve las imágenes, pero devuelve ok:true
+     // Usamos el base64 que acabamos de enviar como la URL de la imagen
+     resolve({ ok: true, data: base64 });
+   } else {
+     resolve({ ok: false, error: result.error || 'Error al subir imagen' });
+   }
+ };
+ reader.onerror = () => {
+   resolve({ ok: false, error: 'Error al leer archivo' });
+ };
+ reader.readAsDataURL(file);
+ });
+ } catch (e: any) {
+   console.error('[uploadImage] Error:', e);
+   return { ok: false, error: e?.message || 'Error de red' };
+ }
 }
