@@ -49,14 +49,27 @@ const solicitudesEjemplo = [
 ];
 
 const UserProfile: React.FC = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Si hay usuario en el contexto de auth, usarlo directamente
+    console.log('🔍 [UserProfile] Usuario cargado:', user);
+    
     if (user) {
+      const userRole = typeof user.role === 'string' ? parseInt(user.role) : user.role;
+      console.log('🔍 [UserProfile] Rol detectado:', userRole);
+      
+      // Si es institución (rol 21), redirigir a su muro
+      if (userRole === 21) {
+        console.log('➡️ [UserProfile] Redirigiendo a muro institucional (rol 21)');
+        navigate('/muro-institucion');
+        return;
+      }
+
+      // Si es usuario normal (rol 20), cargar perfil
+      console.log('✅ [UserProfile] Cargando perfil de usuario normal (rol 20)');
       setProfileData({
         id: user.id,
         role: user.role,
@@ -70,7 +83,7 @@ const UserProfile: React.FC = () => {
       });
       setIsLoading(false);
     } else {
-      // Si no hay usuario en contexto, redirigir al login
+      console.log('❌ [UserProfile] No hay usuario, redirigiendo a login');
       setIsLoading(false);
       navigate('/login');
     }
@@ -86,28 +99,9 @@ const UserProfile: React.FC = () => {
     );
   }
 
-  // Fecha
   const miembroDesde = profileData.created_at
     ? new Date(profileData.created_at).toLocaleDateString('es-CL', { month: 'long', year: 'numeric' })
     : 'Recientemente';
-
-  // Verificar si es institución (rol 21)
-  const isInstitution = profileData.role === 21 || profileData.role === '21';
-
-  // Determinar el tipo de rol para mostrar
-  const getRoleName = (role: string | number): string => {
-    const roleNum = typeof role === 'string' ? parseInt(role) : role;
-    switch (roleNum) {
-      case 20:
-        return 'Usuario';
-      case 21:
-        return 'Institución';
-      case 22:
-        return 'Dador de Adopción';
-      default:
-        return 'Usuario';
-    }
-  };
 
   return (
     <>
@@ -117,14 +111,13 @@ const UserProfile: React.FC = () => {
           <div className="perfil-row-top">
             <div className="perfil-avatar-section">
               <div className="perfil-avatar-box">
-                {/* Avatar sólo inicial del nombre */}
                 <span className="perfil-avatar-text">{profileData.name.charAt(0).toUpperCase()}</span>
               </div>
             </div>
             <div className="perfil-info-section">
               <div className="perfil-nombre-rol">
                 <span className="perfil-nombre">{profileData.name}</span>
-                <span className="perfil-rol">{getRoleName(profileData.role)}</span>
+                <span className="perfil-rol">Usuario</span>
               </div>
               <div className="perfil-miembro">
                 Miembro desde {miembroDesde}
@@ -133,19 +126,6 @@ const UserProfile: React.FC = () => {
               <div className="perfil-adopciones-label">ADOPCIONES</div>
             </div>
           </div>
-
-          {/* Botón Crear Post solo para instituciones */}
-          {isInstitution && (
-            <div className="perfil-crear-post-section">
-              <button 
-                className="perfil-btn-crear-post"
-                onClick={() => navigate('/crear-post')}
-              >
-                ➕ Crear Publicación
-              </button>
-            </div>
-          )}
-
           <div className="perfil-divider" />
           <div className="perfil-content-columns">
             <div className="perfil-left">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, lazy, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -27,6 +27,7 @@ interface InstitutionData {
 const InstitutionProfilePage: React.FC = () => {
   const { id: paramId } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   const institutionId = paramId || user?.id;
   
@@ -35,6 +36,26 @@ const InstitutionProfilePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('Publicaciones');
+
+  // Validación de rol - Solo instituciones pueden ver su muro
+  useEffect(() => {
+    console.log('🔍 [InstitutionProfile] Usuario cargado:', user);
+    
+    if (user && !paramId) {
+      // Si no hay paramId, significa que es el perfil propio
+      const userRole = typeof user.role === 'string' ? parseInt(user.role) : user.role;
+      console.log('🔍 [InstitutionProfile] Rol detectado:', userRole);
+      
+      // Si es usuario normal (rol 20), redirigir a su perfil
+      if (userRole === 20) {
+        console.log('➡️ [InstitutionProfile] Redirigiendo a perfil de usuario (rol 20)');
+        navigate('/perfil');
+        return;
+      }
+
+      console.log('✅ [InstitutionProfile] Cargando muro institucional (rol 21)');
+    }
+  }, [user, paramId, navigate]);
 
   useEffect(() => {
     const loadInstitutionData = async () => {
@@ -191,7 +212,6 @@ const InstitutionProfilePage: React.FC = () => {
                   <div style={{ marginTop: '15px', lineHeight: '1.6' }}>
                     <p><strong>Descripción:</strong></p>
                     <p>{institutionData.description || 'Sin descripción disponible'}</p>
-                    
                   </div>
                 </div>
               )}
