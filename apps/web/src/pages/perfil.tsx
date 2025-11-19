@@ -18,54 +18,35 @@ interface UserProfileData {
   created_at?: string;
 }
 
-const solicitudesEjemplo = [
-  {
-    id: "1",
-    nombreMascota: "Max",
-    fotoMascota: "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg",
-    tipoMascota: "Perro",
-    edadMascota: "2 años",
-    estado: "En revisión",
-    fechaSolicitud: "Solicitado el 10 Nov 2025",
-  },
-  {
-    id: "2",
-    nombreMascota: "Luna",
-    fotoMascota: "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg",
-    tipoMascota: "Gato",
-    edadMascota: "1 año",
-    estado: "Pendiente",
-    fechaSolicitud: "Solicitado el 12 Nov 2025",
-  },
-  {
-    id: "3",
-    nombreMascota: "Rocky",
-    fotoMascota: "https://images.pexels.com/photos/1938126/pexels-photo-1938126.jpeg",
-    tipoMascota: "Perro",
-    edadMascota: "3 meses",
-    estado: "En revisión",
-    fechaSolicitud: "Solicitado el 15 Nov 2025",
-  },
-];
+interface AdoptionRequest {
+  id: number;
+  post_id: number;
+  message: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  postImages: string[];
+}
+
+const API_BASE_URL = 'http://ayunpet-api.eastus2.cloudapp.azure.com/v1';
 
 const UserProfile: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState<UserProfileData | null>(null);
+  const [solicitudes, setSolicitudes] = useState<AdoptionRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingRequests, setIsLoadingRequests] = useState(true);
 
   useEffect(() => {
     if (user) {
       const userRole = typeof user.role === 'string' ? parseInt(user.role) : user.role;
 
-      // Si es institución (rol 21), redirigir a su muro
       if (userRole === 21) {
         navigate('/muro-institucion');
         return;
       }
-      // Si es dador de adopción (rol 22), puedes redirigir en el futuro si tienes perfil para este rol
       
-      // Si es usuario normal (rol 20), cargar perfil
       setProfileData({
         id: user.id,
         role: user.role,
@@ -78,12 +59,164 @@ const UserProfile: React.FC = () => {
         created_at: user.created_at || new Date().toISOString(),
       });
       setIsLoading(false);
+      
+      loadAdoptionRequests();
     } else {
-      // Si no hay usuario en contexto, redirigir al login
       setIsLoading(false);
       navigate('/login');
     }
   }, [user, navigate]);
+
+  const loadAdoptionRequests = async () => {
+    const token = localStorage.getItem('authToken');
+    
+    try {
+      setIsLoadingRequests(true);
+      
+      console.log('🔍 Cargando solicitudes para usuario...');
+      
+      const response = await fetch(`${API_BASE_URL}/adoptions/adoption-requests?page=1&pageSize=50`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al cargar solicitudes');
+      }
+
+      const result = await response.json();
+      console.log('✅ Solicitudes del usuario:', result);
+      
+      if (result.data && Array.isArray(result.data)) {
+        const solicitudesConImagenes = await Promise.all(
+          result.data.map(async (sol: AdoptionRequest) => {
+            try {
+              const postResponse = await fetch(`${API_BASE_URL}/adoptions/publications/${sol.post_id}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                }
+              });
+
+              if (postResponse.ok) {
+                const postData = await postResponse.json();
+                const images = postData.data?.post?.images || postData.data?.images || [];
+                
+                // ✅ CARGAR IMÁGENES COMO DATA URL
+                if (images.length > 0) {
+                  try {
+                    const imageResponse = await fetch(images[0], {
+                      headers: {
+                        'Authorization': `Bearer ${token}`
+                      }
+                    });
+                    
+                    if (imageResponse.ok) {
+                      const blob = await imageResponse.blob();
+                      const dataUrl = await new Promise<string>((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result as string);
+                        reader.readAsDataURL(blob);
+                      });
+                      
+                      return {
+                        ...sol,
+                        postImages: [dataUrl]
+                      };
+                    }
+                  } catch (imgErr) {
+                    console.error('Error cargando imagen como blob:', imgErr);
+                  }
+                }
+                
+                return {
+                  ...sol,
+                  postImages: images
+                };
+              }
+              
+              return sol;
+            } catch (err) {
+              console.error(`❌ Error cargando post ${sol.post_id}:`, err);
+              return sol;
+            }
+          })
+        );
+        
+        console.log('✅ Solicitudes con imágenes:', solicitudesConImagenes);
+        setSolicitudes(solicitudesConImagenes);
+      } else {
+        setSolicitudes([]);
+      }
+    } catch (err: any) {
+      console.error('❌ Error al cargar solicitudes:', err);
+      setSolicitudes([]);
+    } finally {
+      setIsLoadingRequests(false);
+    }
+  };
+
+
+  const handleDeleteRequest = async (requestId: number) => {
+    if (!window.confirm('¿Estás seguro de que deseas cancelar esta solicitud?')) {
+      return;
+    }
+
+    const token = localStorage.getItem('authToken');
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/adoptions/adoption-requests/${requestId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar solicitud');
+      }
+
+      alert('✅ Solicitud cancelada exitosamente');
+      loadAdoptionRequests();
+    } catch (err: any) {
+      console.error('❌ Error al eliminar:', err);
+      alert(`❌ Error: ${err.message}`);
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    const statusMap: Record<string, string> = {
+      'pending': 'Pendiente',
+      'approved': 'Aprobada',
+      'rejected': 'Rechazada',
+      'completed': 'Completada'
+    };
+    return statusMap[status] || status;
+  };
+
+  const getStatusClass = (status: string) => {
+    if (status === 'pending') return 'perfil-solicitud-estado pendiente';
+    if (status === 'approved') return 'perfil-solicitud-estado revision';
+    if (status === 'rejected') return 'perfil-solicitud-estado rechazada';
+    if (status === 'completed') return 'perfil-solicitud-estado completada';
+    return 'perfil-solicitud-estado';
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('es-CL', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
 
   if (isLoading || !profileData) {
     return (
@@ -118,7 +251,7 @@ const UserProfile: React.FC = () => {
               <div className="perfil-miembro">
                 Miembro desde {miembroDesde}
               </div>
-              <div className="perfil-adopciones-num">0</div>
+              <div className="perfil-adopciones-num">{solicitudes.filter(s => s.status === 'completed').length}</div>
               <div className="perfil-adopciones-label">ADOPCIONES</div>
             </div>
           </div>
@@ -132,26 +265,104 @@ const UserProfile: React.FC = () => {
                 </div>
               </div>
               <div className="perfil-section-title" style={{ marginTop: 30 }}>
-                <span>Solicitudes Pendientes de Adopción</span>
+                <span>Mis Solicitudes de Adopción ({solicitudes.length})</span>
               </div>
               <div className="perfil-solicitudes-list">
-                {solicitudesEjemplo.map((s) => (
-                  <div key={s.id} className="perfil-solicitud-card">
-                    <img src={s.fotoMascota} alt={s.nombreMascota} className="perfil-solicitud-img" />
-                    <div className="perfil-solicitud-info">
-                      <div className="perfil-solicitud-nombre">{s.nombreMascota}</div>
-                      <div className="perfil-solicitud-desc">{s.tipoMascota} • {s.edadMascota}</div>
-                      <div className="perfil-solicitud-fecha">{s.fechaSolicitud}</div>
-                    </div>
-                    <div className={
-                      s.estado === "Pendiente"
-                        ? "perfil-solicitud-estado pendiente"
-                        : "perfil-solicitud-estado revision"
-                    }>
-                      {s.estado}
-                    </div>
+                {isLoadingRequests ? (
+                  <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                    Cargando solicitudes...
                   </div>
-                ))}
+                ) : solicitudes.length > 0 ? (
+                  solicitudes.map((s) => (
+                    <div key={s.id} className="perfil-solicitud-card">
+                      {s.postImages && s.postImages.length > 0 ? (
+                        <img
+                          src={s.postImages[0]}
+                          alt="Mascota"
+                          className="perfil-solicitud-img"
+                          crossOrigin="use-credentials"  // ✅ AGREGAR ESTO
+                          onError={(e) => {
+                            console.error('❌ Error cargando imagen:', s.postImages[0]);
+                            e.currentTarget.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.style.cssText = 'width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 2rem; background-color: #f3f4f6; border-radius: 8px; flex-shrink: 0;';
+                            fallback.textContent = '🐾';
+                            e.currentTarget.parentElement?.insertBefore(fallback, e.currentTarget);
+                          }}
+                        />
+                      ) : (
+                        <div style={{
+                          width: '80px',
+                          height: '80px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '2rem',
+                          backgroundColor: '#f3f4f6',
+                          borderRadius: '8px',
+                          flexShrink: 0
+                        }}>
+                          🐾
+                        </div>
+                      )}
+                      <div className="perfil-solicitud-info">
+                        <div className="perfil-solicitud-nombre">Publicación #{s.post_id}</div>
+                        <div className="perfil-solicitud-desc">
+                          Solicitud #{s.id}
+                        </div>
+                        <div className="perfil-solicitud-fecha">
+                          Solicitado el {formatDate(s.created_at)}
+                        </div>
+                        {s.message && (
+                          <div style={{ 
+                            fontSize: '0.85rem', 
+                            color: '#666', 
+                            marginTop: '0.25rem',
+                            fontStyle: 'italic'
+                          }}>
+                            "{s.message.substring(0, 50)}{s.message.length > 50 ? '...' : ''}"
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+                        <div className={getStatusClass(s.status)}>
+                          {getStatusLabel(s.status)}
+                        </div>
+                        {s.status === 'pending' && (
+                          <button
+                            onClick={() => handleDeleteRequest(s.id)}
+                            style={{
+                              padding: '0.375rem 0.75rem',
+                              backgroundColor: '#ef4444',
+                              color: 'white',
+                              border: 'none',
+                              borderRadius: '6px',
+                              fontSize: '0.75rem',
+                              cursor: 'pointer',
+                              fontWeight: '600'
+                            }}
+                          >
+                            ❌ Cancelar
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ 
+                    textAlign: 'center', 
+                    padding: '3rem 2rem',
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '12px',
+                    border: '2px dashed #dee2e6'
+                  }}>
+                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
+                    <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Sin solicitudes</h4>
+                    <p style={{ fontSize: '0.95rem', color: '#868e96', margin: 0 }}>
+                      Aún no has solicitado adoptar ninguna mascota
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="perfil-right">
