@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
 import { useAuth } from '../context/AuthContext';
+import UploadProfileImages from '../components/UploadProfileImages';
 import '../components/perfil.css';
 
 interface UserProfileData {
@@ -16,6 +17,8 @@ interface UserProfileData {
   address?: string;
   description?: string;
   created_at?: string;
+  profile_picture?: string;  // ✅ AGREGADO
+  profile_mural?: string;     // ✅ AGREGADO
 }
 
 interface AdoptionRequest {
@@ -28,7 +31,7 @@ interface AdoptionRequest {
   postImages: string[];
 }
 
-const API_BASE_URL = 'http://ayunpet-api.eastus2.cloudapp.azure.com/v1';
+const API_BASE_URL = '/api';
 
 const UserProfile: React.FC = () => {
   const { user } = useAuth();
@@ -37,6 +40,90 @@ const UserProfile: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<AdoptionRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingRequests, setIsLoadingRequests] = useState(true);
+
+// ✅ NUEVA FUNCIÓN: Cargar datos completos del usuario desde la API
+  const loadUserProfile = async () => {
+    const token = localStorage.getItem('authToken');
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/entities/users/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Perfil completo del usuario:', result.data);
+        
+        // ✅ CARGAR FOTO DE PERFIL COMO DATA URL
+        let profilePictureUrl = result.data.profile_picture;
+        let profileMuralUrl = result.data.profile_mural;
+
+        if (profilePictureUrl) {
+          try {
+            const imgResponse = await fetch(profilePictureUrl, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            
+            if (imgResponse.ok) {
+              const blob = await imgResponse.blob();
+              profilePictureUrl = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.readAsDataURL(blob);
+              });
+              console.log('✅ Foto de perfil cargada como data URL');
+            }
+          } catch (err) {
+            console.error('❌ Error cargando foto de perfil:', err);
+          }
+        }
+
+        if (profileMuralUrl) {
+          try {
+            const imgResponse = await fetch(profileMuralUrl, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            
+            if (imgResponse.ok) {
+              const blob = await imgResponse.blob();
+              profileMuralUrl = await new Promise<string>((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.readAsDataURL(blob);
+              });
+              console.log('✅ Mural cargado como data URL');
+            }
+          } catch (err) {
+            console.error('❌ Error cargando mural:', err);
+          }
+        }
+        
+        setProfileData({
+          id: result.data.id,
+          role: result.data.role,
+          rut: result.data.rut || '',
+          email: result.data.email,
+          name: result.data.name,
+          validated: result.data.validated !== undefined ? result.data.validated : true,
+          address: result.data.address || null,
+          description: result.data.description || null,
+          created_at: result.data.created_at || new Date().toISOString(),
+          profile_picture: profilePictureUrl,  // ✅ DATA URL
+          profile_mural: profileMuralUrl        // ✅ DATA URL
+        });
+      }
+    } catch (err) {
+      console.error('❌ Error al cargar perfil:', err);
+    }
+  };
+
 
   useEffect(() => {
     if (user) {
@@ -47,19 +134,8 @@ const UserProfile: React.FC = () => {
         return;
       }
       
-      setProfileData({
-        id: user.id,
-        role: user.role,
-        rut: user.rut || '',
-        email: user.email,
-        name: user.name,
-        validated: user.validated !== undefined ? user.validated : true,
-        address: user.address || null,
-        description: user.description || null,
-        created_at: user.created_at || new Date().toISOString(),
-      });
+      loadUserProfile();  // ✅ CARGAR PERFIL COMPLETO
       setIsLoading(false);
-      
       loadAdoptionRequests();
     } else {
       setIsLoading(false);
@@ -104,7 +180,6 @@ const UserProfile: React.FC = () => {
                 const postData = await postResponse.json();
                 const images = postData.data?.post?.images || postData.data?.images || [];
                 
-                // ✅ CARGAR IMÁGENES COMO DATA URL
                 if (images.length > 0) {
                   try {
                     const imageResponse = await fetch(images[0], {
@@ -157,7 +232,6 @@ const UserProfile: React.FC = () => {
       setIsLoadingRequests(false);
     }
   };
-
 
   const handleDeleteRequest = async (requestId: number) => {
     if (!window.confirm('¿Estás seguro de que deseas cancelar esta solicitud?')) {
@@ -239,9 +313,25 @@ const UserProfile: React.FC = () => {
         <div className="perfil-card">
           <div className="perfil-row-top">
             <div className="perfil-avatar-section">
-              <div className="perfil-avatar-box">
-                <span className="perfil-avatar-text">{profileData.name.charAt(0).toUpperCase()}</span>
-              </div>
+              {/* ✅ MOSTRAR FOTO DE PERFIL SI EXISTE */}
+              {profileData.profile_picture ? (
+                <img 
+                  src={profileData.profile_picture} 
+                  alt={profileData.name}
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    border: '4px solid #f3f4f6',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                  }}
+                />
+              ) : (
+                <div className="perfil-avatar-box">
+                  <span className="perfil-avatar-text">{profileData.name.charAt(0).toUpperCase()}</span>
+                </div>
+              )}
             </div>
             <div className="perfil-info-section">
               <div className="perfil-nombre-rol">
@@ -264,6 +354,14 @@ const UserProfile: React.FC = () => {
                   {profileData.description || 'Sin descripción proporcionada.'}
                 </div>
               </div>
+
+              {/* ✅ COMPONENTE PARA SUBIR FOTOS */}
+              <UploadProfileImages
+                currentProfilePicture={profileData.profile_picture}
+                currentMural={profileData.profile_mural}
+                onSuccess={loadUserProfile}
+              />
+
               <div className="perfil-section-title" style={{ marginTop: 30 }}>
                 <span>Mis Solicitudes de Adopción ({solicitudes.length})</span>
               </div>
@@ -280,7 +378,7 @@ const UserProfile: React.FC = () => {
                           src={s.postImages[0]}
                           alt="Mascota"
                           className="perfil-solicitud-img"
-                          crossOrigin="use-credentials"  // ✅ AGREGAR ESTO
+                          crossOrigin="use-credentials"
                           onError={(e) => {
                             console.error('❌ Error cargando imagen:', s.postImages[0]);
                             e.currentTarget.style.display = 'none';
