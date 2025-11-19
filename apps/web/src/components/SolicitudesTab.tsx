@@ -41,7 +41,6 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
       
       console.log('🔍 Cargando solicitudes para institución:', institutionId);
       
-      // GET /v1/adoptions/adoption-requests (rol 21 = giver)
       const response = await fetch(`${API_BASE_URL}/adoptions/adoption-requests?page=1&pageSize=50`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -55,9 +54,6 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
       }
 
       const result = await response.json();
-      console.log('✅ Solicitudes cargadas:', result);
-      
-      // ✅ CORRECCIÓN: La API devuelve data.requests, no data directamente
       setRequests(result.data?.requests || []);
     } catch (err: any) {
       console.error('❌ Error al cargar solicitudes:', err);
@@ -91,9 +87,8 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
 
       const result = await response.json();
       
-      alert(`✅ Solicitud aprobada!\n\n🔑 Código de confirmación: ${result.data.confirmation_code}\n\n⏰ Expira: ${new Date(result.data.expiresAt).toLocaleString()}\n\nEntrega este código al adoptante para completar la adopción.`);
+      alert(`✅ Solicitud aprobada!\n\n🔑 Código de confirmación: ${result.data.confirmation_code}\n\n⏰ Expira: ${new Date(result.data.expiresAt).toLocaleString()}\n\nEntrega este código al adoptante.`);
       
-      // Recargar solicitudes
       loadRequests();
       setShowModal(false);
     } catch (err: any) {
@@ -126,7 +121,6 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
 
       alert('✅ Solicitud rechazada');
       
-      // Recargar solicitudes
       loadRequests();
       setShowModal(false);
     } catch (err: any) {
@@ -136,11 +130,28 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
   };
 
   const getStatusBadge = (status: string) => {
+    // Uso de variables CSS definidas en tu index.css
     const statusMap: Record<string, { bg: string; text: string; label: string }> = {
-      'pending': { bg: '#fef3c7', text: '#92400e', label: '⏳ Pendiente' },
-      'approved': { bg: '#d1fae5', text: '#065f46', label: '✅ Aprobada' },
-      'rejected': { bg: '#fee2e2', text: '#991b1b', label: '❌ Rechazada' },
-      'completed': { bg: '#dbeafe', text: '#1e3a8a', label: '🎉 Completada' }
+      'pending': { 
+        bg: 'var(--color-status-espera-bg)', 
+        text: 'var(--color-status-espera-text)', 
+        label: '⏳ Pendiente' 
+      },
+      'approved': { 
+        bg: 'var(--color-status-aceptado-bg)', 
+        text: 'var(--color-status-aceptado-text)', 
+        label: '✅ Aprobada' 
+      },
+      'rejected': { 
+        bg: 'var(--color-status-rechazado-bg)', 
+        text: 'var(--color-status-rechazado-text)', 
+        label: '❌ Rechazada' 
+      },
+      'completed': { 
+        bg: 'var(--color-status-aceptado-bg)', 
+        text: 'var(--color-status-aceptado-text)', 
+        label: '🎉 Completada' 
+      }
     };
 
     const statusInfo = statusMap[status] || statusMap['pending'];
@@ -175,9 +186,9 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: 'center', padding: '3rem' }}>
+      <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🐾</div>
-        <p style={{ color: '#666' }}>Cargando solicitudes...</p>
+        <p>Cargando solicitudes...</p>
       </div>
     );
   }
@@ -186,19 +197,20 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
     return (
       <div style={{
         padding: '2rem',
-        backgroundColor: '#fee2e2',
+        backgroundColor: 'var(--color-status-rechazado-bg)',
         borderRadius: '12px',
-        textAlign: 'center'
+        textAlign: 'center',
+        border: '1px solid var(--color-error)'
       }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
-        <h4 style={{ color: '#991b1b', marginBottom: '0.5rem' }}>Error al cargar solicitudes</h4>
-        <p style={{ color: '#dc2626', margin: 0 }}>{error}</p>
+        <h4 style={{ color: 'var(--color-error)', marginBottom: '0.5rem' }}>Error al cargar solicitudes</h4>
+        <p style={{ color: 'var(--color-error)', margin: 0 }}>{error}</p>
         <button
           onClick={loadRequests}
           style={{
             marginTop: '1rem',
             padding: '0.5rem 1rem',
-            backgroundColor: '#ef4444',
+            backgroundColor: 'var(--color-error)',
             color: 'white',
             border: 'none',
             borderRadius: '8px',
@@ -215,14 +227,14 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
     return (
       <div style={{
         padding: '3rem 2rem',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--color-bg-light)',
         borderRadius: '16px',
         textAlign: 'center',
-        border: '2px dashed #dee2e6'
+        border: '2px dashed var(--color-border)'
       }}>
         <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>📋</div>
-        <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Sin solicitudes pendientes</h4>
-        <p style={{ fontSize: '1rem', color: '#868e96', margin: 0 }}>
+        <h4 style={{ color: 'var(--color-text-primary)', marginBottom: '0.5rem' }}>Sin solicitudes pendientes</h4>
+        <p style={{ fontSize: '1rem', color: 'var(--color-text-secondary)', margin: 0 }}>
           Aquí aparecerán las solicitudes de adopción cuando lleguen
         </p>
       </div>
@@ -231,7 +243,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
 
   return (
     <>
-      <h3 style={{ marginBottom: '1.5rem', color: '#1f2937' }}>
+      <h3 style={{ marginBottom: '1.5rem', color: 'var(--color-text-primary)' }}>
         Solicitudes de Adopción ({requests.length})
       </h3>
 
@@ -240,8 +252,8 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
           <div
             key={request.id}
             style={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
+              backgroundColor: 'var(--color-bg-content)', // Variable CSS
+              border: '1px solid var(--color-border)', // Variable CSS
               borderRadius: '12px',
               padding: '1.25rem',
               display: 'flex',
@@ -255,7 +267,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
               setShowModal(true);
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
+              e.currentTarget.style.boxShadow = '0 4px 12px var(--color-shadow)';
               e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseOut={(e) => {
@@ -269,7 +281,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
               height: '80px',
               borderRadius: '8px',
               overflow: 'hidden',
-              backgroundColor: '#f3f4f6',
+              backgroundColor: 'var(--color-bg-light)',
               flexShrink: 0
             }}>
               {request.postImages && request.postImages.length > 0 ? (
@@ -301,7 +313,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
             {/* Contenido */}
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                <h4 style={{ margin: 0, color: '#1f2937', fontSize: '1.05rem' }}>
+                <h4 style={{ margin: 0, color: 'var(--color-text-primary)', fontSize: '1.05rem' }}>
                   Solicitud #{request.id} - Post #{request.post_id}
                 </h4>
                 {getStatusBadge(request.status)}
@@ -309,7 +321,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
 
               <p style={{
                 margin: '0.5rem 0',
-                color: '#6b7280',
+                color: 'var(--color-text-secondary)',
                 fontSize: '0.9rem',
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -319,13 +331,13 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
                 {request.message || 'Sin mensaje'}
               </p>
 
-              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: '#9ca3af', marginTop: '0.75rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: 'var(--color-text-secondary)', marginTop: '0.75rem' }}>
                 <span>👤 Usuario #{request.user_id}</span>
                 <span>📅 {formatDate(request.created_at)}</span>
               </div>
             </div>
 
-            {/* Botones de acción */}
+            {/* Botones de acción (solo visibles si pendiente) */}
             {request.status === 'pending' && (
               <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}>
                 <button
@@ -335,7 +347,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
                   }}
                   style={{
                     padding: '0.5rem 1rem',
-                    backgroundColor: '#10b981',
+                    backgroundColor: 'var(--color-success)', // Usando variable
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -354,7 +366,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
                   }}
                   style={{
                     padding: '0.5rem 1rem',
-                    backgroundColor: '#ef4444',
+                    backgroundColor: 'var(--color-error)', // Usando variable
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -381,7 +393,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: 'var(--modal-overlay-bg)', // Variable del modal
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -392,17 +404,19 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
         >
           <div
             style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--color-bg-content)', // Variable background
+              color: 'var(--color-text-primary)', // Variable texto
               borderRadius: '16px',
               maxWidth: '600px',
               width: '100%',
               maxHeight: '90vh',
               overflow: 'auto',
-              padding: '2rem'
+              padding: '2rem',
+              border: '1px solid var(--color-border)'
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 style={{ marginTop: 0, marginBottom: '1.5rem' }}>
+            <h2 style={{ marginTop: 0, marginBottom: '1.5rem', color: 'var(--color-text-accent)' }}>
               Detalles de Solicitud #{selectedRequest.id}
             </h2>
 
@@ -427,7 +441,8 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
               <p style={{ 
                 marginTop: '0.5rem', 
                 padding: '1rem', 
-                backgroundColor: '#f9fafb', 
+                backgroundColor: 'var(--color-bg-light)', 
+                color: 'var(--color-text-secondary)',
                 borderRadius: '8px',
                 lineHeight: '1.6'
               }}>
@@ -442,7 +457,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
                   style={{
                     flex: 1,
                     padding: '0.875rem',
-                    backgroundColor: '#10b981',
+                    backgroundColor: 'var(--color-success)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '10px',
@@ -458,7 +473,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
                   style={{
                     flex: 1,
                     padding: '0.875rem',
-                    backgroundColor: '#ef4444',
+                    backgroundColor: 'var(--color-error)',
                     color: 'white',
                     border: 'none',
                     borderRadius: '10px',
@@ -477,7 +492,7 @@ const SolicitudesTab: React.FC<SolicitudesTabProps> = ({ institutionId }) => {
               style={{
                 width: '100%',
                 padding: '0.875rem',
-                backgroundColor: '#6b7280',
+                backgroundColor: 'var(--color-text-secondary)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '10px',
