@@ -54,7 +54,7 @@ function App() {
       <Route 
         path="/solicitudes" 
         element={
-          <ProtectedRoute roles={['normal','tester', 'institution']}>
+          <ProtectedRoute roles={[20, 21]}>  {/* ✅ Cambiar de 'normal','institution' a 20,21 */}
             <AdoptionRequestsPage />
           </ProtectedRoute>
         } 
@@ -62,7 +62,7 @@ function App() {
       <Route 
         path="/adopta" 
         element={
-          <ProtectedRoute roles={['normal','tester', "institution"]}>
+          <ProtectedRoute roles={[20, 21, 23]}>  {/* ✅ Cambiar strings por números */}
             <AdoptionPage />
           </ProtectedRoute>
         } 
@@ -81,11 +81,11 @@ function App() {
       <Route 
         path="/muro-institucion" 
         element={
-          <ProtectedRoute roles={['institution','tester']}>
+          <ProtectedRoute roles={[21]}>  {/* ✅ Cambiar de 'institution' a 21 */}
             <InstitutionProfilePage />
           </ProtectedRoute>
         } 
-        />
+      />
       <Route 
         path="/institucion/:id" 
         element={

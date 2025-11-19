@@ -60,7 +60,7 @@ const UserProfile: React.FC = () => {
 
       // Si es institución (rol 21), redirigir a su muro
       if (userRole === 21) {
-        navigate('/institution-profile');
+        navigate('/muro-institucion');
         return;
       }
       // Si es dador de adopción (rol 22), puedes redirigir en el futuro si tienes perfil para este rol
