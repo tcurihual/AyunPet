@@ -12,6 +12,9 @@ import PetAdoptionCard from '../components/PetAdoptionCard';
 import InstitutionPetCard from '../components/InstitutionPetCard';
 import { fetchInstitutionProfile } from '../lib/institutionService';
 import banner from '../assets/sigma.png';
+import SolicitudesTab from '../components/SolicitudesTab';
+
+
 const GraficoTorta = lazy(() => import('../components/charts/PieChart'));
 
 const API_BASE_URL = 'http://ayunpet-api.eastus2.cloudapp.azure.com/v1';
@@ -282,23 +285,11 @@ const InstitutionProfilePage: React.FC = () => {
               )}
 
               {activeTab === 'Solicitudes' && (
-                <div style={{ padding: '20px' }}>
-                  <h3 style={{ marginBottom: '1.5rem' }}>Solicitudes de Adopción</h3>
-                  <div style={{
-                    padding: '3rem 2rem',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '12px',
-                    textAlign: 'center',
-                    border: '2px dashed #dee2e6'
-                  }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
-                    <h4 style={{ color: '#495057', marginBottom: '0.5rem' }}>Sin solicitudes pendientes</h4>
-                    <p style={{ fontSize: '1rem', color: '#868e96', margin: 0 }}>
-                      Aquí aparecerán las solicitudes de adopción cuando lleguen
-                    </p>
-                  </div>
+                <div style={{ padding: '1.5rem' }}>
+                  <SolicitudesTab institutionId={institutionId || ''} />
                 </div>
               )}
+
               
               {activeTab === 'Sobre Nosotros' && (
                 <div style={{ padding: '20px' }}>
