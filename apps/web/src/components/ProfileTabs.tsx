@@ -5,7 +5,7 @@ interface ProfileTabsProps {
   setActiveTab: (tabName: string) => void;
 }
 
-const TABS = ['Publicaciones', 'Sobre Nosotros', 'Estadísticas', 'Equipo', 'Documentos'];
+const TABS = ['Publicaciones', 'Solicitudes', 'Sobre Nosotros', 'Estadísticas', 'Equipo', 'Documentos'];
 
 const ProfileTabs: React.FC<ProfileTabsProps> = ({ activeTab, setActiveTab }) => {
   return (

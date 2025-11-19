@@ -22,6 +22,7 @@ import VistaNoticias from './pages/VistaNoticias';
 import VerifyEmail from './components/VerifyEmail.tsx';
 import PublicanteReview from './pages/Publicante_revition.tsx';
 import PetDetailPage from './pages/PetDetailPage'; // <-- 1. Ruta importada
+import EditPostPage from './pages/EditPostPage';
 
 function App() {
   const maintenanceMode = false;
@@ -54,7 +55,7 @@ function App() {
       <Route 
         path="/solicitudes" 
         element={
-          <ProtectedRoute roles={['normal','tester', 'institution']}>
+          <ProtectedRoute roles={[20, 21]}>  {/* ✅ Cambiar de 'normal','institution' a 20,21 */}
             <AdoptionRequestsPage />
           </ProtectedRoute>
         } 
@@ -62,7 +63,7 @@ function App() {
       <Route 
         path="/adopta" 
         element={
-          <ProtectedRoute roles={['normal','tester', "institution"]}>
+          <ProtectedRoute roles={[20, 21, 23]}>  {/* ✅ Cambiar strings por números */}
             <AdoptionPage />
           </ProtectedRoute>
         } 
@@ -81,11 +82,11 @@ function App() {
       <Route 
         path="/muro-institucion" 
         element={
-          <ProtectedRoute roles={['institution','tester']}>
+          <ProtectedRoute roles={[21]}>  {/* ✅ Cambiar de 'institution' a 21 */}
             <InstitutionProfilePage />
           </ProtectedRoute>
         } 
-        />
+      />
       <Route 
         path="/institucion/:id" 
         element={
@@ -94,7 +95,14 @@ function App() {
           </ProtectedRoute>
         } 
         />
-
+      <Route 
+        path="/editar-post/:id" 
+        element={
+          <ProtectedRoute roles={[21]}>
+            <EditPostPage />
+          </ProtectedRoute>
+        } 
+      />
 
       {/* Otras rutas */}
       <Route path="/perfil" element={<UserProfile/>} />
