@@ -57,13 +57,14 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     if (user) {
       const userRole = typeof user.role === 'string' ? parseInt(user.role) : user.role;
-      
+
       // Si es institución (rol 21), redirigir a su muro
       if (userRole === 21) {
-        navigate('/muro-institucion');
+        navigate('/institution-profile');
         return;
       }
-
+      // Si es dador de adopción (rol 22), puedes redirigir en el futuro si tienes perfil para este rol
+      
       // Si es usuario normal (rol 20), cargar perfil
       setProfileData({
         id: user.id,
@@ -83,7 +84,6 @@ const UserProfile: React.FC = () => {
       navigate('/login');
     }
   }, [user, navigate]);
-
 
   if (isLoading || !profileData) {
     return (
