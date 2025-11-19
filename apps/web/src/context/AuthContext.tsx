@@ -13,7 +13,7 @@ interface User {
   id: string | number;
   name: string;
   email: string;
-  role: number; // 🔥 CAMBIO: Ahora es number, no string
+  role: number;
   rut?: string;
   address?: string;
   description?: string;
@@ -42,13 +42,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const { setLoading } = useLoading();
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/login";
-  const REGISTER_API_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth/register/user";
+  const API_BASE_URL = "http://ayunpet-api.eastus2.cloudapp.azure.com/v1/auth";
 
   const login = async (data: LoginData) => {
     setLoading(true);
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -67,13 +66,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       const { token, user: apiUser } = result.data;
 
-      // 🔥 CAMBIO: Guardamos el user EXACTAMENTE como viene de la API
       const mappedUser: User = {
         id: apiUser.id,
         name: apiUser.name,
         email: apiUser.email,
         rut: apiUser.rut,
-        role: apiUser.role, // 🔥 GUARDAMOS EL NÚMERO REAL: 20, 21, 22
+        role: apiUser.role,
         address: apiUser.address,
         description: apiUser.description,
         validated: apiUser.validated,
@@ -82,7 +80,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       };
 
       localStorage.setItem("authToken", token);
-      localStorage.setItem("user", JSON.stringify(mappedUser)); // 🔥 CAMBIO: key es "user", no "userData"
+      localStorage.setItem("user", JSON.stringify(mappedUser));
 
       setUser(mappedUser);
       setToken(token);
@@ -97,6 +95,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const register = async (data: RegisterData) => {
     setLoading(true);
     try {
+      // ✅ Determinar el endpoint según el tipo de usuario
+      let endpoint = '';
+      
+      if (data.userType === 'usuario') {
+        endpoint = `${API_BASE_URL}/register/user`;
+      } else if (data.userType === 'empresa') {
+        // Para empresas/instituciones usamos "shelter"
+        endpoint = `${API_BASE_URL}/register/shelter`;
+      } else if (data.userType === 'dador') {
+        endpoint = `${API_BASE_URL}/register/giver`;
+      } else {
+        throw new Error('Tipo de usuario no válido');
+      }
+
+      console.log('📤 Registrando en:', endpoint);
+
       const payload: {
         name: string;
         email: string;
@@ -118,16 +132,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         payload.address = data.address;
       }
 
-      const response = await fetch(REGISTER_API_URL, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const result = await response.json();
+      console.log('✅ Respuesta de registro:', result);
 
       if (response.status === 201 && result.type === "success") {
-        alert(result.message || "Usuario registrado exitosamente");
+        const message = data.userType === 'usuario' 
+          ? "Usuario registrado exitosamente. Por favor, verifica tu correo electrónico."
+          : "Solicitud de registro enviada. Un administrador revisará tu solicitud.";
+        
+        alert(result.message || message);
       } else {
         const errorMessage =
           result.message || result.error || "Error al registrar usuario";
@@ -145,8 +164,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const logout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
-    localStorage.removeItem("userRole"); // Por si queda guardado
-    localStorage.removeItem("userData"); // Por si queda guardado
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userData");
     setUser(null);
     setToken(null);
   };

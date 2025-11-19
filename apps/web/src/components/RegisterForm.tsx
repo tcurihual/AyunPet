@@ -12,10 +12,12 @@ const RegisterForm: React.FC = () => {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterData>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
     defaultValues: { userType: '' },
   });
+
+  const userType = watch('userType');
 
   const onSubmit = async (data: RegisterData) => {
     setLoading(true);
@@ -23,6 +25,7 @@ const RegisterForm: React.FC = () => {
       await registerUser(data); 
       navigate("/login");      
     } catch (error) {
+      console.error('Error en registro:', error);
     } finally {
       setLoading(false);
     }
@@ -35,12 +38,40 @@ const RegisterForm: React.FC = () => {
       <p className="form-subtitle">Únete a Ayün Pet</p>
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        {/* ✅ Tipo de cuenta PRIMERO */}
         <div className="form-group">
-          <label htmlFor="fullName">Nombre completo</label>
+          <label htmlFor="userType">Tipo de cuenta *</label>
+          <select {...register('userType')} disabled={isLoading} className="form-select">
+            <option value="">Selecciona una opción...</option>
+            <option value="usuario">👤 Usuario Adoptante</option>
+            <option value="empresa">🏢 Institución / Refugio</option>
+          </select>
+          {errors.userType && <p className="error-message">{errors.userType.message}</p>}
+        </div>
+
+        {/* ✅ Mensaje informativo según tipo */}
+        {userType === 'empresa' && (
+          <div style={{
+            padding: '1rem',
+            backgroundColor: '#fff3cd',
+            borderLeft: '4px solid #ffc107',
+            marginBottom: '1rem',
+            borderRadius: '4px'
+          }}>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: '#856404' }}>
+              ℹ️ <strong>Nota:</strong> Las cuentas de institución requieren validación administrativa antes de ser activadas.
+            </p>
+          </div>
+        )}
+
+        <div className="form-group">
+          <label htmlFor="fullName">
+            {userType === 'empresa' ? 'Nombre de la institución *' : 'Nombre completo *'}
+          </label>
           <input 
             type="text" 
             id="fullName" 
-            placeholder="Ej: Sofía González Pérez" 
+            placeholder={userType === 'empresa' ? 'Ej: Refugio Patitas Felices' : 'Ej: Sofía González Pérez'} 
             {...register("fullName")}
             disabled={isLoading}
           />
@@ -48,11 +79,11 @@ const RegisterForm: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="email">Correo electrónico</label>
+          <label htmlFor="email">Correo electrónico *</label>
           <input 
             type="email" 
             id="email" 
-            placeholder="sofia.gonzalez@email.com" 
+            placeholder="correo@ejemplo.com" 
             {...register("email")}
             disabled={isLoading}
           />
@@ -60,7 +91,7 @@ const RegisterForm: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="rut">RUT</label>
+          <label htmlFor="rut">RUT *</label>
           <input 
             type="text" 
             id="rut" 
@@ -72,7 +103,7 @@ const RegisterForm: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="password">Contraseña</label>
+          <label htmlFor="password">Contraseña *</label>
           <input 
             type="password" 
             id="password"
@@ -84,7 +115,7 @@ const RegisterForm: React.FC = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="confirmPassword">Confirmar contraseña</label>
+          <label htmlFor="confirmPassword">Confirmar contraseña *</label>
           <input 
             type="password" 
             id="confirmPassword"
@@ -100,7 +131,7 @@ const RegisterForm: React.FC = () => {
           <input 
             type="text" 
             id="address" 
-            placeholder="Ej: El Sauco 7490480 Praderas Santa Carolina" 
+            placeholder="Ej: Av. Principal 123, Temuco" 
             {...register("address")}
             disabled={isLoading}
           />
@@ -108,30 +139,20 @@ const RegisterForm: React.FC = () => {
 
         <div className="form-group">
           <label htmlFor="description">Descripción (opcional)</label>
-          <input 
-            type="text" 
+          <textarea 
             id="description" 
-            placeholder="Ej: Amante de los animales y voluntario" 
+            placeholder={userType === 'empresa' ? 'Cuéntanos sobre tu institución...' : 'Cuéntanos sobre ti...'}
             {...register("description")}
             disabled={isLoading}
-            className="form-input"
+            rows={3}
+            style={{ resize: 'vertical' }}
           />
           {errors.description && <p className="error-message">{errors.description.message}</p>}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="userType">Tipo de cuenta</label>
-          <select {...register('userType')} disabled={isLoading} className="form-select">
-            <option value="">Selecciona una opción...</option>
-            <option value="usuario">Usuario</option>
-            <option value="empresa">Empresa</option>
-          </select>
-          {errors.userType && <p className="error-message">{errors.userType.message}</p>}
-        </div>
-
         <div className="terms-group">
-          <input type="checkbox" {...register('agreedToTerms')} disabled={isLoading} />
-          <label>
+          <input type="checkbox" {...register('agreedToTerms')} disabled={isLoading} id="terms" />
+          <label htmlFor="terms">
             Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a>.
           </label>
         </div>
