@@ -206,10 +206,13 @@ const PetDetailPage: React.FC = () => {
   if (pet.healthStatus) healthTags.push(pet.healthStatus);
   if (pet.sterilized) healthTags.push('Esterilizado');
 
-  // galería: pet.image + post.images; eliminar duplicados y URLs de ejemplo
+  // galería: pet.image + post.images + ejemplos fijos; eliminar duplicados
   const galleryImages = [
     pet.image,
     ...(post?.images || []),
+    // imágenes fallback (opcionales)
+    'https://cdn.discordapp.com/attachments/673348241269719043/1439045995827564748/cierre-de-una-mano-hombre-acariciando-un-perro-feliz-al-aire-libre-adopcion-mascotas-terapia-animal-compania-y-conceptos-384750970.webp',
+    'https://cdn.discordapp.com/attachments/673348241269719043/1439045996297584750/Mascotas-078-1.jpg',
   ]
     .filter(Boolean)
     .filter((img, idx, arr) => arr.indexOf(img) === idx);

@@ -4590,36 +4590,3 @@ html.dark .checkbox-option input[type="checkbox"] {
   background-position: center;
   background-repeat: no-repeat;
 }
-
-
-.perfil-crear-post-section {
-  margin: 1.5rem 0;
-  display: flex;
-  justify-content: center;
-}
-
-.perfil-btn-crear-post {
-  background: linear-gradient(135deg, #FF6B35 0%, #f94a29 100%);
-  color: white;
-  border: none;
-  padding: 0.875rem 2rem;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.perfil-btn-crear-post:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
-  background: linear-gradient(135deg, #f94a29 0%, #e63a1f 100%);
-}
-
-.perfil-btn-crear-post:active {
-  transform: translateY(0);
-}
