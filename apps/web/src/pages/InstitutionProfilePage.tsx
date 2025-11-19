@@ -37,25 +37,20 @@ const InstitutionProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('Publicaciones');
 
-  // Validación de rol - Solo instituciones pueden ver su muro
   useEffect(() => {
-    console.log('🔍 [InstitutionProfile] Usuario cargado:', user);
-    
     if (user && !paramId) {
       // Si no hay paramId, significa que es el perfil propio
       const userRole = typeof user.role === 'string' ? parseInt(user.role) : user.role;
-      console.log('🔍 [InstitutionProfile] Rol detectado:', userRole);
       
       // Si es usuario normal (rol 20), redirigir a su perfil
       if (userRole === 20) {
-        console.log('➡️ [InstitutionProfile] Redirigiendo a perfil de usuario (rol 20)');
         navigate('/perfil');
         return;
       }
-
-      console.log('✅ [InstitutionProfile] Cargando muro institucional (rol 21)');
     }
   }, [user, paramId, navigate]);
+
+
 
   useEffect(() => {
     const loadInstitutionData = async () => {

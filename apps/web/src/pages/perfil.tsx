@@ -55,21 +55,16 @@ const UserProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔍 [UserProfile] Usuario cargado:', user);
-    
     if (user) {
       const userRole = typeof user.role === 'string' ? parseInt(user.role) : user.role;
-      console.log('🔍 [UserProfile] Rol detectado:', userRole);
       
       // Si es institución (rol 21), redirigir a su muro
       if (userRole === 21) {
-        console.log('➡️ [UserProfile] Redirigiendo a muro institucional (rol 21)');
         navigate('/muro-institucion');
         return;
       }
 
       // Si es usuario normal (rol 20), cargar perfil
-      console.log('✅ [UserProfile] Cargando perfil de usuario normal (rol 20)');
       setProfileData({
         id: user.id,
         role: user.role,
@@ -83,11 +78,12 @@ const UserProfile: React.FC = () => {
       });
       setIsLoading(false);
     } else {
-      console.log('❌ [UserProfile] No hay usuario, redirigiendo a login');
+      // Si no hay usuario en contexto, redirigir al login
       setIsLoading(false);
       navigate('/login');
     }
   }, [user, navigate]);
+
 
   if (isLoading || !profileData) {
     return (
