@@ -22,6 +22,7 @@ import VistaNoticias from './pages/VistaNoticias';
 import VerifyEmail from './components/VerifyEmail.tsx';
 import PublicanteReview from './pages/Publicante_revition.tsx';
 import PetDetailPage from './pages/PetDetailPage'; // <-- 1. Ruta importada
+import EditPostPage from './pages/EditPostPage';
 
 function App() {
   const maintenanceMode = false;
@@ -94,7 +95,14 @@ function App() {
           </ProtectedRoute>
         } 
         />
-
+      <Route 
+        path="/editar-post/:id" 
+        element={
+          <ProtectedRoute roles={[21]}>
+            <EditPostPage />
+          </ProtectedRoute>
+        } 
+      />
 
       {/* Otras rutas */}
       <Route path="/perfil" element={<UserProfile/>} />
